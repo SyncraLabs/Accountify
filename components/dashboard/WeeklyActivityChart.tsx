@@ -33,18 +33,46 @@ export function WeeklyActivityChart({ data }: WeeklyActivityChartProps) {
         });
     }, [data, maxCount]);
 
-    // Create the path string (smooth curve)
-    // Simple line for now, can implement bezier if needed, but linear is often cleaner for daily data
-    const pathString = useMemo(() => {
+    // Helper to generate smooth path command
+    const getSmoothPath = (points: { x: number; y: number }[]) => {
         if (points.length === 0) return "";
+        if (points.length === 1) return `M ${points[0].x} ${points[0].y}`;
+
         let d = `M ${points[0].x} ${points[0].y}`;
 
-        // Simple straight lines between points
-        points.slice(1).forEach(point => {
-            d += ` L ${point.x} ${point.y}`;
-        });
+        for (let i = 0; i < points.length - 1; i++) {
+            const current = points[i];
+            const next = points[i + 1];
 
+            // Simple smoothing: control points at 1/3 and 2/3 of the way
+            // For a more advanced "catmull-rom" style, we'd need p-1 and p+2
+            // But for a simple smooth chart, cubic bezier with CP's parallel to the axis 
+            // often looks odd. Let's use a "tension" based approach or simple midpoint smoothing.
+
+            // Let's use a standard "catmull-rom" to cubic conversion substitute for simplicity
+            // or just simple cubic bezier interpolation.
+            // Using a simple technique: Control Point 1 is (current + (next-prev)*smoothing)
+            // But we don't have prev for first.
+
+            const p0 = points[i === 0 ? 0 : i - 1];
+            const p1 = points[i];
+            const p2 = points[i + 1];
+            const p3 = points[i + 2] || p2;
+
+            const cp1x = p1.x + (p2.x - p0.x) * 0.15; // 0.15 is tension
+            const cp1y = p1.y + (p2.y - p0.y) * 0.15;
+
+            const cp2x = p2.x - (p3.x - p1.x) * 0.15;
+            const cp2y = p2.y - (p3.y - p1.y) * 0.15;
+
+            d += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p2.x} ${p2.y}`;
+        }
         return d;
+    };
+
+    // Create the path string (smooth curve)
+    const pathString = useMemo(() => {
+        return getSmoothPath(points);
     }, [points]);
 
     // Create area path logic for gradient
@@ -66,7 +94,7 @@ export function WeeklyActivityChart({ data }: WeeklyActivityChartProps) {
 
                 <div className="relative h-full w-full">
                     <svg
-                        viewBox="0 0 100 100"
+                        viewBox="0 -10 100 120" // Expand viewbox slightly to accommodate glow and thick strokes
                         preserveAspectRatio="none"
                         className="w-full h-full overflow-visible"
                     >
@@ -76,6 +104,19 @@ export function WeeklyActivityChart({ data }: WeeklyActivityChartProps) {
                                 <stop offset="0%" stopColor="#a3e635" stopOpacity="0.2" />
                                 <stop offset="100%" stopColor="#a3e635" stopOpacity="0" />
                             </linearGradient>
+                            {/* Glow Filter */}
+                            <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                                <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur" />
+                                <feColorMatrix in="blur" type="matrix" values="
+                                    0 0 0 0 0.639
+                                    0 0 0 0 0.902
+                                    0 0 0 0 0.208
+                                    0 0 0 0.5 0" result="coloredBlur" />
+                                <feMerge>
+                                    <feMergeNode in="coloredBlur" />
+                                    <feMergeNode in="SourceGraphic" />
+                                </feMerge>
+                            </filter>
                         </defs>
 
                         {/* Area Fill */}
@@ -93,12 +134,13 @@ export function WeeklyActivityChart({ data }: WeeklyActivityChartProps) {
                             d={pathString}
                             fill="none"
                             stroke="#a3e635"
-                            strokeWidth="0.8"
+                            strokeWidth="4" // Bold line
                             strokeLinecap="round"
                             strokeLinejoin="round"
-                            initial={{ pathLength: 0 }}
-                            animate={{ pathLength: 1 }}
-                            transition={{ duration: 1.5, ease: "easeInOut" }}
+                            filter="url(#glow)" // Apply glow
+                            initial={{ pathLength: 0, opacity: 0 }}
+                            animate={{ pathLength: 1, opacity: 1 }}
+                            transition={{ duration: 1.2, ease: "easeOut" }} // Smooth easing
                             vectorEffect="non-scaling-stroke"
                         />
 
@@ -122,10 +164,11 @@ export function WeeklyActivityChart({ data }: WeeklyActivityChartProps) {
                                     <circle
                                         cx={point.x}
                                         cy={point.y}
-                                        r="2"
+                                        r="4" // Slightly larger for interaction
                                         fill="#a3e635"
                                         stroke="#000"
-                                        strokeWidth="0.5"
+                                        strokeWidth="2"
+                                        className="drop-shadow-lg"
                                     />
                                 )}
                             </g>
@@ -135,18 +178,18 @@ export function WeeklyActivityChart({ data }: WeeklyActivityChartProps) {
                     {/* Tooltip */}
                     {hoveredIndex !== null && (
                         <motion.div
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="absolute pointer-events-none bg-zinc-900 border border-zinc-800 rounded-lg p-2 shadow-xl z-20 flex flex-col items-center min-w-[100px]"
+                            initial={{ opacity: 0, y: 10, scale: 0.9 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            className="absolute pointer-events-none bg-zinc-900/90 backdrop-blur-md border border-zinc-700/50 rounded-xl p-2.5 shadow-xl z-20 flex flex-col items-center min-w-[100px]"
                             style={{
                                 left: `${points[hoveredIndex].x}%`,
                                 top: `${points[hoveredIndex].y}%`,
-                                transform: 'translate(-50%, -120%)' // Move up above the point
+                                transform: 'translate(-50%, -130%)' // Move up above the point
                             }}
                         >
-                            <span className="text-xs text-zinc-400 font-medium mb-1">{data[hoveredIndex].label}</span>
+                            <span className="text-[10px] text-zinc-400 font-medium mb-1 uppercase tracking-wider">{data[hoveredIndex].label}</span>
                             <div className="flex items-center gap-2">
-                                <div className="w-2 h-2 rounded-full bg-[#a3e635]" />
+                                <div className="w-2 h-2 rounded-full bg-[#a3e635] shadow-[0_0_8px_rgba(163,230,53,0.8)]" />
                                 <span className="text-sm font-bold text-white whitespace-nowrap">
                                     {data[hoveredIndex].count} Hábitos
                                 </span>
@@ -160,7 +203,7 @@ export function WeeklyActivityChart({ data }: WeeklyActivityChartProps) {
                     {data.map((d, i) => (
                         <span
                             key={i}
-                            className={`text-[10px] uppercase font-medium transition-colors ${hoveredIndex === i ? 'text-[#a3e635]' : 'text-zinc-600'}`}
+                            className={`text-[10px] uppercase font-medium transition-all duration-300 ${hoveredIndex === i ? 'text-[#a3e635] scale-110' : 'text-zinc-600'}`}
                         >
                             {d.label}
                         </span>
