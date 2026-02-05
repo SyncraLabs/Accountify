@@ -40,8 +40,13 @@
   --animate-background-position-spin: background-position-spin 3000ms infinite alternate;
 
   @keyframes background-position-spin {
-    0% { background-position: top center; }
-    100% { background-position: bottom center; }
+    0% {
+      background-position: top center;
+    }
+
+    100% {
+      background-position: bottom center;
+    }
   }
 }
 
@@ -83,18 +88,18 @@
 
 .dark {
   /* Glaido Brand Colors (Dark) */
-  --background: #000000;
-  /* Pure Black */
+  --background: #09090b;
+  /* Zinc 950 instead of pure black */
   --foreground: #ffffff;
 
-  --card: #000000;
+  --card: #09090b;
   --card-foreground: #ffffff;
 
-  --popover: #000000;
+  --popover: #09090b;
   --popover-foreground: #ffffff;
 
   /* Ambient Background Gradient for Glassmorphism depth */
-  background-image: radial-gradient(circle at 50% -20%, rgba(191, 245, 73, 0.15), rgba(0, 0, 0, 0) 50%);
+  background-image: radial-gradient(circle at 50% -20%, rgba(191, 245, 73, 0.08), rgba(0, 0, 0, 0) 50%);
   background-attachment: fixed;
 
   /* Primary: Lime Green #BFF549 */
@@ -147,6 +152,7 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }

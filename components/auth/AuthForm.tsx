@@ -41,9 +41,10 @@ export function AuthForm() {
             } else {
                 await signup(formData)
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error(error)
-            toast.error("Ocurrió un error inesperado")
+            // Show the actual error message from the server action if available
+            toast.error(error.message || "Ocurrió un error inesperado")
         } finally {
             // In a redirect scenario, this might not run if unmounted, but that's fine
             setIsLoading(false)
@@ -51,10 +52,10 @@ export function AuthForm() {
     }
 
     return (
-        <div className="w-full max-w-md p-8 rounded-2xl border border-white/10 bg-zinc-950/50 backdrop-blur-xl shadow-2xl relative overflow-hidden">
+        <div className="w-full max-w-md p-8 rounded-2xl border border-zinc-700 bg-zinc-900 backdrop-blur-xl shadow-2xl relative overflow-hidden">
             {/* Background Gradients */}
             <div className="absolute top-0 -left-10 w-40 h-40 bg-primary/20 rounded-full blur-[80px] pointer-events-none" />
-            <div className="absolute bottom-0 -right-10 w-40 h-40 bg-indigo-500/10 rounded-full blur-[80px] pointer-events-none" />
+            <div className="absolute bottom-0 -right-10 w-40 h-40 bg-primary/10 rounded-full blur-[80px] pointer-events-none" />
 
             {/* Header */}
             <div className="flex flex-col items-center mb-8 relative z-10">
@@ -76,12 +77,12 @@ export function AuthForm() {
             </div>
 
             {/* Tabs */}
-            <div className="grid grid-cols-2 p-1 mb-8 bg-zinc-900/80 rounded-lg border border-white/5 relative z-10">
+            <div className="grid grid-cols-2 p-1 mb-8 bg-zinc-800 rounded-lg border border-zinc-700 relative z-10">
                 <button
                     onClick={() => toggleMode("login")}
                     className={`text-sm font-medium py-2 rounded-md transition-all duration-300 ${mode === "login"
-                        ? "bg-zinc-800 text-white shadow-lg"
-                        : "text-zinc-500 hover:text-zinc-300"
+                        ? "bg-zinc-700 text-white shadow-lg"
+                        : "text-zinc-400 hover:text-zinc-200"
                         }`}
                 >
                     Iniciar Sesión
@@ -89,8 +90,8 @@ export function AuthForm() {
                 <button
                     onClick={() => toggleMode("signup")}
                     className={`text-sm font-medium py-2 rounded-md transition-all duration-300 ${mode === "signup"
-                        ? "bg-zinc-800 text-white shadow-lg"
-                        : "text-zinc-500 hover:text-zinc-300"
+                        ? "bg-zinc-700 text-white shadow-lg"
+                        : "text-zinc-400 hover:text-zinc-200"
                         }`}
                 >
                     Registrarse
@@ -115,7 +116,7 @@ export function AuthForm() {
                                     id="fullName"
                                     name="fullName"
                                     placeholder="Tu Nombre"
-                                    className="pl-9 h-10 bg-zinc-900/50 border-white/10 text-white placeholder:text-zinc-600 focus:border-primary/50 focus:ring-primary/20 transition-all"
+                                    className="pl-9 h-10 bg-zinc-800 border-zinc-600 text-white placeholder:text-zinc-500 focus:border-primary focus:ring-primary/30 transition-all"
                                 />
                             </div>
                         </motion.div>
@@ -132,7 +133,7 @@ export function AuthForm() {
                             type="email"
                             placeholder="tu@email.com"
                             required
-                            className="pl-9 h-10 bg-zinc-900/50 border-white/10 text-white placeholder:text-zinc-600 focus:border-primary/50 focus:ring-primary/20 transition-all"
+                            className="pl-9 h-10 bg-zinc-800 border-zinc-600 text-white placeholder:text-zinc-500 focus:border-primary focus:ring-primary/30 transition-all"
                         />
                     </div>
                 </div>
@@ -154,7 +155,7 @@ export function AuthForm() {
                             type="password"
                             required
                             placeholder="••••••••"
-                            className="pl-9 h-10 bg-zinc-900/50 border-white/10 text-white placeholder:text-zinc-600 focus:border-primary/50 focus:ring-primary/20 transition-all"
+                            className="pl-9 h-10 bg-zinc-800 border-zinc-600 text-white placeholder:text-zinc-500 focus:border-primary focus:ring-primary/30 transition-all"
                         />
                     </div>
                     {mode === "signup" && (
