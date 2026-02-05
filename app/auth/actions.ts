@@ -20,10 +20,12 @@ export async function resetPassword(formData: FormData) {
     // Get origin
     const originHeader = (await headers()).get('origin')
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
-    const origin = originHeader || siteUrl || 'https://accountify-azure.vercel.app'
+    const origin = originHeader || siteUrl || 'https://accountify.syncralabs.es'
 
+    // Use /auth/callback to handle the PKCE token exchange
+    // The callback will redirect to /auth/update-password after successful verification
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${origin}/auth/update-password`,
+        redirectTo: `${origin}/auth/callback?type=recovery`,
     })
 
     if (error) {

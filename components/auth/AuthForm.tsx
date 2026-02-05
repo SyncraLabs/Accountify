@@ -42,6 +42,12 @@ export function AuthForm() {
                 await signup(formData)
             }
         } catch (error: any) {
+            // NEXT_REDIRECT is an internal Next.js error thrown when redirect() is called
+            // It's not an actual error, so we should ignore it
+            if (error?.digest?.includes('NEXT_REDIRECT')) {
+                // This is a successful redirect, not an error
+                return
+            }
             console.error(error)
             // Show the actual error message from the server action if available
             toast.error(error.message || "Ocurrió un error inesperado")

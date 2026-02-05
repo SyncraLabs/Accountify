@@ -43,7 +43,7 @@ export async function signup(formData: FormData) {
     // Get origin with fallback
     const originHeader = (await headers()).get('origin')
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
-    const origin = originHeader || siteUrl || 'https://accountify-azure.vercel.app'
+    const origin = originHeader || siteUrl || 'https://accountify.syncralabs.es'
 
     console.log('Signup attempt:', { email, origin, hasSiteUrl: !!siteUrl })
 
