@@ -103,19 +103,19 @@ export function GroupSettingsDialog({ group, onUpdate }: GroupSettingsDialogProp
                     Configuración
                 </Button>
             </DialogTrigger>
-            <DialogContent className="bg-zinc-900/95 backdrop-blur-xl border-zinc-800 shadow-[0_0_50px_rgba(0,0,0,0.5)]">
-                <DialogHeader>
-                    <DialogTitle className="text-white">Configuración del Grupo</DialogTitle>
-                    <DialogDescription className="text-zinc-400">
-                        Personaliza la información y apariencia del grupo
+            <DialogContent className="bg-zinc-950/95 backdrop-blur-xl border border-zinc-800 shadow-[0_0_50px_rgba(0,0,0,0.5)] sm:max-w-[425px]">
+                <DialogHeader className="space-y-3 pb-4 border-b border-zinc-900">
+                    <DialogTitle className="text-xl font-semibold text-white tracking-tight">Editar Grupo</DialogTitle>
+                    <DialogDescription className="text-zinc-500">
+                        Personaliza la imagen, nombre y descripción de tu grupo de disciplina.
                     </DialogDescription>
                 </DialogHeader>
 
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleSubmit} className="space-y-6 pt-4">
                     {/* Avatar Upload */}
-                    <div className="flex flex-col items-center gap-3">
+                    <div className="flex flex-col items-center gap-4">
                         <div
-                            className="relative w-20 h-20 rounded-full overflow-hidden bg-zinc-800 border-2 border-zinc-700 hover:border-primary/50 cursor-pointer transition-all group"
+                            className="relative w-24 h-24 rounded-full overflow-hidden bg-zinc-900 border-2 border-zinc-800 hover:border-primary cursor-pointer transition-all duration-300 group shadow-xl"
                             onClick={() => fileInputRef.current?.click()}
                         >
                             {avatarUrl ? (
@@ -123,18 +123,23 @@ export function GroupSettingsDialog({ group, onUpdate }: GroupSettingsDialogProp
                                     src={avatarUrl}
                                     alt={name}
                                     fill
-                                    className="object-cover"
+                                    className="object-cover transition-transform duration-500 group-hover:scale-110"
                                 />
                             ) : (
-                                <div className="w-full h-full flex items-center justify-center text-zinc-500 text-2xl font-bold">
-                                    {name.charAt(0).toUpperCase()}
+                                <div className="w-full h-full flex items-center justify-center text-zinc-600 bg-zinc-900 group-hover:bg-zinc-800 transition-colors">
+                                    <span className="text-3xl font-bold">{name.charAt(0).toUpperCase()}</span>
                                 </div>
                             )}
-                            <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+
+                            {/* Overlay */}
+                            <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 backdrop-blur-[2px]">
                                 {uploading ? (
-                                    <Loader2 className="h-5 w-5 text-white animate-spin" />
+                                    <Loader2 className="h-6 w-6 text-primary animate-spin" />
                                 ) : (
-                                    <Camera className="h-5 w-5 text-white" />
+                                    <>
+                                        <Camera className="h-6 w-6 text-white mb-1" />
+                                        <span className="text-[10px] text-zinc-300 font-medium">CAMBIAR</span>
+                                    </>
                                 )}
                             </div>
                         </div>
@@ -145,43 +150,56 @@ export function GroupSettingsDialog({ group, onUpdate }: GroupSettingsDialogProp
                             className="hidden"
                             onChange={handleImageUpload}
                         />
-                        <p className="text-xs text-zinc-500">Haz clic para cambiar la imagen</p>
+                        <div className="text-center">
+                            <p className="text-sm font-medium text-white">Imagen del Grupo</p>
+                            <p className="text-xs text-zinc-500 mt-0.5">Recomendado: 500x500px</p>
+                        </div>
                     </div>
 
-                    {/* Name */}
-                    <div className="space-y-2">
-                        <Label htmlFor="name" className="text-zinc-300 text-sm">
-                            Nombre del Grupo
-                        </Label>
-                        <Input
-                            id="name"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            placeholder="Nombre del grupo"
-                            required
-                            className="bg-zinc-800/50 border-zinc-700/50 focus:border-primary/50 transition-colors"
-                        />
+                    <div className="space-y-4">
+                        {/* Name */}
+                        <div className="space-y-2">
+                            <Label htmlFor="name" className="text-zinc-400 text-xs uppercase tracking-wider font-semibold">
+                                Nombre
+                            </Label>
+                            <Input
+                                id="name"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                placeholder="Ej. Espartanos 300"
+                                required
+                                className="bg-zinc-900/50 border-zinc-800 focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all h-10"
+                            />
+                        </div>
+
+                        {/* Description */}
+                        <div className="space-y-2">
+                            <Label htmlFor="description" className="text-zinc-400 text-xs uppercase tracking-wider font-semibold">
+                                Descripción
+                            </Label>
+                            <Input
+                                id="description"
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
+                                placeholder="¿Cuál es el propósito de este grupo?"
+                                className="bg-zinc-900/50 border-zinc-800 focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all h-10"
+                            />
+                        </div>
                     </div>
 
-                    {/* Description */}
-                    <div className="space-y-2">
-                        <Label htmlFor="description" className="text-zinc-300 text-sm">
-                            Descripción
-                        </Label>
-                        <Input
-                            id="description"
-                            value={description}
-                            onChange={(e) => setDescription(e.target.value)}
-                            placeholder="¿De qué trata este grupo?"
-                            className="bg-zinc-800/50 border-zinc-700/50 focus:border-primary/50 transition-colors"
-                        />
-                    </div>
-
-                    <DialogFooter>
+                    <DialogFooter className="pt-2">
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            onClick={() => setOpen(false)}
+                            className="text-zinc-400 hover:text-white hover:bg-zinc-900"
+                        >
+                            Cancelar
+                        </Button>
                         <Button
                             type="submit"
                             disabled={loading || uploading}
-                            className="bg-primary text-black hover:bg-primary/90 transition-all duration-200 hover:shadow-[0_0_20px_rgba(191,245,73,0.3)]"
+                            className="bg-primary text-black hover:bg-primary/90 min-w-[120px] transition-all duration-200 hover:shadow-[0_0_20px_rgba(191,245,73,0.2)]"
                         >
                             {loading ? (
                                 <>
