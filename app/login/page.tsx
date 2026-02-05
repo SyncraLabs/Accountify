@@ -6,7 +6,8 @@ import { login, signup } from "./actions"
 import { toast } from "sonner"
 import { useEffect, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
-import { ShieldCheck } from "lucide-react"
+
+import Image from "next/image"
 
 function LoginForm() {
     const searchParams = useSearchParams()
@@ -21,8 +22,13 @@ function LoginForm() {
     return (
         <div className="w-full max-w-sm p-8 rounded-xl border border-zinc-800 bg-zinc-900/50">
             <div className="flex flex-col items-center mb-8">
-                <div className="h-10 w-10 rounded-lg bg-primary flex items-center justify-center mb-4">
-                    <ShieldCheck className="h-5 w-5 text-black" />
+                <div className="h-10 w-10 relative mb-4">
+                    <Image
+                        src="/logo.svg"
+                        alt="Accountify Logo"
+                        fill
+                        className="object-contain"
+                    />
                 </div>
                 <h1 className="text-xl font-semibold text-white">Accountify</h1>
                 <p className="text-sm text-zinc-500 mt-1">Ingresa o crea tu cuenta</p>

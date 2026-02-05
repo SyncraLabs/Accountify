@@ -14,8 +14,7 @@ import {
     Settings,
     LogOut,
     CreditCard,
-    UserCircle,
-    ShieldCheck
+    UserCircle
 } from "lucide-react";
 import { signOut } from "@/app/auth/actions";
 
@@ -81,8 +80,13 @@ export function AppSidebar({ className, user }: SidebarProps) {
             {/* Header / Logo */}
             <div className="h-16 flex items-center px-6 border-b border-white/5">
                 <div className="flex items-center gap-2 font-bold text-white tracking-tight">
-                    <div className="h-6 w-6 rounded bg-primary flex items-center justify-center text-black">
-                        <ShieldCheck className="h-4 w-4" />
+                    <div className="h-6 w-6 relative">
+                        <Image
+                            src="/logo.svg"
+                            alt="Logo"
+                            fill
+                            className="object-contain"
+                        />
                     </div>
                     Accountify
                 </div>

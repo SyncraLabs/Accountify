@@ -34,7 +34,12 @@ export async function signup(formData: FormData) {
     const password = formData.get('password') as string
     const fullName = formData.get('fullName') as string
 
-    const origin = (await headers()).get('origin')
+    // Get origin with fallback
+    const originHeader = (await headers()).get('origin')
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
+    const origin = originHeader || siteUrl || 'https://accountify-azure.vercel.app' // Fallback to production URL if all else fails
+
+    console.log('Signup attempt:', { email, origin, hasSiteUrl: !!siteUrl })
 
     const { data, error } = await supabase.auth.signUp({
         email,
@@ -52,11 +57,15 @@ export async function signup(formData: FormData) {
         if (error.code === '429' || error.message.includes('rate_limit')) {
             return redirect('/login?message=Demasiados intentos. Por favor espera un momento.')
         }
-        return redirect('/login?message=Error al registrarse. Intenta de nuevo.')
+        return redirect(`/login?message=Error: ${encodeURIComponent(error.message)}`)
+    }
+
+    if (data.user && data.user.identities && data.user.identities.length === 0) {
+        return redirect('/login?message=Este correo ya está registrado. Por favor inicia sesión.')
     }
 
     if (!data.session) {
-        return redirect('/login?message=Por favor revisa tu email para confirmar tu cuenta')
+        return redirect('/login?message=Por favor revisa tu email para confirmar tu cuenta. Si no lo ves, revisa Spam.')
     }
 
     revalidatePath('/', 'layout')
