@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useSearchParams } from "next/navigation"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -79,8 +80,8 @@ export function AuthForm() {
                 <button
                     onClick={() => toggleMode("login")}
                     className={`text-sm font-medium py-2 rounded-md transition-all duration-300 ${mode === "login"
-                            ? "bg-zinc-800 text-white shadow-lg"
-                            : "text-zinc-500 hover:text-zinc-300"
+                        ? "bg-zinc-800 text-white shadow-lg"
+                        : "text-zinc-500 hover:text-zinc-300"
                         }`}
                 >
                     Iniciar Sesión
@@ -88,8 +89,8 @@ export function AuthForm() {
                 <button
                     onClick={() => toggleMode("signup")}
                     className={`text-sm font-medium py-2 rounded-md transition-all duration-300 ${mode === "signup"
-                            ? "bg-zinc-800 text-white shadow-lg"
-                            : "text-zinc-500 hover:text-zinc-300"
+                        ? "bg-zinc-800 text-white shadow-lg"
+                        : "text-zinc-500 hover:text-zinc-300"
                         }`}
                 >
                     Registrarse
@@ -140,9 +141,9 @@ export function AuthForm() {
                     <div className="flex items-center justify-between">
                         <Label htmlFor="password" className="text-xs font-semibold text-zinc-400 uppercase tracking-wider ml-1">Contraseña</Label>
                         {mode === "login" && (
-                            <button type="button" className="text-[10px] text-primary hover:text-primary/80 transition-colors">
+                            <Link href="/login/forgot-password" className="text-[10px] text-primary hover:text-primary/80 transition-colors">
                                 ¿Olvidaste tu contraseña?
-                            </button>
+                            </Link>
                         )}
                     </div>
                     <div className="relative group">

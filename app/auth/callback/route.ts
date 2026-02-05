@@ -8,12 +8,17 @@ export async function GET(request: Request) {
     const requestUrl = new URL(request.url)
     const code = requestUrl.searchParams.get('code')
     const origin = requestUrl.origin
+    const next = requestUrl.searchParams.get('next') || '/'
 
     if (code) {
         const supabase = await createClient()
         await supabase.auth.exchangeCodeForSession(code)
     }
 
+    if (requestUrl.searchParams.get('type') === 'recovery') {
+        return NextResponse.redirect(`${origin}/auth/update-password`)
+    }
+
     // URL to redirect to after sign in process completes
-    return NextResponse.redirect(`${origin}/`)
+    return NextResponse.redirect(`${origin}${next}`)
 }
