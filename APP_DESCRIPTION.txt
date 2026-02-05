@@ -1,0 +1,71 @@
+Appcountability - Application Overview
+
+1. High-Level Summary
+Appcountability is a modern, gamified habit tracking and social accountability web application built to help users build consistency through "Squads" and visual progress tracking. The app leverages a "dark mode" aesthetic with vibrant neon accents (specifically lime green) to create a premium, high-energy user experience. It combines personal habit management with social pressure and support.
+
+2. Technology Stack
+- **Framework:** Next.js 16 (App Router)
+- **Language:** TypeScript
+- **Backend & Database:** Supabase (PostgreSQL, Auth, Realtime)
+- **Styling:** Tailwind CSS v4, Lucide React (Icons), Class Variance Authority (CVA)
+- **UI Components:** Shadcn/ui (radix-ui primitives), Framer Motion (animations)
+- **Forms:** React Hook Form + Zod
+- **Date Management:** date-fns
+
+3. Core Features
+
+A. Dashboard (Home)
+- **Hero Section:** Personalized greeting ("Hola, Guerrero") with current global streak display.
+- **Quick Stats:**
+  - Daily completion rate (e.g., 4/6 habits).
+  - User Level & Title (e.g., Level 5 Warrior).
+  - Active Challenges count.
+  - Progress to next milestone/level.
+- **Daily Habits List:** Interactive list of today's tasks with check-off functionality.
+- **Squad/Group Activity:** Real-time feed or summary of the user's accountability group (chat messages, updates).
+
+B. Habit Management
+- **Creation:** Users can create custom habits with:
+  - Title & Category.
+  - Frequency (Health, Learning, Fitness, etc.).
+  - Description.
+- **Tracking:**
+  - Daily completion toggles.
+  - Streak tracking per habit.
+  - "Habit Logs" for historical data and heatmaps.
+- **Calendar View:** A visual representation of habit consistency over time.
+
+C. Social Accountability (Groups)
+- **Squads:** Users join "Groups" (e.g., "Alpha Squad").
+- **Chat:** Built-in group chat for motivation and updates.
+- **Roles:** Members have roles within the group.
+- **AI Integration:** Support for AI-generated messages/coaching within the group chat.
+
+D. User Profiles
+- **Identity:** Avatar, Bio, Full Name.
+- **Gamification:**
+  - Current Streak (Global).
+  - Leveling system based on consistency.
+
+4. Database Schema (Supabase)
+- `profiles`: Extended user data (streak, avatar, bio).
+- `habits`: Definitions of user habits (frequency, category).
+- `habit_logs`: Daily completion records (for heatmaps/stats).
+- `groups`: Accountability communities.
+- `group_members`: Junction table for users <-> groups.
+- `group_messages`: Chat history for groups.
+
+5. Visual Identity & Design System
+- **Theme:** sleek Dark Mode.
+- **Primary Accent:** Neon Lime Green (#BFF549 / rgba(191,245,73)).
+- **Typography:** Modern sans-serif (Inter/Geist).
+- **Effects:**
+  - Glassmorphism (backdrop-blur).
+  - Smooth gradients and glows.
+  - Micro-animations (Framer Motion) on hover and entry.
+- **Language:** Currently localized in Spanish for the UI ("Días Racha", "Completados", etc.).
+
+6. Current Status
+- The project is in active development with the core authenticated dashboard, habit listing, and basic group structure implemented.
+- Authentication is handled via Supabase Auth.
+- The UI is fully responsive and optimized for desktop, with mobile considerations in progress.
