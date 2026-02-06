@@ -8,7 +8,9 @@ import { DashboardHabitRow } from "@/components/dashboard/DashboardHabitRow";
 import { DashboardRoutineGroup } from "@/components/dashboard/DashboardRoutineGroup";
 import { DashboardGroupCard } from "@/components/dashboard/DashboardGroupCard";
 import { WeeklyActivityChart } from "@/components/dashboard/WeeklyActivityChart";
+import { DashboardClient } from "@/components/dashboard/DashboardClient";
 import { getUserGroups } from "@/app/groups/actions";
+import { hasCompletedAppOnboarding } from "@/app/onboarding/actions";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Plus } from "lucide-react";
 
@@ -97,8 +99,11 @@ export default async function Dashboard() {
     // Limit groups to show on dashboard (e.g. 3)
     const displayedGroups = userGroups.slice(0, 3);
 
-    return (
+    // Check if user has completed app onboarding
+    const hasCompletedOnboarding = await hasCompletedAppOnboarding();
 
+    return (
+        <DashboardClient showOnboarding={!hasCompletedOnboarding}>
         <div className="flex min-h-screen bg-black">
             {/* Sidebar - Desktop Only for now (Mobile TBD) */}
             <AppSidebar user={user} className="hidden md:flex" />
@@ -220,6 +225,7 @@ export default async function Dashboard() {
                 </div>
             </main>
         </div>
+        </DashboardClient>
     );
 }
 
