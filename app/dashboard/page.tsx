@@ -5,6 +5,7 @@ import { AppSidebar } from "@/components/layout/AppSidebar";
 import { MobileNav } from "@/components/layout/MobileNav";
 import { DashboardStats } from "@/components/dashboard/DashboardStats";
 import { DashboardHabitRow } from "@/components/dashboard/DashboardHabitRow";
+import { DashboardRoutineGroup } from "@/components/dashboard/DashboardRoutineGroup";
 import { DashboardGroupCard } from "@/components/dashboard/DashboardGroupCard";
 import { WeeklyActivityChart } from "@/components/dashboard/WeeklyActivityChart";
 import { getUserGroups } from "@/app/groups/actions";
@@ -19,18 +20,26 @@ export default async function Dashboard() {
         redirect("/login");
     }
 
-    // Fetch user's habits
+    // Fetch user's habits with routine info
     const { data: habits } = await supabase
         .from('habits')
         .select(`
-      id,
-      title,
-      category,
-      frequency,
-      habit_logs (
-        completed_date
-      )
-    `)
+            id,
+            title,
+            category,
+            frequency,
+            routine_id,
+            habit_logs (
+                completed_date
+            )
+        `)
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+
+    // Fetch user's routines
+    const { data: routines } = await supabase
+        .from('routines')
+        .select('id, title, description, category')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
@@ -40,6 +49,15 @@ export default async function Dashboard() {
         ...habit,
         completedToday: habit.habit_logs?.some((log: any) => log.completed_date === today) || false
     }));
+
+    // Group habits by routine
+    const routineGroups = (routines || []).map(routine => ({
+        routine,
+        habits: habitsWithCompletion.filter(h => h.routine_id === routine.id)
+    })).filter(group => group.habits.length > 0);
+
+    // Get standalone habits (no routine)
+    const standaloneHabits = habitsWithCompletion.filter(h => !h.routine_id);
 
     const completedToday = habitsWithCompletion.filter(h => h.completedToday).length;
     const totalHabits = habitsWithCompletion.length;
@@ -123,14 +141,26 @@ export default async function Dashboard() {
                                 {habitsWithCompletion.length === 0 ? (
                                     <div className="p-8 border border-dashed border-zinc-800 rounded-xl text-center bg-zinc-950/50">
                                         <p className="text-zinc-500 text-sm mb-4">No has creado hábitos aún.</p>
-                                        <Link href="/calendar">
-                                            <Button size="sm" className="bg-primary text-black hover:bg-primary/90">Crear Primer Hábito</Button>
+                                        <Link href="/coach">
+                                            <Button size="sm" className="bg-primary text-black hover:bg-primary/90">Crear con AI Coach</Button>
                                         </Link>
                                     </div>
                                 ) : (
-                                    habitsWithCompletion.map((habit) => (
-                                        <DashboardHabitRow key={habit.id} habit={habit} />
-                                    ))
+                                    <>
+                                        {/* Routine Groups */}
+                                        {routineGroups.map((group) => (
+                                            <DashboardRoutineGroup
+                                                key={group.routine.id}
+                                                routine={group.routine}
+                                                habits={group.habits}
+                                            />
+                                        ))}
+
+                                        {/* Standalone Habits */}
+                                        {standaloneHabits.map((habit) => (
+                                            <DashboardHabitRow key={habit.id} habit={habit} />
+                                        ))}
+                                    </>
                                 )}
                             </div>
                         </div>

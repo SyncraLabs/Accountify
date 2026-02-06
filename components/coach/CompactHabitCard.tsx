@@ -1,0 +1,158 @@
+"use client";
+
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { ChevronDown, ChevronUp, Pencil, Trash2, Flame } from "lucide-react";
+import { deleteHabit } from "@/app/actions";
+import { toast } from "sonner";
+
+interface CompactHabitCardProps {
+    habit: {
+        id: string;
+        title: string;
+        category: string;
+        frequency: string;
+        description?: string;
+        streak?: number;
+        reasoning?: string;
+    };
+    onEdit?: (habit: any) => void;
+    onDelete?: () => void;
+    showActions?: boolean;
+}
+
+const categoryEmojis: Record<string, string> = {
+    "Salud & Fitness": "💪",
+    "Mindset & Aprendizaje": "🧠",
+    "Productividad": "⚡",
+    "Creatividad": "🎨",
+    "Social": "👥",
+};
+
+export function CompactHabitCard({
+    habit,
+    onEdit,
+    onDelete,
+    showActions = true
+}: CompactHabitCardProps) {
+    const [isExpanded, setIsExpanded] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
+
+    const emoji = categoryEmojis[habit.category] || "✨";
+
+    const handleDelete = async () => {
+        if (!confirm("¿Estás seguro de eliminar este hábito?")) return;
+
+        setIsDeleting(true);
+        const result = await deleteHabit(habit.id);
+
+        if (result.error) {
+            toast.error(result.error);
+        } else {
+            toast.success("Hábito eliminado");
+            onDelete?.();
+        }
+        setIsDeleting(false);
+    };
+
+    return (
+        <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden hover:bg-white/[0.07] transition-colors">
+            {/* Collapsed Header */}
+            <button
+                onClick={() => setIsExpanded(!isExpanded)}
+                className="w-full px-4 py-3 flex items-center justify-between text-left"
+            >
+                <div className="flex items-center gap-3 min-w-0">
+                    <span className="text-lg flex-shrink-0">{emoji}</span>
+                    <span className="text-white font-medium truncate">{habit.title}</span>
+                </div>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                    <Badge variant="outline" className="text-xs hidden sm:inline-flex">
+                        {habit.category}
+                    </Badge>
+                    {habit.streak && habit.streak > 0 && (
+                        <div className="flex items-center gap-1 text-orange-400 text-sm">
+                            <Flame className="h-3.5 w-3.5" />
+                            <span>{habit.streak}</span>
+                        </div>
+                    )}
+                    {isExpanded ? (
+                        <ChevronUp className="h-4 w-4 text-zinc-400" />
+                    ) : (
+                        <ChevronDown className="h-4 w-4 text-zinc-400" />
+                    )}
+                </div>
+            </button>
+
+            {/* Expanded Content */}
+            <AnimatePresence>
+                {isExpanded && (
+                    <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="overflow-hidden"
+                    >
+                        <div className="px-4 pb-4 pt-1 border-t border-white/10 space-y-3">
+                            {/* Details */}
+                            <div className="flex flex-wrap gap-2 text-sm text-zinc-400">
+                                <span>Frecuencia: <span className="text-zinc-300">{habit.frequency}</span></span>
+                                {habit.streak !== undefined && (
+                                    <span>Racha: <span className="text-zinc-300">{habit.streak} días</span></span>
+                                )}
+                            </div>
+
+                            {habit.description && (
+                                <p className="text-sm text-zinc-400">{habit.description}</p>
+                            )}
+
+                            {habit.reasoning && (
+                                <div className="bg-primary/10 rounded-lg p-3">
+                                    <p className="text-xs text-primary">
+                                        <strong>La Ciencia:</strong> {habit.reasoning}
+                                    </p>
+                                </div>
+                            )}
+
+                            {/* Actions */}
+                            {showActions && (
+                                <div className="flex gap-2 pt-2">
+                                    {onEdit && (
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                onEdit(habit);
+                                            }}
+                                            className="border-zinc-700 text-zinc-300 hover:text-white hover:bg-zinc-800"
+                                        >
+                                            <Pencil className="h-3.5 w-3.5 mr-1.5" />
+                                            Editar
+                                        </Button>
+                                    )}
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleDelete();
+                                        }}
+                                        disabled={isDeleting}
+                                        className="border-red-900/50 text-red-400 hover:text-red-300 hover:bg-red-950/50"
+                                    >
+                                        <Trash2 className="h-3.5 w-3.5 mr-1.5" />
+                                        {isDeleting ? "..." : "Eliminar"}
+                                    </Button>
+                                </div>
+                            )}
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </div>
+    );
+}
