@@ -1,13 +1,14 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Trophy, Copy, Check } from "lucide-react"
+import { Copy, Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import { InviteDialog } from "./InviteDialog"
 import { GroupSettingsDialog } from "./GroupSettingsDialog"
 import { MembersListDialog } from "./MembersListDialog"
 import { ChallengesSection } from "./ChallengesSection"
+import { GroupHabitsProgress } from "./GroupHabitsProgress"
 import { isUserGroupAdmin } from "@/app/groups/actions"
 import Image from "next/image"
 
@@ -115,6 +116,11 @@ export function GroupInfoSidebar({ group, currentUserId, onGroupUpdate }: GroupI
             {/* Challenges Section */}
             <div className="relative">
                 <ChallengesSection groupId={group.id} isAdmin={isAdmin} />
+            </div>
+
+            {/* Group Progress Section */}
+            <div className="relative">
+                <GroupHabitsProgress groupId={group.id} />
             </div>
         </div>
     )

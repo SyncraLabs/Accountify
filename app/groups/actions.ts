@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { createMentionNotification, createGroupMessageNotification } from '@/app/notifications/actions'
 
 export type CreateGroupState = {
     error?: string
@@ -112,10 +113,32 @@ export async function getUserGroups() {
     return data.map((item: any) => item.groups)
 }
 
-export async function sendMessage(groupId: string, content: string, type: 'text' | 'image' = 'text', mediaUrl: string | null = null) {
+export async function sendMessage(
+    groupId: string,
+    content: string,
+    type: 'text' | 'image' = 'text',
+    mediaUrl: string | null = null,
+    mentionedUserIds: string[] = []
+) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return { error: 'Not authenticated' }
+
+    // Get sender profile for notifications
+    const { data: senderProfile } = await supabase
+        .from('profiles')
+        .select('username, full_name')
+        .eq('id', user.id)
+        .single()
+    const senderName = senderProfile?.username || senderProfile?.full_name || 'Alguien'
+
+    // Get group details for notifications
+    const { data: group } = await supabase
+        .from('groups')
+        .select('name')
+        .eq('id', groupId)
+        .single()
+    const groupName = group?.name || 'Grupo'
 
     const { error } = await supabase
         .from('messages')
@@ -128,6 +151,41 @@ export async function sendMessage(groupId: string, content: string, type: 'text'
         })
 
     if (error) return { error: error.message }
+
+    // Send mention notifications
+    for (const mentionedUserId of mentionedUserIds) {
+        if (mentionedUserId !== user.id) {
+            await createMentionNotification(
+                mentionedUserId,
+                senderName,
+                groupId,
+                groupName,
+                content
+            )
+        }
+    }
+
+    // Send group message notifications to other members (batched)
+    const { data: members } = await supabase
+        .from('group_members')
+        .select('user_id')
+        .eq('group_id', groupId)
+        .neq('user_id', user.id)
+
+    if (members) {
+        for (const member of members) {
+            // Skip if already mentioned (they'll get the mention notification instead)
+            if (!mentionedUserIds.includes(member.user_id)) {
+                await createGroupMessageNotification(
+                    member.user_id,
+                    groupId,
+                    groupName,
+                    senderName
+                )
+            }
+        }
+    }
+
     return { success: true }
 }
 
@@ -610,4 +668,242 @@ export async function shareHabitCompletion(
 
     if (error) return { error: error.message }
     return { success: true }
+}
+
+// ========= Onboarding Features =========
+
+export async function hasCompletedGroupsOnboarding(): Promise<boolean> {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return true // Don't show onboarding if not logged in
+
+    const { data, error } = await supabase
+        .from('user_onboarding_flags')
+        .select('groups_intro_completed')
+        .eq('user_id', user.id)
+        .single()
+
+    if (error || !data) return false
+    return data.groups_intro_completed || false
+}
+
+export async function completeGroupsOnboarding() {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { error: 'Not authenticated' }
+
+    const { error } = await supabase
+        .from('user_onboarding_flags')
+        .upsert({
+            user_id: user.id,
+            groups_intro_completed: true,
+            groups_intro_completed_at: new Date().toISOString()
+        })
+
+    if (error) {
+        console.error('Error completing onboarding:', error)
+        return { error: error.message }
+    }
+
+    return { success: true }
+}
+
+// ========= Habit Sharing Settings =========
+
+export async function getHabitSharingSettings(habitId?: string) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { error: 'Not authenticated', shares: [] }
+
+    let query = supabase
+        .from('habit_group_shares')
+        .select(`
+            id,
+            habit_id,
+            group_id,
+            auto_share,
+            groups (
+                id,
+                name,
+                avatar_url
+            )
+        `)
+        .eq('user_id', user.id)
+
+    if (habitId) {
+        query = query.eq('habit_id', habitId)
+    }
+
+    const { data, error } = await query
+
+    if (error) {
+        console.error('Error fetching habit sharing settings:', error)
+        return { error: error.message, shares: [] }
+    }
+
+    return { shares: data || [] }
+}
+
+export async function updateHabitSharingSettings(
+    habitId: string,
+    groupId: string,
+    autoShare: boolean
+) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { error: 'Not authenticated' }
+
+    if (autoShare) {
+        // Upsert: create or update the sharing setting
+        const { error } = await supabase
+            .from('habit_group_shares')
+            .upsert({
+                habit_id: habitId,
+                group_id: groupId,
+                user_id: user.id,
+                auto_share: true
+            }, {
+                onConflict: 'habit_id,group_id'
+            })
+
+        if (error) {
+            console.error('Error updating habit sharing:', error)
+            return { error: error.message }
+        }
+    } else {
+        // Delete the sharing setting
+        const { error } = await supabase
+            .from('habit_group_shares')
+            .delete()
+            .eq('habit_id', habitId)
+            .eq('group_id', groupId)
+            .eq('user_id', user.id)
+
+        if (error) {
+            console.error('Error removing habit sharing:', error)
+            return { error: error.message }
+        }
+    }
+
+    return { success: true }
+}
+
+export async function getAutoShareGroups(habitId: string) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return []
+
+    const { data, error } = await supabase
+        .from('habit_group_shares')
+        .select('group_id')
+        .eq('habit_id', habitId)
+        .eq('user_id', user.id)
+        .eq('auto_share', true)
+
+    if (error) {
+        console.error('Error fetching auto-share groups:', error)
+        return []
+    }
+
+    return data.map(d => d.group_id)
+}
+
+// ========= Group Progress Features =========
+
+export async function getGroupMembersProgress(groupId: string, date?: string) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { error: 'Not authenticated', members: [] }
+
+    const targetDate = date || new Date().toISOString().split('T')[0]
+
+    // Get all group members
+    const { data: members, error: membersError } = await supabase
+        .from('group_members')
+        .select(`
+            user_id,
+            profiles (
+                id,
+                full_name,
+                avatar_url,
+                username
+            )
+        `)
+        .eq('group_id', groupId)
+
+    if (membersError) {
+        console.error('Error fetching group members:', membersError)
+        return { error: membersError.message, members: [] }
+    }
+
+    // Get shared habits for this group
+    const { data: sharedHabits, error: habitsError } = await supabase
+        .from('habit_group_shares')
+        .select(`
+            habit_id,
+            user_id,
+            habits (
+                id,
+                title,
+                category,
+                frequency
+            )
+        `)
+        .eq('group_id', groupId)
+
+    if (habitsError) {
+        console.error('Error fetching shared habits:', habitsError)
+        return { error: habitsError.message, members: [] }
+    }
+
+    // Get habit logs for today
+    const habitIds = sharedHabits?.map(h => h.habit_id) || []
+    let logs: any[] = []
+
+    if (habitIds.length > 0) {
+        const { data: logsData } = await supabase
+            .from('habit_logs')
+            .select('habit_id, completed_date')
+            .in('habit_id', habitIds)
+            .eq('completed_date', targetDate)
+
+        logs = logsData || []
+    }
+
+    // Build member progress data
+    const membersProgress = members.map((member: any) => {
+        const memberHabits = sharedHabits
+            ?.filter((h: any) => h.user_id === member.user_id)
+            .map((h: any) => {
+                const completedToday = logs.some(
+                    (l: any) => l.habit_id === h.habit_id
+                )
+                return {
+                    id: h.habits.id,
+                    title: h.habits.title,
+                    category: h.habits.category,
+                    frequency: h.habits.frequency,
+                    completedToday
+                }
+            }) || []
+
+        const completedCount = memberHabits.filter(h => h.completedToday).length
+        const totalCount = memberHabits.length
+
+        return {
+            userId: member.user_id,
+            profile: member.profiles,
+            habits: memberHabits,
+            completedCount,
+            totalCount,
+            progress: totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0
+        }
+    })
+
+    // Filter out members with no shared habits and sort by progress
+    const filteredMembers = membersProgress
+        .filter((m: any) => m.totalCount > 0)
+        .sort((a: any, b: any) => b.progress - a.progress)
+
+    return { members: filteredMembers }
 }

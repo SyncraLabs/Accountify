@@ -6,15 +6,25 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Send, Paperclip, Loader2 } from "lucide-react"
+import { Send, Paperclip, Loader2, Users, Info } from "lucide-react"
 import { sendMessage } from "@/app/groups/actions"
 import { createClient } from "@/lib/supabase/client"
 import { motion, AnimatePresence } from "framer-motion"
 import { HabitShareMessage } from "@/components/groups/HabitShareMessage"
+import { GroupHabitsProgress } from "@/components/groups/GroupHabitsProgress"
+import {
+    Sheet,
+    SheetContent,
+    SheetDescription,
+    SheetHeader,
+    SheetTitle,
+    SheetTrigger,
+} from "@/components/ui/sheet"
 
 export function ChatArea({ groupId, initialMessages, groupName, currentUserId }: { groupId: string, initialMessages?: any[], groupName: string, currentUserId: string }) {
     const [messages, setMessages] = useState<any[]>(initialMessages || [])
     const [profiles, setProfiles] = useState<Record<string, any>>({})
+    const [members, setMembers] = useState<any[]>([])
     const [input, setInput] = useState("")
     const scrollRef = useRef<HTMLDivElement>(null)
     const fileInputRef = useRef<HTMLInputElement>(null)
@@ -46,6 +56,31 @@ export function ChatArea({ groupId, initialMessages, groupName, currentUserId }:
         fetchProfiles(userIds);
     }, [messages.length]);
 
+    // Fetch group members for @ mention suggestions
+    useEffect(() => {
+        const fetchMembers = async () => {
+            const { data } = await supabase
+                .from('group_members')
+                .select(`
+                    user_id,
+                    profiles (
+                        id,
+                        username,
+                        full_name
+                    )
+                `)
+                .eq('group_id', groupId)
+            if (data) {
+                setMembers(data.map((m: any) => ({
+                    userId: m.user_id,
+                    username: m.profiles?.username,
+                    fullName: m.profiles?.full_name
+                })))
+            }
+        }
+        fetchMembers()
+    }, [groupId, supabase]);
+
     // Realtime subscription
     useEffect(() => {
         const channel = supabase
@@ -61,7 +96,18 @@ export function ChatArea({ groupId, initialMessages, groupName, currentUserId }:
                 (payload) => {
                     const newMsg = payload.new
                     setMessages((prev) => {
+                        // Check if this exact message already exists
                         if (prev.find(m => m.id === newMsg.id)) return prev
+
+                        // If this message is from the current user, replace any optimistic message
+                        if (newMsg.user_id === currentUserId) {
+                            // Find and remove optimistic messages (temp IDs) from this user
+                            const withoutOptimistic = prev.filter(m =>
+                                !(m.isOptimistic && m.user_id === currentUserId)
+                            )
+                            return [...withoutOptimistic, newMsg]
+                        }
+
                         return [...prev, newMsg]
                     })
                     fetchProfiles([newMsg.user_id]);
@@ -81,9 +127,32 @@ export function ChatArea({ groupId, initialMessages, groupName, currentUserId }:
         }
     }, [messages.length])
 
+    // Parse @mentions from message content
+    const parseMentions = (content: string): string[] => {
+        const mentionRegex = /@(\w+)/g
+        const matches = content.match(mentionRegex)
+        if (!matches) return []
+
+        const mentionedIds: string[] = []
+        matches.forEach(match => {
+            const username = match.slice(1).toLowerCase()
+            const member = members.find(m =>
+                m.username?.toLowerCase() === username ||
+                m.fullName?.toLowerCase().replace(/\s/g, '') === username
+            )
+            if (member && !mentionedIds.includes(member.userId)) {
+                mentionedIds.push(member.userId)
+            }
+        })
+        return mentionedIds
+    }
+
     const handleSend = async () => {
         if (!input.trim()) return
         const content = input
+
+        // Parse mentions before sending
+        const mentionedUserIds = parseMentions(content)
 
         const tempId = `temp-${Date.now()}`
         const optimisticMsg = {
@@ -98,7 +167,7 @@ export function ChatArea({ groupId, initialMessages, groupName, currentUserId }:
         setMessages(prev => [...prev, optimisticMsg])
         setInput("")
 
-        const result = await sendMessage(groupId, content)
+        const result = await sendMessage(groupId, content, 'text', null, mentionedUserIds)
 
         if (result.error) {
             console.error("Failed to send message:", result.error)
@@ -144,11 +213,38 @@ export function ChatArea({ groupId, initialMessages, groupName, currentUserId }:
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[200px] bg-primary/[0.03] blur-[100px] pointer-events-none" />
 
             {/* Header */}
-            <div className="h-14 border-b border-zinc-800/50 flex items-center gap-3 px-5 shrink-0 bg-zinc-900/30 backdrop-blur-sm relative">
-                <Link href="/groups" className="md:hidden text-zinc-400 hover:text-white">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
-                </Link>
-                <h2 className="font-medium text-sm text-white">{groupName}</h2>
+            <div className="h-14 border-b border-zinc-800/50 flex items-center justify-between px-5 shrink-0 bg-zinc-900/30 backdrop-blur-sm relative">
+                <div className="flex items-center gap-3">
+                    <Link href="/groups" className="md:hidden text-zinc-400 hover:text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
+                    </Link>
+                    <h2 className="font-medium text-sm text-white">{groupName}</h2>
+                </div>
+
+                {/* Progress button - visible on mobile/tablet, hidden on desktop (sidebar has it) */}
+                <Sheet>
+                    <SheetTrigger asChild>
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            className="lg:hidden text-zinc-400 hover:text-white hover:bg-zinc-800/50"
+                        >
+                            <Users className="h-4 w-4 mr-2" />
+                            Progreso
+                        </Button>
+                    </SheetTrigger>
+                    <SheetContent className="bg-zinc-950 border-zinc-800 w-full sm:max-w-md overflow-y-auto">
+                        <SheetHeader>
+                            <SheetTitle className="text-white">Progreso del Grupo</SheetTitle>
+                            <SheetDescription>
+                                Mira el progreso diario de los miembros
+                            </SheetDescription>
+                        </SheetHeader>
+                        <div className="mt-6">
+                            <GroupHabitsProgress groupId={groupId} />
+                        </div>
+                    </SheetContent>
+                </Sheet>
             </div>
 
             <ScrollArea className="flex-1 p-4">
@@ -224,7 +320,7 @@ export function ChatArea({ groupId, initialMessages, groupName, currentUserId }:
                     <input type="file" ref={fileInputRef} className="hidden" onChange={handleFileUpload} accept="image/*" />
 
                     <Input
-                        placeholder="Escribe un mensaje..."
+                        placeholder="Escribe un mensaje... Usa @nombre para mencionar"
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         onKeyDown={(e) => e.key === "Enter" && handleSend()}
