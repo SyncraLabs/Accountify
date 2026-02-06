@@ -16,7 +16,8 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { toast } from 'sonner';
-import { Camera, Loader2, User } from 'lucide-react';
+import { Camera, Loader2, User, Share2 } from 'lucide-react';
+import { HabitSharingSettings } from '@/components/habits/HabitSharingSettings';
 
 interface Profile {
     username: string | null;
@@ -188,6 +189,22 @@ export function SettingsForm({ initialProfile }: { initialProfile: Profile | nul
                     <p className="text-xs text-muted-foreground">
                         This information is used by the AI to verify your habits and provide advice.
                     </p>
+                </div>
+
+                {/* Habit Sharing Section */}
+                <div className="space-y-3 pt-4 border-t border-zinc-800">
+                    <div className="space-y-1">
+                        <Label className="text-white flex items-center gap-2">
+                            <Share2 className="h-4 w-4 text-primary" />
+                            Auto-Compartir Hábitos
+                        </Label>
+                        <p className="text-xs text-muted-foreground">
+                            Configura qué hábitos se comparten automáticamente con tus grupos cuando los completas.
+                        </p>
+                    </div>
+                    <HabitSharingSettings
+                        triggerClassName="w-full justify-start bg-secondary/20 border border-primary/20 hover:bg-secondary/30"
+                    />
                 </div>
 
             </CardContent>

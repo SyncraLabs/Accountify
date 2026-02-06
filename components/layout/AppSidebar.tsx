@@ -17,6 +17,7 @@ import {
     UserCircle
 } from "lucide-react";
 import { signOut } from "@/app/auth/actions";
+import { NotificationBell } from "@/components/notifications/NotificationBell";
 
 interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
     user?: any;
@@ -78,7 +79,7 @@ export function AppSidebar({ className, user }: SidebarProps) {
     return (
         <div className={cn("hidden md:flex flex-col h-screen fixed left-0 top-0 bottom-0 z-50 w-64 bg-black border-r border-white/5", className)}>
             {/* Header / Logo */}
-            <div className="h-16 flex items-center px-6 border-b border-white/5">
+            <div className="h-16 flex items-center justify-between px-6 border-b border-white/5">
                 <div className="flex items-center gap-2 font-bold text-white tracking-tight">
                     <div className="h-6 w-6 relative">
                         <Image
@@ -90,6 +91,7 @@ export function AppSidebar({ className, user }: SidebarProps) {
                     </div>
                     Accountify
                 </div>
+                <NotificationBell />
             </div>
 
             {/* Navigation */}

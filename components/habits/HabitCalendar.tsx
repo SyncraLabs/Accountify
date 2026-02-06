@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { Check, Flame, Trash2, Calendar as CalendarIcon } from "lucide-react";
 import { CreateHabitModal } from "./CreateHabitModal";
 import { ShareHabitDialog } from "./ShareHabitDialog";
+import { QuickShareToggle } from "./QuickShareToggle";
 import { FramerWrapper } from "@/components/ui/FramerWrapper";
 import { toggleHabitLog, deleteHabit } from "@/app/actions";
 import { toast } from "sonner";
@@ -257,6 +258,8 @@ export function HabitCalendar({ initialHabits }: HabitCalendarProps) {
                                             streak={currentStreak}
                                             category={habit.category}
                                         />
+
+                                        <QuickShareToggle habitId={habit.id} />
 
                                         <button
                                             onClick={() => handleDeleteClick(habit.id, habit.title)}
