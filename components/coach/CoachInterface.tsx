@@ -327,7 +327,7 @@ export function CoachInterface({ currentHabits }: CoachInterfaceProps) {
                         </div>
 
                         {/* Input Area */}
-                        <div className="border-t border-zinc-800 p-4">
+                        <div className="border-t border-zinc-800 p-4 pb-24 md:pb-4">
                             <form
                                 onSubmit={(e) => {
                                     e.preventDefault();

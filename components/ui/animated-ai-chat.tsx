@@ -312,7 +312,7 @@ export function AnimatedAIChat({
     };
 
     return (
-        <div className="flex flex-col w-full h-full items-center justify-center bg-transparent text-white p-6 relative overflow-hidden">
+        <div className="flex flex-col w-full h-full items-center justify-center bg-transparent text-white p-6 pb-28 md:pb-6 relative overflow-hidden">
             <div className="absolute inset-0 w-full h-full overflow-hidden">
                 <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/10 rounded-full mix-blend-normal filter blur-[128px] animate-pulse" />
                 <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-lime-500/10 rounded-full mix-blend-normal filter blur-[128px] animate-pulse delay-700" />
@@ -548,7 +548,7 @@ export function AnimatedAIChat({
             <AnimatePresence>
                 {isTyping && (
                     <motion.div
-                        className="absolute bottom-8 mx-auto transform -translate-x-1/2 left-1/2 backdrop-blur-2xl bg-white/[0.02] rounded-full px-4 py-2 shadow-lg border border-white/[0.05]"
+                        className="absolute bottom-28 md:bottom-8 mx-auto transform -translate-x-1/2 left-1/2 backdrop-blur-2xl bg-white/[0.02] rounded-full px-4 py-2 shadow-lg border border-white/[0.05]"
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 20 }}

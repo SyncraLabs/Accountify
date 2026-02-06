@@ -306,7 +306,7 @@ export function ChatArea({ groupId, initialMessages, groupName, currentUserId }:
                 </div>
             </ScrollArea>
 
-            <div className="p-4 border-t border-zinc-800/50 bg-zinc-900/30 backdrop-blur-sm shrink-0">
+            <div className="p-4 pb-24 md:pb-4 border-t border-zinc-800/50 bg-zinc-900/30 backdrop-blur-sm shrink-0">
                 <div className="max-w-3xl mx-auto flex gap-2">
                     <Button
                         variant="ghost"
