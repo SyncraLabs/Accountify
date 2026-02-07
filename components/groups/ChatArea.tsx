@@ -277,7 +277,9 @@ export function ChatArea({ groupId, initialMessages, groupName, currentUserId }:
     // Reset messages when groupId changes or initialMessages updates
     // IMPORTANT: Only update if initialMessages is defined and distinct
     useEffect(() => {
+        console.log('[ChatArea] initialMessages received:', initialMessages?.length, 'for group:', groupId)
         if (initialMessages && initialMessages.length > 0) {
+            console.log('[ChatArea] Setting messages from initialMessages')
             setMessages(initialMessages)
             setHasMore(initialMessages.length >= 50)
             // Scroll to bottom on initial load
@@ -288,6 +290,7 @@ export function ChatArea({ groupId, initialMessages, groupName, currentUserId }:
             }, 100)
         } else if (messages.length === 0 && initialMessages?.length === 0) {
             // Handle truly empty state
+            console.log('[ChatArea] Empty state - no messages')
             setMessages([])
             setHasMore(false)
         }

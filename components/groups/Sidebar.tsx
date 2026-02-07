@@ -92,8 +92,8 @@ export function Sidebar({ groups, selectedGroupId }: { groups: any[], selectedGr
                                         {group.description || 'Grupo de accountability'}
                                     </span>
 
-                                    {/* Feature Pills */}
-                                    <div className="flex items-center gap-2 mt-2">
+                                    {/* Feature Pills - Hidden on mobile */}
+                                    <div className="hidden md:flex items-center gap-2 mt-2">
                                         <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-zinc-800/80 text-[10px] text-zinc-400">
                                             <MessageCircle className="h-3 w-3" />
                                             <span>Chat</span>
@@ -114,9 +114,9 @@ export function Sidebar({ groups, selectedGroupId }: { groups: any[], selectedGr
                 )}
             </div>
 
-            {/* Bottom Feature Highlight */}
+            {/* Bottom Feature Highlight - Hidden on mobile */}
             {groups.length > 0 && (
-                <div className="p-4 border-t border-zinc-800/50 bg-gradient-to-t from-zinc-900/50 to-transparent">
+                <div className="hidden md:block p-4 border-t border-zinc-800/50 bg-gradient-to-t from-zinc-900/50 to-transparent">
                     <div className="flex items-center gap-3 p-3 rounded-lg bg-primary/5 border border-primary/10">
                         <div className="p-2 rounded-lg bg-primary/10">
                             <Trophy className="h-4 w-4 text-primary" />

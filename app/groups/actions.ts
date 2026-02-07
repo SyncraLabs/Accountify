@@ -157,6 +157,8 @@ export async function sendMessage(
     const groupName = group?.name || 'Grupo'
 
     // Insert the message
+    console.log('[sendMessage] Attempting to insert message for group:', groupId, 'user:', user.id)
+
     const { data: insertedMessage, error } = await supabase
         .from('messages')
         .insert({
@@ -170,11 +172,11 @@ export async function sendMessage(
         .single()
 
     if (error) {
-        console.error('[sendMessage] Failed to insert message:', error)
+        console.error('[sendMessage] Failed to insert message:', error.message, error.details, error.hint)
         return { error: error.message }
     }
 
-    console.log('[sendMessage] Message inserted successfully:', insertedMessage?.id)
+    console.log('[sendMessage] Message inserted successfully:', insertedMessage?.id, insertedMessage?.content?.substring(0, 30))
 
     // Send mention notifications
     for (const mentionedUserId of mentionedUserIds) {
@@ -237,18 +239,26 @@ export async function getGroupMessages(
         return { error: 'Not authenticated', data: [] }
     }
 
+    console.log('[getGroupMessages] Fetching for user:', user.id, 'group:', groupId)
+
     // Verify user is a member of this group
-    const { data: membership } = await supabase
+    const { data: membership, error: membershipError } = await supabase
         .from('group_members')
         .select('role')
         .eq('group_id', groupId)
         .eq('user_id', user.id)
         .single()
 
+    if (membershipError) {
+        console.error('[getGroupMessages] Membership check error:', membershipError)
+    }
+
     if (!membership) {
         console.error('[getGroupMessages] User is not a member of group:', groupId)
         return { error: 'Not a member of this group', data: [] }
     }
+
+    console.log('[getGroupMessages] User membership confirmed:', membership.role)
 
     let query = supabase
         .from('messages')
@@ -273,10 +283,17 @@ export async function getGroupMessages(
 
     if (error) {
         console.error('[getGroupMessages] Error fetching messages:', error)
+        console.error('[getGroupMessages] Details:', { groupId, userId: user.id, errorMsg: error.message, errorDetails: error.details, errorHint: error.hint })
         return { error: error.message, data: [] }
     }
 
     console.log(`[getGroupMessages] Fetched ${data?.length || 0} messages for group ${groupId}`)
+    if (data && data.length === 0) {
+        console.log('[getGroupMessages] WARNING: No messages returned. Check RLS or if group is truly empty.')
+    }
+    if (data && data.length > 0) {
+        console.log('[getGroupMessages] First message:', data[0]?.id, data[0]?.content?.substring(0, 50))
+    }
 
     // Return reversed array so it renders chronologically (oldest to newest)
     return { data: data ? data.reverse() : [] }
