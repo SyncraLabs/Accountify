@@ -276,6 +276,7 @@ export function ChatArea({ groupId, initialMessages, groupName, currentUserId }:
 
     // Reset messages when groupId changes or initialMessages updates
     // IMPORTANT: Only update if initialMessages is defined and distinct
+    // Reset messages when groupId changes or initialMessages updates
     useEffect(() => {
         console.log('[ChatArea] initialMessages received:', initialMessages?.length, 'for group:', groupId)
         if (initialMessages && initialMessages.length > 0) {
@@ -288,11 +289,30 @@ export function ChatArea({ groupId, initialMessages, groupName, currentUserId }:
                     scrollRef.current.scrollIntoView({ behavior: 'auto' })
                 }
             }, 100)
-        } else if (messages.length === 0 && initialMessages?.length === 0) {
-            // Handle truly empty state
-            console.log('[ChatArea] Empty state - no messages')
-            setMessages([])
-            setHasMore(false)
+        } else {
+            // Fallback: If no initial messages (SSR failed or empty), fetch client-side
+            console.log('[ChatArea] No initialMessages, fetching client-side...')
+            setMessages([]) // Clear current
+            setHasMore(true) // Assume there might be messages
+
+            const fetchInitial = async () => {
+                try {
+                    const { data, error } = await getGroupMessages(groupId, 50)
+                    if (data && data.length > 0) {
+                        setMessages(data)
+                        setHasMore(data.length >= 50)
+
+                        // Fetch profiles
+                        const userIds = Array.from(new Set(data.map((m: any) => m.user_id)));
+                        fetchProfiles(userIds as string[]);
+                    } else {
+                        setHasMore(false)
+                    }
+                } catch (err) {
+                    console.error('[ChatArea] Client-side fetch failed', err)
+                }
+            }
+            fetchInitial()
         }
     }, [initialMessages, groupId])
 
