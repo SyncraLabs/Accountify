@@ -12,15 +12,9 @@ import { createClient } from "@/lib/supabase/client"
 import { motion, AnimatePresence } from "framer-motion"
 import { HabitShareMessage } from "@/components/groups/HabitShareMessage"
 import { GroupHabitsProgress } from "@/components/groups/GroupHabitsProgress"
-import { Play } from "lucide-react"
-import {
-    Sheet,
-    SheetContent,
-    SheetDescription,
-    SheetHeader,
-    SheetTitle,
-    SheetTrigger,
-} from "@/components/ui/sheet"
+import { Play, Settings, Menu } from "lucide-react"
+import { GroupDetails } from "./GroupDetails"
+
 
 export function ChatArea({ groupId, initialMessages, groupName, currentUserId }: { groupId: string, initialMessages?: any[], groupName: string, currentUserId: string }) {
     const [messages, setMessages] = useState<any[]>(initialMessages || [])
@@ -30,6 +24,7 @@ export function ChatArea({ groupId, initialMessages, groupName, currentUserId }:
     const scrollRef = useRef<HTMLDivElement>(null)
     const fileInputRef = useRef<HTMLInputElement>(null)
     const [uploading, setUploading] = useState(false)
+    const [showGroupDetails, setShowGroupDetails] = useState(false)
     const supabase = createClient()
 
     // Fetch profiles function
@@ -213,6 +208,7 @@ export function ChatArea({ groupId, initialMessages, groupName, currentUserId }:
         // Parse mentions before sending
         const mentionedUserIds = parseMentions(content)
 
+        // Optimistically add message
         const tempId = `temp-${Date.now()}`
         const optimisticMsg = {
             id: tempId,
@@ -220,11 +216,19 @@ export function ChatArea({ groupId, initialMessages, groupName, currentUserId }:
             user_id: currentUserId,
             created_at: new Date().toISOString(),
             type: 'text',
-            isOptimistic: true
+            isOptimistic: true,
+            // Add temp profile for immediate rendering
+            profile: { ...profiles[currentUserId] }
         }
 
         setMessages(prev => [...prev, optimisticMsg])
         setInput("")
+
+        // Don't wait for result to clear input
+        // Re-scroll to bottom immediately
+        if (scrollRef.current) {
+            setTimeout(() => scrollRef.current?.scrollIntoView({ behavior: 'smooth' }), 50)
+        }
 
         const result = await sendMessage(groupId, content, 'text', null, mentionedUserIds)
 
@@ -268,10 +272,25 @@ export function ChatArea({ groupId, initialMessages, groupName, currentUserId }:
         }
     }
 
+
+
     // Reset messages when groupId changes or initialMessages updates
+    // IMPORTANT: Only update if initialMessages is defined and distinct
     useEffect(() => {
-        setMessages(initialMessages || [])
-        setHasMore((initialMessages?.length ?? 0) >= 50)
+        if (initialMessages && initialMessages.length > 0) {
+            setMessages(initialMessages)
+            setHasMore(initialMessages.length >= 50)
+            // Scroll to bottom on initial load
+            setTimeout(() => {
+                if (scrollRef.current) {
+                    scrollRef.current.scrollIntoView({ behavior: 'auto' })
+                }
+            }, 100)
+        } else if (messages.length === 0 && initialMessages?.length === 0) {
+            // Handle truly empty state
+            setMessages([])
+            setHasMore(false)
+        }
     }, [initialMessages, groupId])
 
     return (
@@ -288,31 +307,23 @@ export function ChatArea({ groupId, initialMessages, groupName, currentUserId }:
                     <h2 className="font-medium text-sm text-white">{groupName}</h2>
                 </div>
 
-                {/* Progress button - visible on mobile/tablet, hidden on desktop (sidebar has it) */}
-                <Sheet>
-                    <SheetTrigger asChild>
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            className="lg:hidden text-zinc-400 hover:text-white hover:bg-zinc-800/50"
-                        >
-                            <Users className="h-4 w-4 mr-2" />
-                            Progreso
-                        </Button>
-                    </SheetTrigger>
-                    <SheetContent className="bg-zinc-950 border-zinc-800 w-full sm:max-w-md overflow-y-auto">
-                        <SheetHeader>
-                            <SheetTitle className="text-white">Progreso del Grupo</SheetTitle>
-                            <SheetDescription>
-                                Mira el progreso diario de los miembros
-                            </SheetDescription>
-                        </SheetHeader>
-                        <div className="mt-6">
-                            <GroupHabitsProgress groupId={groupId} />
-                        </div>
-                    </SheetContent>
-                </Sheet>
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setShowGroupDetails(true)}
+                    className="text-zinc-400 hover:text-white hover:bg-zinc-800/50 rounded-full"
+                >
+                    <Menu className="h-5 w-5" />
+                </Button>
             </div>
+
+            <GroupDetails
+                isOpen={showGroupDetails}
+                onOpenChange={setShowGroupDetails}
+                groupId={groupId}
+                groupName={groupName}
+                currentUserId={currentUserId}
+            />
 
             <div className="flex-1 overflow-y-auto p-4 custom-scrollbar" onScroll={handleScroll}>
                 {isLoadingMore && (
@@ -341,9 +352,9 @@ export function ChatArea({ groupId, initialMessages, groupName, currentUserId }:
                                         <span className="text-[10px] text-zinc-500 mb-1 px-1">
                                             {profiles[msg.user_id]?.username || profiles[msg.user_id]?.full_name || (isMe ? 'Tú' : 'Desconocido')}
                                         </span>
-                                        <div className={`rounded-xl p-3 text-sm transition-all duration-200 ${isMe
-                                            ? "bg-primary text-black rounded-tr-none shadow-[0_2px_15px_rgba(191,245,73,0.15)]"
-                                            : "bg-zinc-800/80 text-zinc-200 rounded-tl-none hover:bg-zinc-800"
+                                        <div className={`rounded-2xl px-4 py-3 text-sm transition-all duration-200 ${isMe
+                                            ? "bg-primary text-black rounded-tr-sm shadow-[0_2px_15px_rgba(191,245,73,0.15)]"
+                                            : "bg-[#1A1A1D] border border-zinc-800/50 text-zinc-100 rounded-tl-sm"
                                             }`}>
                                             {msg.type === 'image' && msg.media_url ? (
                                                 <div className="space-y-2">

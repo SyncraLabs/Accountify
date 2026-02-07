@@ -1,7 +1,7 @@
 import { getUserGroups, getGroupDetails, getGroupMessages, hasCompletedGroupsOnboarding } from './actions'
 import { Sidebar } from '@/components/groups/Sidebar'
 import { ChatArea } from '@/components/groups/ChatArea'
-import { GroupInfoSidebar } from '@/components/groups/GroupInfoSidebar'
+
 import { GroupsPageClient } from '@/components/groups/GroupsPageClient'
 import { AppSidebar } from "@/components/layout/AppSidebar"
 import { MobileNav } from '@/components/layout/MobileNav'
@@ -60,16 +60,12 @@ export default async function GroupsPage({ searchParams }: { searchParams: Promi
                         {selectedGroupId && selectedGroup ? (
                             <>
                                 <ChatArea
-                                    key={selectedGroupId}
+                                    key={selectedGroupId} // Force remount on group change
                                     groupId={selectedGroupId}
                                     groupName={selectedGroup.name}
                                     initialMessages={messages}
                                     currentUserId={user.id}
                                 />
-                                {/* Info sidebar hidden on mobile for simplicity, or could handle similarly */}
-                                <div className="hidden lg:block">
-                                    <GroupInfoSidebar group={selectedGroup} currentUserId={user.id} />
-                                </div>
                             </>
                         ) : (
                             <div className="flex-1 flex flex-col items-center justify-center text-zinc-500 p-8 text-center relative">

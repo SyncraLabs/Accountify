@@ -274,7 +274,7 @@ export function HabitCalendar({ initialHabits }: HabitCalendarProps) {
                                 </div>
 
                                 {/* Days Grid */}
-                                <div className="flex-1 grid grid-cols-7 gap-4">
+                                <div className="flex-1 grid grid-cols-7 gap-2 md:gap-4">
                                     {DAYS.map((date, i) => {
                                         const isToday = date.toDateString() === new Date().toDateString();
                                         const completed = isCompleted(habit, date);
@@ -282,11 +282,11 @@ export function HabitCalendar({ initialHabits }: HabitCalendarProps) {
                                         const isLoading = loading === loadingKey;
 
                                         return (
-                                            <div key={i} className="flex flex-col items-center gap-3 group/day">
+                                            <div key={i} className="flex flex-col items-center gap-2 md:gap-3 group/day">
 
                                                 <button
                                                     onClick={() => handleDayClick(date)}
-                                                    className={`text-xs font-bold uppercase tracking-wider hover:text-white transition-colors cursor-pointer ${isToday ? "text-primary" : "text-muted-foreground"}`}
+                                                    className={`text-[10px] md:text-xs font-bold uppercase tracking-wider hover:text-white transition-colors cursor-pointer ${isToday ? "text-primary" : "text-muted-foreground"}`}
                                                 >
                                                     {date.toLocaleDateString("es-ES", { weekday: "short" })}
                                                 </button>
@@ -295,7 +295,7 @@ export function HabitCalendar({ initialHabits }: HabitCalendarProps) {
                                                     onClick={() => handleToggle(habit.id, date)}
                                                     disabled={isLoading}
                                                     className={cn(
-                                                        "h-14 w-full rounded-2xl border flex items-center justify-center transition-all duration-300 relative overflow-hidden",
+                                                        "h-10 w-full md:h-14 rounded-xl md:rounded-2xl border flex items-center justify-center transition-all duration-300 relative overflow-hidden",
                                                         completed
                                                             ? "bg-primary border-primary text-black shadow-[0_0_20px_rgba(191,245,73,0.3)] hover:scale-105"
                                                             : "bg-transparent border-white/10 text-muted-foreground hover:border-white/30 hover:bg-white/5",
@@ -304,9 +304,9 @@ export function HabitCalendar({ initialHabits }: HabitCalendarProps) {
                                                     )}
                                                 >
                                                     {completed ? (
-                                                        <Check className="h-6 w-6 stroke-[3px]" />
+                                                        <Check className="h-4 w-4 md:h-6 md:w-6 stroke-[3px]" />
                                                     ) : (
-                                                        <span className={cn("text-lg font-medium", isToday && "text-primary")}>{date.getDate()}</span>
+                                                        <span className={cn("text-sm md:text-lg font-medium", isToday && "text-primary")}>{date.getDate()}</span>
                                                     )}
                                                 </button>
                                             </div>

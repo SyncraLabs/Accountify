@@ -38,7 +38,7 @@ export default async function CalendarPage() {
     }));
 
     return (
-        <div className="flex min-h-screen bg-black">
+        <div className="flex min-h-screen bg-black overflow-x-hidden w-full">
             {/* Sidebar */}
             <div className="hidden md:block w-64 fixed inset-y-0 z-50">
                 <AppSidebar user={user} />

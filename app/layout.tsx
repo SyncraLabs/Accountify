@@ -24,7 +24,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" className="dark">
-      <body className={`${outfit.className} antialiased min-h-screen bg-background text-foreground selection:bg-primary/30 selection:text-primary-foreground`}>
+      <body className={`${outfit.className} antialiased min-h-screen bg-black text-foreground selection:bg-primary/30 selection:text-primary-foreground overflow-x-hidden`}>
         <AuthListener />
         {children}
         <Toaster />
