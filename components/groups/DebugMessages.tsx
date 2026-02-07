@@ -1,7 +1,6 @@
-'use client'
-
 import { createBrowserClient } from '@supabase/ssr'
 import { useEffect, useState } from 'react'
+import { getGroupMessages } from '@/app/groups/actions'
 
 export function DebugMessages({ groupId }: { groupId: string }) {
     const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading')
@@ -63,7 +62,7 @@ export function DebugMessages({ groupId }: { groupId: string }) {
 
     return (
         <div className={`p-2 text-xs font-mono mb-2 rounded border relative z-50 ${status === 'error' || actionStatus === 'error' ? 'bg-red-900/50 border-red-500 text-red-200' :
-                'bg-blue-900/50 border-blue-500 text-blue-200'
+            'bg-blue-900/50 border-blue-500 text-blue-200'
             }`}>
             <p><strong>DEBUG:</strong> Group ID: {groupId.slice(0, 8)}...</p>
             <div className="grid grid-cols-2 gap-2 mt-1">
