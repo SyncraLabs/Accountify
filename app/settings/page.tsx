@@ -29,7 +29,7 @@ export default async function SettingsPage() {
             <MobileNav />
 
             <main className="md:pl-64 flex-1 relative">
-                <div className="h-full px-6 py-10 lg:px-10 space-y-8 max-w-[1000px] mx-auto">
+                <div className="h-full px-6 py-10 pb-24 md:pb-10 lg:px-10 space-y-8 max-w-[1000px] mx-auto">
                     {/* Simple Header */}
                     <div className="flex flex-col gap-2">
                         <div className="flex items-center gap-2 text-primary">

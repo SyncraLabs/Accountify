@@ -20,7 +20,7 @@ export function Sidebar({ groups, selectedGroupId }: { groups: any[], selectedGr
                     <JoinGroupDialog />
                 </div>
             </div>
-            <div className="flex-1 overflow-auto p-2 space-y-1 relative">
+            <div className="flex-1 overflow-auto p-2 space-y-1 relative pb-24 md:pb-2">
                 {groups.length === 0 && (
                     <div className="text-center p-6 text-zinc-500 text-sm">
                         Aún no te has unido a ningún grupo.

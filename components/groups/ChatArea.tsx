@@ -2,16 +2,17 @@
 
 import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
-import { ScrollArea } from "@/components/ui/scroll-area"
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Send, Paperclip, Loader2, Users, Info } from "lucide-react"
-import { sendMessage } from "@/app/groups/actions"
+import { sendMessage, getGroupMessages } from "@/app/groups/actions"
 import { createClient } from "@/lib/supabase/client"
 import { motion, AnimatePresence } from "framer-motion"
 import { HabitShareMessage } from "@/components/groups/HabitShareMessage"
 import { GroupHabitsProgress } from "@/components/groups/GroupHabitsProgress"
+import { Play } from "lucide-react"
 import {
     Sheet,
     SheetContent,
@@ -81,6 +82,15 @@ export function ChatArea({ groupId, initialMessages, groupName, currentUserId }:
         fetchMembers()
     }, [groupId, supabase]);
 
+    const [isLoadingMore, setIsLoadingMore] = useState(false)
+    const [hasMore, setHasMore] = useState(true)
+    const [isNearBottom, setIsNearBottom] = useState(true)
+
+    // Check if initial load was full page implies more messages might exist
+    useEffect(() => {
+        setHasMore((initialMessages?.length ?? 0) >= 50)
+    }, [])
+
     // Realtime subscription
     useEffect(() => {
         const channel = supabase
@@ -118,14 +128,63 @@ export function ChatArea({ groupId, initialMessages, groupName, currentUserId }:
         return () => {
             supabase.removeChannel(channel)
         }
-    }, [groupId, supabase])
+    }, [groupId, supabase, currentUserId])
 
-    // Auto-scroll
+    // Auto-scroll to bottom when new messages arrive if near bottom
     useEffect(() => {
-        if (scrollRef.current) {
+        if (isNearBottom && scrollRef.current) {
             scrollRef.current.scrollIntoView({ behavior: 'smooth' })
         }
-    }, [messages.length])
+    }, [messages.length, isNearBottom])
+
+    const loadMoreMessages = async () => {
+        if (isLoadingMore || !hasMore || messages.length === 0) return
+
+        setIsLoadingMore(true)
+        const oldestMessage = messages[0]
+
+        try {
+            const { data, error } = await getGroupMessages(groupId, 50, oldestMessage.created_at)
+
+            if (error) {
+                console.error("Error loading more messages:", error)
+                return
+            }
+
+            if (data && data.length > 0) {
+                setMessages(prev => [...data, ...prev])
+                // Fetch profiles for new old messages
+                const userIds = Array.from(new Set(data.map((m: any) => m.user_id)));
+                fetchProfiles(userIds as string[]);
+
+                if (data.length < 50) {
+                    setHasMore(false)
+                }
+            } else {
+                setHasMore(false)
+            }
+        } catch (err) {
+            console.error("Failed to load more messages", err)
+        } finally {
+            setIsLoadingMore(false)
+        }
+    }
+
+    const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+        const { scrollTop, scrollHeight, clientHeight } = e.currentTarget
+
+        // Check if near bottom
+        const distanceToBottom = scrollHeight - scrollTop - clientHeight
+        setIsNearBottom(distanceToBottom < 100)
+
+        // Load more when scrolled to top
+        if (scrollTop < 50 && hasMore && !isLoadingMore) {
+            // Save current scroll height to restore position after load
+            // This is tricky with infinite scroll going up, usually requires layout effect
+            // For now, simpler implementation:
+            loadMoreMessages()
+        }
+    }
 
     // Parse @mentions from message content
     const parseMentions = (content: string): string[] => {
@@ -186,6 +245,8 @@ export function ChatArea({ groupId, initialMessages, groupName, currentUserId }:
             const fileExt = file.name.split('.').pop()
             const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
             const filePath = `${groupId}/${fileName}`
+            const isVideo = file.type.startsWith('video/')
+            const type = isVideo ? 'video' : 'image'
 
             const { error: uploadError } = await supabase.storage
                 .from('group-media')
@@ -197,7 +258,7 @@ export function ChatArea({ groupId, initialMessages, groupName, currentUserId }:
                 .from('group-media')
                 .getPublicUrl(filePath)
 
-            await sendMessage(groupId, '', 'image', publicUrl)
+            await sendMessage(groupId, '', type, publicUrl)
         } catch (error) {
             console.error("Upload failed", error)
             alert("Upload failed. Please ensure 'group-media' bucket exists and is public.")
@@ -208,7 +269,7 @@ export function ChatArea({ groupId, initialMessages, groupName, currentUserId }:
     }
 
     return (
-        <div className="flex-1 flex flex-col relative h-full bg-zinc-950">
+        <div className="flex-1 flex flex-col relative h-[100dvh] md:h-full bg-zinc-950">
             {/* Subtle ambient glow */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[200px] bg-primary/[0.03] blur-[100px] pointer-events-none" />
 
@@ -247,7 +308,12 @@ export function ChatArea({ groupId, initialMessages, groupName, currentUserId }:
                 </Sheet>
             </div>
 
-            <ScrollArea className="flex-1 p-4">
+            <div className="flex-1 overflow-y-auto p-4 custom-scrollbar" onScroll={handleScroll}>
+                {isLoadingMore && (
+                    <div className="flex justify-center py-2">
+                        <Loader2 className="h-4 w-4 animate-spin text-zinc-500" />
+                    </div>
+                )}
                 <div className="space-y-4 max-w-3xl mx-auto pb-4">
                     <AnimatePresence mode="popLayout">
                         {messages.map((msg: any) => {
@@ -284,6 +350,15 @@ export function ChatArea({ groupId, initialMessages, groupName, currentUserId }:
                                                     category={msg.habit_category}
                                                     isMe={isMe}
                                                 />
+                                            ) : msg.type === 'video' && msg.media_url ? (
+                                                <div className="space-y-2">
+                                                    <video
+                                                        src={msg.media_url}
+                                                        controls
+                                                        className="rounded-lg max-w-full max-h-60 border border-zinc-700/50"
+                                                        preload="metadata"
+                                                    />
+                                                </div>
                                             ) : (
                                                 msg.content
                                             )}
@@ -304,9 +379,9 @@ export function ChatArea({ groupId, initialMessages, groupName, currentUserId }:
                     )}
                     <div ref={scrollRef} />
                 </div>
-            </ScrollArea>
+            </div>
 
-            <div className="p-4 pb-24 md:pb-4 border-t border-zinc-800/50 bg-zinc-900/30 backdrop-blur-sm shrink-0">
+            <div className="p-4 pb-4 border-t border-zinc-800/50 bg-zinc-900/30 backdrop-blur-sm shrink-0">
                 <div className="max-w-3xl mx-auto flex gap-2">
                     <Button
                         variant="ghost"
@@ -317,7 +392,7 @@ export function ChatArea({ groupId, initialMessages, groupName, currentUserId }:
                     >
                         {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Paperclip className="h-4 w-4" />}
                     </Button>
-                    <input type="file" ref={fileInputRef} className="hidden" onChange={handleFileUpload} accept="image/*" />
+                    <input type="file" ref={fileInputRef} className="hidden" onChange={handleFileUpload} accept="image/*,video/*" />
 
                     <Input
                         placeholder="Escribe un mensaje... Usa @nombre para mencionar"
@@ -335,7 +410,7 @@ export function ChatArea({ groupId, initialMessages, groupName, currentUserId }:
                     </Button>
                 </div>
             </div>
-        </div>
+        </div >
     )
 }
 

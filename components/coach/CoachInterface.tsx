@@ -213,8 +213,8 @@ export function CoachInterface({ currentHabits }: CoachInterfaceProps) {
                                             {/* Message Bubble */}
                                             <div
                                                 className={`rounded-2xl px-4 py-3 ${message.role === 'user'
-                                                        ? 'bg-primary text-primary-foreground ml-auto'
-                                                        : 'bg-zinc-800/80 text-zinc-100'
+                                                    ? 'bg-primary text-primary-foreground ml-auto'
+                                                    : 'bg-zinc-800/80 text-zinc-100'
                                                     }`}
                                             >
                                                 <p className="text-sm whitespace-pre-wrap">{message.content}</p>
@@ -263,11 +263,11 @@ export function CoachInterface({ currentHabits }: CoachInterfaceProps) {
 
                                                     {/* Action Buttons */}
                                                     {currentSuggestion && message.suggestion.title === currentSuggestion.title && (
-                                                        <div className="p-4 border-t border-zinc-800 flex gap-3">
+                                                        <div className="p-4 border-t border-zinc-800 flex flex-col sm:flex-row gap-3">
                                                             <Button
                                                                 variant="outline"
                                                                 onClick={handleModifyRequest}
-                                                                className="flex-1 border-zinc-700"
+                                                                className="flex-1 border-zinc-700 w-full"
                                                             >
                                                                 <RefreshCw className="h-4 w-4 mr-2" />
                                                                 Modificar
@@ -275,7 +275,7 @@ export function CoachInterface({ currentHabits }: CoachInterfaceProps) {
                                                             <Button
                                                                 onClick={handleAcceptRoutine}
                                                                 disabled={creating}
-                                                                className="flex-1"
+                                                                className="flex-1 w-full"
                                                             >
                                                                 {creating ? (
                                                                     <>
@@ -327,7 +327,7 @@ export function CoachInterface({ currentHabits }: CoachInterfaceProps) {
                         </div>
 
                         {/* Input Area */}
-                        <div className="border-t border-zinc-800 p-4 pb-24 md:pb-4">
+                        <div className="border-t border-zinc-800 p-4 pb-28 md:pb-4">
                             <form
                                 onSubmit={(e) => {
                                     e.preventDefault();

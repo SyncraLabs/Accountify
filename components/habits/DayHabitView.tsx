@@ -163,7 +163,7 @@ export function DayHabitView({ initialHabits, dateStr }: DayHabitViewProps) {
                             )} />
 
                             <div className="relative z-10 flex items-start justify-between gap-4 mb-6">
-                                <div className="h-14 w-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-2xl shadow-inner">
+                                <div className="h-12 w-12 md:h-14 md:w-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-xl md:text-2xl shadow-inner">
                                     {getEmoji(habit.category)}
                                 </div>
                                 <div className={cn(
@@ -178,7 +178,7 @@ export function DayHabitView({ initialHabits, dateStr }: DayHabitViewProps) {
 
                             <div className="relative z-10 space-y-4">
                                 <div>
-                                    <h3 className="text-xl font-bold text-white mb-1">{habit.title}</h3>
+                                    <h3 className="text-lg md:text-xl font-bold text-white mb-1">{habit.title}</h3>
                                     <div className="flex items-center gap-2 text-sm text-zinc-400">
                                         <Flame className={cn("h-4 w-4", completed ? "fill-primary text-primary" : "text-zinc-600")} />
                                         <span className={completed ? "text-primary" : ""}>{habit.streak} racha actual</span>

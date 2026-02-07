@@ -28,7 +28,7 @@ export default async function GroupsPage({ searchParams }: { searchParams: Promi
     if (selectedGroupId) {
         selectedGroup = await getGroupDetails(selectedGroupId)
         if (selectedGroup) {
-            const msgResult = await getGroupMessages(selectedGroupId)
+            const msgResult = await getGroupMessages(selectedGroupId, 50)
             if (msgResult.data) {
                 messages = msgResult.data
             }
@@ -42,7 +42,7 @@ export default async function GroupsPage({ searchParams }: { searchParams: Promi
                 <div className="hidden md:block w-64 fixed inset-y-0 z-50">
                     <AppSidebar />
                 </div>
-                <MobileNav />
+                {!selectedGroupId && <MobileNav />}
 
                 {/* Combined Main Area */}
                 <main className="md:pl-64 flex flex-1 w-full h-full relative">

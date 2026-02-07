@@ -116,7 +116,7 @@ export async function getUserGroups() {
 export async function sendMessage(
     groupId: string,
     content: string,
-    type: 'text' | 'image' = 'text',
+    type: 'text' | 'image' | 'video' = 'text',
     mediaUrl: string | null = null,
     mentionedUserIds: string[] = []
 ) {
@@ -201,23 +201,43 @@ export async function getGroupDetails(groupId: string) {
     return data
 }
 
-export async function getGroupMessages(groupId: string) {
+export async function getGroupMessages(
+    groupId: string,
+    limit: number = 50,
+    before?: string
+) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return { error: 'Not authenticated' }
 
-    const { data, error } = await supabase
+    let query = supabase
         .from('messages')
-        .select('*')
+        .select(`
+            *,
+            profiles:user_id (
+                id,
+                username,
+                full_name,
+                avatar_url
+            )
+        `)
         .eq('group_id', groupId)
-        .order('created_at', { ascending: true })
+        .order('created_at', { ascending: false })
+        .limit(limit)
+
+    if (before) {
+        query = query.lt('created_at', before)
+    }
+
+    const { data, error } = await query
 
     if (error) {
         console.error('Error fetching messages:', error)
         return { error: error.message }
     }
 
-    return { data }
+    // Return reversed array so it renders chronologically (oldest to newest)
+    return { data: data ? data.reverse() : [] }
 }
 
 // ========= Group Admin Features =========

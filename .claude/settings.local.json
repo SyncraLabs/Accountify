@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir:*)",
+      "Bash(supabase db push:*)",
+      "Bash(npx supabase db push:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run dev:*)",
+      "Bash(timeout:*)",
+      "Bash(ls:*)",
+      "Bash(coach \")",
+      "Bash(git -C /c/Users/FX507/Desktop/Appcountability log --oneline -10)",
+      "Bash(git -C /c/Users/FX507/Desktop/Appcountability status --short)",
+      "Bash(git -C /c/Users/FX507/Desktop/Appcountability diff HEAD -- app/actions.ts)"
+    ]
+  }
+}

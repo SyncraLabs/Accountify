@@ -207,16 +207,16 @@ export function HabitCalendar({ initialHabits }: HabitCalendarProps) {
 
 
                     return (
-                        <FramerWrapper key={habit.id} delay={idx * 0.1} className="group relative rounded-[2.5rem] bg-white/5 border border-white/5 p-8 hover:bg-white/10 transition-all duration-500">
+                        <FramerWrapper key={habit.id} delay={idx * 0.1} className="group relative rounded-[2rem] bg-white/5 border border-white/5 p-6 md:p-8 hover:bg-white/10 transition-all duration-500">
                             <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-8">
 
                                 {/* Habit Info */}
-                                <div className="relative flex items-start gap-6 min-w-[300px]">
-                                    <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-white/5 to-white/10 border border-white/10 flex items-center justify-center text-2xl shadow-inner">
+                                <div className="relative flex items-start gap-4 md:gap-6 w-full xl:w-auto min-w-0 xl:min-w-[300px]">
+                                    <div className="h-12 w-12 md:h-16 md:w-16 rounded-2xl bg-gradient-to-br from-white/5 to-white/10 border border-white/10 flex items-center justify-center text-xl md:text-2xl shadow-inner">
                                         {getEmoji(habit.category)}
                                     </div>
                                     <div className="space-y-1">
-                                        <h3 className="text-2xl font-bold text-white max-w-[200px] truncate" title={habit.title}>{habit.title}</h3>
+                                        <h3 className="text-xl md:text-2xl font-bold text-white max-w-[200px] truncate" title={habit.title}>{habit.title}</h3>
                                         <div className="flex items-center gap-2 text-primary font-medium">
                                             <Flame className="h-4 w-4 fill-primary" />
                                             <span>{currentStreak} day streak</span>
@@ -224,7 +224,7 @@ export function HabitCalendar({ initialHabits }: HabitCalendarProps) {
                                     </div>
 
                                     {/* Actions */}
-                                    <div className="absolute -top-2 -right-4 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all duration-300 bg-black/50 backdrop-blur-sm p-1 rounded-xl border border-white/10">
+                                    <div className="absolute top-0 right-0 lg:-top-2 lg:-right-4 flex items-center gap-1 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-all duration-300 bg-black/50 backdrop-blur-sm p-1 rounded-xl border border-white/10 z-20">
                                         <Popover>
                                             <PopoverTrigger asChild>
                                                 <Button

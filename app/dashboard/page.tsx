@@ -104,127 +104,127 @@ export default async function Dashboard() {
 
     return (
         <DashboardClient showOnboarding={!hasCompletedOnboarding}>
-        <div className="flex min-h-screen bg-black">
-            {/* Sidebar - Desktop Only for now (Mobile TBD) */}
-            <AppSidebar user={user} className="hidden md:flex" />
-            <MobileNav />
+            <div className="flex min-h-screen bg-black">
+                {/* Sidebar - Desktop Only for now (Mobile TBD) */}
+                <AppSidebar user={user} className="hidden md:flex" />
+                <MobileNav />
 
-            {/* Main Content */}
-            <main className="md:pl-64 flex-1 relative bg-black min-h-screen">
-                <div className="h-full px-8 py-8 space-y-8 max-w-[1600px] mx-auto">
-                    {/* Header */}
-                    <div className="flex flex-col gap-1 mb-8">
-                        <h2 className="text-3xl font-bold tracking-tight text-white">
-                            Dashboard
-                        </h2>
-                        <p className="text-zinc-500">
-                            Bienvenido, alcancemos tus metas hoy.
-                        </p>
-                    </div>
-
-                    {/* Stats Row */}
-                    <DashboardStats
-                        completedToday={completedToday}
-                        totalHabits={totalHabits}
-                        activeGroups={userGroups.length}
-                        totalCompleted={totalCompleted}
-                    />
-
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        {/* Main Column: Habits */}
-                        <div className="lg:col-span-2 space-y-6">
-                            <div className="flex items-center justify-between">
-                                <h3 className="text-xl font-semibold text-white">Hábitos de Hoy</h3>
-                                <Link href="/calendar">
-                                    <Button variant="ghost" className="text-zinc-400 hover:text-white">
-                                        Ver Calendario <ArrowRight className="ml-2 h-4 w-4" />
-                                    </Button>
-                                </Link>
-                            </div>
-
-                            <div className="space-y-3">
-                                {habitsWithCompletion.length === 0 ? (
-                                    <div className="p-8 border border-dashed border-zinc-800 rounded-xl text-center bg-zinc-950/50">
-                                        <p className="text-zinc-500 text-sm mb-4">No has creado hábitos aún.</p>
-                                        <Link href="/coach">
-                                            <Button size="sm" className="bg-primary text-black hover:bg-primary/90">Crear con AI Coach</Button>
-                                        </Link>
-                                    </div>
-                                ) : (
-                                    <>
-                                        {/* Routine Groups */}
-                                        {routineGroups.map((group) => (
-                                            <DashboardRoutineGroup
-                                                key={group.routine.id}
-                                                routine={group.routine}
-                                                habits={group.habits}
-                                            />
-                                        ))}
-
-                                        {/* Standalone Habits */}
-                                        {standaloneHabits.map((habit) => (
-                                            <DashboardHabitRow key={habit.id} habit={habit} />
-                                        ))}
-                                    </>
-                                )}
-                            </div>
+                {/* Main Content */}
+                <main className="md:pl-64 flex-1 relative bg-black min-h-screen">
+                    <div className="h-full px-8 py-8 pb-24 md:pb-8 space-y-8 max-w-[1600px] mx-auto">
+                        {/* Header */}
+                        <div className="flex flex-col gap-1 mb-8">
+                            <h2 className="text-3xl font-bold tracking-tight text-white">
+                                Dashboard
+                            </h2>
+                            <p className="text-zinc-500">
+                                Bienvenido, alcancemos tus metas hoy.
+                            </p>
                         </div>
 
-                        {/* Right Column: Groups & Progress Graph (Placeholder/Future) */}
-                        <div className="space-y-8">
-                            {/* Groups Section */}
-                            <div className="space-y-4">
+                        {/* Stats Row */}
+                        <DashboardStats
+                            completedToday={completedToday}
+                            totalHabits={totalHabits}
+                            activeGroups={userGroups.length}
+                            totalCompleted={totalCompleted}
+                        />
+
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                            {/* Main Column: Habits */}
+                            <div className="lg:col-span-2 space-y-6">
                                 <div className="flex items-center justify-between">
-                                    <h3 className="text-lg font-semibold text-white">Tus Grupos</h3>
-                                    <Link href="/groups">
-                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-zinc-400 hover:text-white">
-                                            <Plus className="h-4 w-4" />
+                                    <h3 className="text-xl font-semibold text-white">Hábitos de Hoy</h3>
+                                    <Link href="/calendar">
+                                        <Button variant="ghost" className="text-zinc-400 hover:text-white">
+                                            Ver Calendario <ArrowRight className="ml-2 h-4 w-4" />
                                         </Button>
                                     </Link>
                                 </div>
 
                                 <div className="space-y-3">
-                                    {displayedGroups.length === 0 ? (
-                                        <div className="p-6 border border-dashed border-zinc-800 rounded-xl text-center bg-zinc-950/50">
-                                            <p className="text-zinc-500 text-xs mb-3">No estás en ningún grupo aún.</p>
-                                            <Link href="/groups">
-                                                <Button variant="outline" size="sm" className="border-zinc-700 text-zinc-300 hover:text-white hover:bg-zinc-800">Buscar Grupos</Button>
+                                    {habitsWithCompletion.length === 0 ? (
+                                        <div className="p-8 border border-dashed border-zinc-800 rounded-xl text-center bg-zinc-950/50">
+                                            <p className="text-zinc-500 text-sm mb-4">No has creado hábitos aún.</p>
+                                            <Link href="/coach">
+                                                <Button size="sm" className="bg-primary text-black hover:bg-primary/90">Crear con AI Coach</Button>
                                             </Link>
                                         </div>
                                     ) : (
-                                        displayedGroups.map((group) => (
-                                            <DashboardGroupCard key={group.id} group={group} />
-                                        ))
+                                        <>
+                                            {/* Routine Groups */}
+                                            {routineGroups.map((group) => (
+                                                <DashboardRoutineGroup
+                                                    key={group.routine.id}
+                                                    routine={group.routine}
+                                                    habits={group.habits}
+                                                />
+                                            ))}
+
+                                            {/* Standalone Habits */}
+                                            {standaloneHabits.map((habit) => (
+                                                <DashboardHabitRow key={habit.id} habit={habit} />
+                                            ))}
+                                        </>
                                     )}
                                 </div>
-                                {userGroups.length > 3 && (
-                                    <Link href="/groups" className="block text-center text-xs text-zinc-500 hover:text-primary transition-colors">
-                                        Ver todos los {userGroups.length} grupos
-                                    </Link>
-                                )}
                             </div>
 
-                            {/* Weekly Progress Graph */}
-                            <div className="bg-[#0f0f10] border border-zinc-800 rounded-xl p-6">
-                                <div className="flex items-center justify-between mb-6">
-                                    <div>
-                                        <h3 className="text-base font-semibold text-white">Actividad Semanal</h3>
-                                        <p className="text-xs text-zinc-500">Últimos 7 días</p>
+                            {/* Right Column: Groups & Progress Graph (Placeholder/Future) */}
+                            <div className="space-y-8">
+                                {/* Groups Section */}
+                                <div className="space-y-4">
+                                    <div className="flex items-center justify-between">
+                                        <h3 className="text-lg font-semibold text-white">Tus Grupos</h3>
+                                        <Link href="/groups">
+                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-zinc-400 hover:text-white">
+                                                <Plus className="h-4 w-4" />
+                                            </Button>
+                                        </Link>
                                     </div>
-                                    <div className="text-right">
-                                        <div className="text-2xl font-bold text-white">
-                                            {habitsWithCompletion.reduce((acc, h) => acc + (h.habit_logs?.length || 0), 0)}
-                                        </div>
-                                        <p className="text-xs text-zinc-500">Completados Totales</p>
+
+                                    <div className="space-y-3">
+                                        {displayedGroups.length === 0 ? (
+                                            <div className="p-6 border border-dashed border-zinc-800 rounded-xl text-center bg-zinc-950/50">
+                                                <p className="text-zinc-500 text-xs mb-3">No estás en ningún grupo aún.</p>
+                                                <Link href="/groups">
+                                                    <Button variant="outline" size="sm" className="border-zinc-700 text-zinc-300 hover:text-white hover:bg-zinc-800">Buscar Grupos</Button>
+                                                </Link>
+                                            </div>
+                                        ) : (
+                                            displayedGroups.map((group) => (
+                                                <DashboardGroupCard key={group.id} group={group} />
+                                            ))
+                                        )}
                                     </div>
+                                    {userGroups.length > 3 && (
+                                        <Link href="/groups" className="block text-center text-xs text-zinc-500 hover:text-primary transition-colors">
+                                            Ver todos los {userGroups.length} grupos
+                                        </Link>
+                                    )}
                                 </div>
-                                <WeeklyActivityChart data={weeklyData} />
+
+                                {/* Weekly Progress Graph */}
+                                <div className="bg-[#0f0f10] border border-zinc-800 rounded-xl p-6">
+                                    <div className="flex items-center justify-between mb-6">
+                                        <div>
+                                            <h3 className="text-base font-semibold text-white">Actividad Semanal</h3>
+                                            <p className="text-xs text-zinc-500">Últimos 7 días</p>
+                                        </div>
+                                        <div className="text-right">
+                                            <div className="text-2xl font-bold text-white">
+                                                {habitsWithCompletion.reduce((acc, h) => acc + (h.habit_logs?.length || 0), 0)}
+                                            </div>
+                                            <p className="text-xs text-zinc-500">Completados Totales</p>
+                                        </div>
+                                    </div>
+                                    <WeeklyActivityChart data={weeklyData} />
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </main>
-        </div>
+                </main>
+            </div>
         </DashboardClient>
     );
 }
