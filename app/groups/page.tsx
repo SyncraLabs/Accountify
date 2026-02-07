@@ -53,7 +53,7 @@ export default async function GroupsPage({ searchParams }: { searchParams: Promi
                     </div>
 
                     {/* Chat Area: Hidden on mobile if NO group selected */}
-                    <div className={`${selectedGroupId ? 'flex' : 'hidden md:flex'} flex-1 h-full overflow-hidden border-l border-zinc-800/50 bg-zinc-950 relative w-full`}>
+                    <div className={`${selectedGroupId ? 'flex absolute inset-0 md:static z-50' : 'hidden md:flex'} flex-1 h-full overflow-hidden border-l border-zinc-800/50 bg-zinc-950 relative w-full`}>
                         {/* Subtle ambient glow */}
                         <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.02] via-transparent to-transparent pointer-events-none" />
 

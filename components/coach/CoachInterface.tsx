@@ -161,7 +161,7 @@ export function CoachInterface({ currentHabits }: CoachInterfaceProps) {
     const hasConversation = messages.length > 0;
 
     return (
-        <div className="h-full flex flex-col">
+        <div className="h-full flex flex-col w-full overflow-x-hidden">
             {/* Header with Habit Management */}
             <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-800">
                 <div className="flex items-center gap-2">

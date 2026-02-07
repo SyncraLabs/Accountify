@@ -268,8 +268,14 @@ export function ChatArea({ groupId, initialMessages, groupName, currentUserId }:
         }
     }
 
+    // Reset messages when groupId changes or initialMessages updates
+    useEffect(() => {
+        setMessages(initialMessages || [])
+        setHasMore((initialMessages?.length ?? 0) >= 50)
+    }, [initialMessages, groupId])
+
     return (
-        <div className="flex-1 flex flex-col relative h-[100dvh] md:h-full bg-zinc-950">
+        <div className="flex-1 flex flex-col relative h-[100dvh] bg-zinc-950">
             {/* Subtle ambient glow */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[200px] bg-primary/[0.03] blur-[100px] pointer-events-none" />
 
@@ -370,11 +376,17 @@ export function ChatArea({ groupId, initialMessages, groupName, currentUserId }:
                     </AnimatePresence>
                     {messages.length === 0 && (
                         <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            className="text-center text-zinc-500 mt-10 text-sm"
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            className="flex flex-col items-center justify-center py-20 text-center"
                         >
-                            No hay mensajes aún. ¡Di hola! 👋
+                            <div className="w-16 h-16 rounded-full bg-zinc-900/50 border border-zinc-800 flex items-center justify-center mb-4">
+                                <span className="text-2xl">👋</span>
+                            </div>
+                            <h3 className="text-zinc-300 font-medium mb-1">¡Comienza la conversación!</h3>
+                            <p className="text-zinc-500 text-sm max-w-xs">
+                                Sé el primero en enviar un mensaje a este grupo.
+                            </p>
                         </motion.div>
                     )}
                     <div ref={scrollRef} />
@@ -399,12 +411,12 @@ export function ChatArea({ groupId, initialMessages, groupName, currentUserId }:
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         onKeyDown={(e) => e.key === "Enter" && handleSend()}
-                        className="flex-1 bg-zinc-800/30 border-zinc-700/50 text-sm h-10 focus:border-primary/30 transition-colors"
+                        className="flex-1 bg-zinc-800/50 border-zinc-700/50 text-sm h-11 focus-visible:ring-1 focus-visible:ring-primary/50 focus-visible:border-primary/50 transition-all rounded-xl placeholder:text-zinc-500"
                     />
                     <Button
                         onClick={handleSend}
                         size="icon"
-                        className="bg-primary hover:bg-primary/90 text-black h-10 w-10 transition-all duration-200 hover:shadow-[0_0_20px_rgba(191,245,73,0.3)]"
+                        className="bg-primary text-black h-11 w-11 rounded-xl transition-all duration-200 hover:scale-105 hover:shadow-[0_0_20px_rgba(191,245,73,0.3)] shadow-[0_0_10px_rgba(191,245,73,0.1)]"
                     >
                         <Send className="h-4 w-4" />
                     </Button>

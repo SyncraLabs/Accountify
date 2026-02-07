@@ -211,20 +211,22 @@ export function HabitCalendar({ initialHabits }: HabitCalendarProps) {
                             <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-8">
 
                                 {/* Habit Info */}
-                                <div className="relative flex items-start gap-4 md:gap-6 w-full xl:w-auto min-w-0 xl:min-w-[300px]">
-                                    <div className="h-12 w-12 md:h-16 md:w-16 rounded-2xl bg-gradient-to-br from-white/5 to-white/10 border border-white/10 flex items-center justify-center text-xl md:text-2xl shadow-inner">
-                                        {getEmoji(habit.category)}
-                                    </div>
-                                    <div className="space-y-1">
-                                        <h3 className="text-xl md:text-2xl font-bold text-white max-w-[200px] truncate" title={habit.title}>{habit.title}</h3>
-                                        <div className="flex items-center gap-2 text-primary font-medium">
-                                            <Flame className="h-4 w-4 fill-primary" />
-                                            <span>{currentStreak} day streak</span>
+                                <div className="relative flex flex-col md:flex-row items-start gap-4 md:gap-6 w-full xl:w-auto min-w-0 xl:min-w-[300px]">
+                                    <div className="flex items-center gap-4 w-full">
+                                        <div className="h-12 w-12 md:h-16 md:w-16 rounded-2xl bg-gradient-to-br from-white/5 to-white/10 border border-white/10 flex items-center justify-center text-xl md:text-2xl shadow-inner shrink-0">
+                                            {getEmoji(habit.category)}
+                                        </div>
+                                        <div className="space-y-1 min-w-0 flex-1">
+                                            <h3 className="text-xl md:text-2xl font-bold text-white truncate" title={habit.title}>{habit.title}</h3>
+                                            <div className="flex items-center gap-2 text-primary font-medium">
+                                                <Flame className="h-4 w-4 fill-primary" />
+                                                <span>{currentStreak} day streak</span>
+                                            </div>
                                         </div>
                                     </div>
 
                                     {/* Actions */}
-                                    <div className="absolute top-0 right-0 lg:-top-2 lg:-right-4 flex items-center gap-1 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-all duration-300 bg-black/50 backdrop-blur-sm p-1 rounded-xl border border-white/10 z-20">
+                                    <div className="flex items-center gap-1 mt-2 md:mt-0 md:absolute md:top-0 md:right-0 lg:-top-2 lg:-right-4 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-all duration-300 md:bg-black/50 md:backdrop-blur-sm p-1 rounded-xl md:border md:border-white/10 z-20">
                                         <Popover>
                                             <PopoverTrigger asChild>
                                                 <Button
