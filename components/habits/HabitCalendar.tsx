@@ -211,7 +211,7 @@ export function HabitCalendar({ initialHabits }: HabitCalendarProps) {
                             <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-8">
 
                                 {/* Habit Info */}
-                                <div className="relative flex flex-col md:flex-row items-start gap-4 md:gap-6 w-full xl:w-auto min-w-0 xl:min-w-[300px]">
+                                <div className="relative flex flex-col md:flex-row items-start gap-4 md:gap-6 w-full xl:w-auto min-w-0 xl:min-w-[300px] mb-4 xl:mb-0">
                                     <div className="flex items-center gap-4 w-full">
                                         <div className="h-12 w-12 md:h-16 md:w-16 rounded-2xl bg-gradient-to-br from-white/5 to-white/10 border border-white/10 flex items-center justify-center text-xl md:text-2xl shadow-inner shrink-0">
                                             {getEmoji(habit.category)}
@@ -274,7 +274,7 @@ export function HabitCalendar({ initialHabits }: HabitCalendarProps) {
                                 </div>
 
                                 {/* Days Grid */}
-                                <div className="flex-1 grid grid-cols-7 gap-2 md:gap-4">
+                                <div className="flex-1 grid grid-cols-7 gap-1 md:gap-4 min-w-0">
                                     {DAYS.map((date, i) => {
                                         const isToday = date.toDateString() === new Date().toDateString();
                                         const completed = isCompleted(habit, date);
@@ -282,20 +282,22 @@ export function HabitCalendar({ initialHabits }: HabitCalendarProps) {
                                         const isLoading = loading === loadingKey;
 
                                         return (
-                                            <div key={i} className="flex flex-col items-center gap-2 md:gap-3 group/day">
+                                            <div key={i} className="flex flex-col items-center gap-1 md:gap-3 group/day">
 
                                                 <button
                                                     onClick={() => handleDayClick(date)}
                                                     className={`text-[10px] md:text-xs font-bold uppercase tracking-wider hover:text-white transition-colors cursor-pointer ${isToday ? "text-primary" : "text-muted-foreground"}`}
                                                 >
-                                                    {date.toLocaleDateString("es-ES", { weekday: "short" })}
+                                                    {/* Mobile: Single letter, Desktop: Short name */}
+                                                    <span className="md:hidden">{date.toLocaleDateString("es-ES", { weekday: "narrow" })}</span>
+                                                    <span className="hidden md:inline">{date.toLocaleDateString("es-ES", { weekday: "short" })}</span>
                                                 </button>
 
                                                 <button
                                                     onClick={() => handleToggle(habit.id, date)}
                                                     disabled={isLoading}
                                                     className={cn(
-                                                        "h-10 w-full md:h-14 rounded-xl md:rounded-2xl border flex items-center justify-center transition-all duration-300 relative overflow-hidden",
+                                                        "h-8 w-8 sm:h-10 sm:w-10 md:h-14 md:w-full rounded-lg md:rounded-2xl border flex items-center justify-center transition-all duration-300 relative overflow-hidden",
                                                         completed
                                                             ? "bg-primary border-primary text-black shadow-[0_0_20px_rgba(191,245,73,0.3)] hover:scale-105"
                                                             : "bg-transparent border-white/10 text-muted-foreground hover:border-white/30 hover:bg-white/5",
@@ -304,9 +306,9 @@ export function HabitCalendar({ initialHabits }: HabitCalendarProps) {
                                                     )}
                                                 >
                                                     {completed ? (
-                                                        <Check className="h-4 w-4 md:h-6 md:w-6 stroke-[3px]" />
+                                                        <Check className="h-3 w-3 md:h-6 md:w-6 stroke-[3px]" />
                                                     ) : (
-                                                        <span className={cn("text-sm md:text-lg font-medium", isToday && "text-primary")}>{date.getDate()}</span>
+                                                        <span className={cn("text-xs md:text-lg font-medium", isToday && "text-primary")}>{date.getDate()}</span>
                                                     )}
                                                 </button>
                                             </div>

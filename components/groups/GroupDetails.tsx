@@ -9,6 +9,7 @@ import { ScrollArea } from "@/components/ui/scroll-area" // Ensure this is usabl
 import { User, Settings, Image as ImageIcon, Info, Shield, LogOut } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import { GroupHabitsProgress } from "./GroupHabitsProgress"
+import { GroupChallenges } from "./GroupChallenges"
 
 interface GroupDetailsProps {
     isOpen: boolean
@@ -71,20 +72,30 @@ export function GroupDetails({ isOpen, onOpenChange, groupId, groupName, groupDe
                     </SheetDescription>
                 </SheetHeader>
 
-                <Tabs defaultValue="progress" className="flex-1 flex flex-col overflow-hidden">
+                <Tabs defaultValue="challenges" className="flex-1 flex flex-col overflow-hidden">
                     <div className="px-6 pt-4 pb-2">
-                        <TabsList className="w-full bg-zinc-900/50 border border-zinc-800/50 p-1">
-                            <TabsTrigger value="progress" className="flex-1 data-[state=active]:bg-primary data-[state=active]:text-black">
+                        <TabsList className="w-full bg-zinc-900/50 border border-zinc-800/50 p-1 grid grid-cols-4">
+                            <TabsTrigger value="challenges" className="data-[state=active]:bg-primary data-[state=active]:text-black text-xs">
+                                Retos
+                            </TabsTrigger>
+                            <TabsTrigger value="progress" className="data-[state=active]:bg-primary data-[state=active]:text-black text-xs">
                                 Progreso
                             </TabsTrigger>
-                            <TabsTrigger value="members" className="flex-1 data-[state=active]:bg-primary data-[state=active]:text-black">
+                            <TabsTrigger value="members" className="data-[state=active]:bg-primary data-[state=active]:text-black text-xs">
                                 Miembros
                             </TabsTrigger>
-                            <TabsTrigger value="info" className="flex-1 data-[state=active]:bg-primary data-[state=active]:text-black">
+                            <TabsTrigger value="info" className="data-[state=active]:bg-primary data-[state=active]:text-black text-xs">
                                 Info
                             </TabsTrigger>
                         </TabsList>
                     </div>
+
+                    <TabsContent value="challenges" className="flex-1 overflow-y-auto px-6 py-4 data-[state=inactive]:hidden">
+                        <div className="space-y-4">
+                            <h3 className="text-sm font-medium text-zinc-400 uppercase tracking-wider text-xs">Retos del Grupo</h3>
+                            <GroupChallenges groupId={groupId} isAdmin={members.find(m => m.id === currentUserId)?.role === 'admin'} />
+                        </div>
+                    </TabsContent>
 
                     <TabsContent value="progress" className="flex-1 overflow-y-auto px-6 py-4 data-[state=inactive]:hidden">
                         <div className="space-y-4">

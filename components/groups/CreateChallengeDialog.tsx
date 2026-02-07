@@ -1,20 +1,15 @@
 'use client'
 
 import { useState } from "react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Calendar } from "@/components/ui/calendar"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { format } from "date-fns"
-import { es } from "date-fns/locale"
-import { CalendarIcon, Loader2, Plus } from "lucide-react"
 import { createChallenge } from "@/app/groups/actions"
+import { Loader2, Plus } from "lucide-react"
 import { toast } from "sonner"
-import { cn } from "@/lib/utils"
 
 interface CreateChallengeDialogProps {
     groupId: string
@@ -23,46 +18,63 @@ interface CreateChallengeDialogProps {
 
 export function CreateChallengeDialog({ groupId, onChallengeCreated }: CreateChallengeDialogProps) {
     const [open, setOpen] = useState(false)
-    const [loading, setLoading] = useState(false)
-    const [date, setDate] = useState<Date>()
-    const [endDate, setEndDate] = useState<Date>()
+    const [isLoading, setIsLoading] = useState(false)
+    const [formData, setFormData] = useState({
+        title: "",
+        description: "",
+        target_value: "",
+        unit: "veces",
+        challenge_type: "count",
+        duration_days: "7"
+    })
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        if (!date || !endDate) return toast.error("Selecciona las fechas de inicio y fin")
-
-        setLoading(true)
-        const formData = new FormData(e.currentTarget)
+        setIsLoading(true)
 
         try {
+            const startDate = new Date()
+            const endDate = new Date()
+            endDate.setDate(endDate.getDate() + parseInt(formData.duration_days))
+
             const result = await createChallenge(groupId, {
-                title: formData.get('title') as string,
-                description: formData.get('description') as string,
-                target_value: Number(formData.get('target_value')),
-                unit: formData.get('unit') as string,
-                challenge_type: formData.get('challenge_type') as string,
-                start_date: date.toISOString(),
-                end_date: endDate.toISOString()
+                title: formData.title,
+                description: formData.description,
+                target_value: parseInt(formData.target_value),
+                unit: formData.unit,
+                challenge_type: formData.challenge_type,
+                start_date: startDate.toISOString().split('T')[0],
+                end_date: endDate.toISOString().split('T')[0]
             })
 
-            if (result.error) throw new Error(result.error)
-
-            toast.success("Reto creado exitosamente")
-            setOpen(false)
-            onChallengeCreated?.()
-        } catch (error: any) {
-            toast.error(error.message)
+            if (result.error) {
+                toast.error(result.error)
+            } else {
+                toast.success("Reto creado correctamente")
+                setOpen(false)
+                setFormData({
+                    title: "",
+                    description: "",
+                    target_value: "",
+                    unit: "veces",
+                    challenge_type: "count",
+                    duration_days: "7"
+                })
+                onChallengeCreated?.()
+            }
+        } catch (error) {
+            toast.error("Error al crear el reto")
         } finally {
-            setLoading(false)
+            setIsLoading(false)
         }
     }
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button size="sm" className="w-full bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white border border-zinc-700/50">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Crear Reto
+                <Button className="w-full bg-primary text-black hover:bg-primary/90">
+                    <Plus className="mr-2 h-4 w-4" />
+                    Crear Nuevo Reto
                 </Button>
             </DialogTrigger>
             <DialogContent className="bg-zinc-950 border-zinc-800 text-white sm:max-w-[425px]">
@@ -71,41 +83,49 @@ export function CreateChallengeDialog({ groupId, onChallengeCreated }: CreateCha
                 </DialogHeader>
                 <form onSubmit={handleSubmit} className="space-y-4 pt-4">
                     <div className="space-y-2">
-                        <Label>Título del Reto</Label>
+                        <Label htmlFor="title">Título del Reto</Label>
                         <Input
-                            name="title"
-                            placeholder="Ej: 100 Flexiones"
+                            id="title"
+                            placeholder="Ej: 100 Flexiones Diarias"
+                            value={formData.title}
+                            onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
                             className="bg-zinc-900 border-zinc-800"
                             required
                         />
                     </div>
 
                     <div className="space-y-2">
-                        <Label>Descripción</Label>
+                        <Label htmlFor="description">Descripción</Label>
                         <Textarea
-                            name="description"
-                            placeholder="Detalles del reto..."
-                            className="bg-zinc-900 border-zinc-800 resize-none h-20"
+                            id="description"
+                            placeholder="Detalles sobre el reto..."
+                            value={formData.description}
+                            onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                            className="bg-zinc-900 border-zinc-800"
                         />
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
-                            <Label>Objetivo</Label>
+                            <Label htmlFor="target">Meta</Label>
                             <Input
+                                id="target"
                                 type="number"
-                                name="target_value"
-                                placeholder="100"
-                                className="bg-zinc-900 border-zinc-800"
                                 min="1"
+                                placeholder="Ej: 100"
+                                value={formData.target_value}
+                                onChange={(e) => setFormData(prev => ({ ...prev, target_value: e.target.value }))}
+                                className="bg-zinc-900 border-zinc-800"
                                 required
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label>Unidad</Label>
+                            <Label htmlFor="unit">Unidad</Label>
                             <Input
-                                name="unit"
-                                placeholder="Ej: reps, min, km"
+                                id="unit"
+                                placeholder="Ej: flexiones"
+                                value={formData.unit}
+                                onChange={(e) => setFormData(prev => ({ ...prev, unit: e.target.value }))}
                                 className="bg-zinc-900 border-zinc-800"
                                 required
                             />
@@ -113,76 +133,31 @@ export function CreateChallengeDialog({ groupId, onChallengeCreated }: CreateCha
                     </div>
 
                     <div className="space-y-2">
-                        <Label>Tipo de Reto</Label>
-                        <Select name="challenge_type" defaultValue="count">
+                        <Label htmlFor="duration">Duración</Label>
+                        <Select
+                            value={formData.duration_days}
+                            onValueChange={(value) => setFormData(prev => ({ ...prev, duration_days: value }))}
+                        >
                             <SelectTrigger className="bg-zinc-900 border-zinc-800">
-                                <SelectValue />
+                                <SelectValue placeholder="Selecciona duración" />
                             </SelectTrigger>
                             <SelectContent className="bg-zinc-900 border-zinc-800">
-                                <SelectItem value="count">Contador Acumulativo</SelectItem>
-                                <SelectItem value="streak">Racha Diaria (Próximamente)</SelectItem>
+                                <SelectItem value="7">1 Semana</SelectItem>
+                                <SelectItem value="14">2 Semanas</SelectItem>
+                                <SelectItem value="30">1 Mes</SelectItem>
+                                <SelectItem value="90">3 Meses</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <Label>Inicio</Label>
-                            <Popover>
-                                <PopoverTrigger asChild>
-                                    <Button
-                                        variant={"outline"}
-                                        className={cn(
-                                            "w-full justify-start text-left font-normal bg-zinc-900 border-zinc-800",
-                                            !date && "text-muted-foreground"
-                                        )}
-                                    >
-                                        <CalendarIcon className="mr-2 h-4 w-4" />
-                                        {date ? format(date, "PPP", { locale: es }) : <span>Seleccionar</span>}
-                                    </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0 bg-zinc-900 border-zinc-800">
-                                    <Calendar
-                                        mode="single"
-                                        selected={date}
-                                        onSelect={setDate}
-                                        initialFocus
-                                    />
-                                </PopoverContent>
-                            </Popover>
-                        </div>
-                        <div className="space-y-2">
-                            <Label>Fin</Label>
-                            <Popover>
-                                <PopoverTrigger asChild>
-                                    <Button
-                                        variant={"outline"}
-                                        className={cn(
-                                            "w-full justify-start text-left font-normal bg-zinc-900 border-zinc-800",
-                                            !endDate && "text-muted-foreground"
-                                        )}
-                                    >
-                                        <CalendarIcon className="mr-2 h-4 w-4" />
-                                        {endDate ? format(endDate, "PPP", { locale: es }) : <span>Seleccionar</span>}
-                                    </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0 bg-zinc-900 border-zinc-800">
-                                    <Calendar
-                                        mode="single"
-                                        selected={endDate}
-                                        onSelect={setEndDate}
-                                        initialFocus
-                                        disabled={(date) => date < (date || new Date())}
-                                    />
-                                </PopoverContent>
-                            </Popover>
-                        </div>
-                    </div>
-
-                    <Button type="submit" className="w-full bg-primary text-black hover:bg-primary/90 mt-4" disabled={loading}>
-                        {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                        Crear Reto
-                    </Button>
+                    <DialogFooter>
+                        <Button type="button" variant="ghost" onClick={() => setOpen(false)}>
+                            Cancelar
+                        </Button>
+                        <Button type="submit" disabled={isLoading || !formData.title || !formData.target_value}>
+                            {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Crear Reto"}
+                        </Button>
+                    </DialogFooter>
                 </form>
             </DialogContent>
         </Dialog>
