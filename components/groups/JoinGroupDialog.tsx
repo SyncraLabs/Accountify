@@ -34,11 +34,11 @@ export function JoinGroupDialog() {
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
                 <Button
-                    variant="ghost"
-                    className="w-full justify-start gap-2 text-zinc-400 hover:text-white hover:bg-zinc-800/50 h-10 transition-all duration-200"
+                    variant="outline"
+                    className="w-full justify-center gap-2 border-zinc-700/50 bg-zinc-800/50 hover:bg-zinc-700/50 text-zinc-300 hover:text-white h-10 transition-all duration-200 hover:border-zinc-600 font-medium"
                 >
                     <UsersRound className="h-4 w-4" />
-                    Unirse con Código
+                    <span className="text-xs">Unirse</span>
                 </Button>
             </DialogTrigger>
             <DialogContent className="bg-zinc-900/95 backdrop-blur-xl border-zinc-800 shadow-[0_0_50px_rgba(0,0,0,0.5)]">

@@ -1,6 +1,7 @@
 import { getUserGroups, getGroupDetails, getGroupMessages, hasCompletedGroupsOnboarding } from './actions'
 import { Sidebar } from '@/components/groups/Sidebar'
 import { ChatArea } from '@/components/groups/ChatArea'
+import { GroupsWelcome } from '@/components/groups/GroupsWelcome'
 
 import { GroupsPageClient } from '@/components/groups/GroupsPageClient'
 import { AppSidebar } from "@/components/layout/AppSidebar"
@@ -68,13 +69,7 @@ export default async function GroupsPage({ searchParams }: { searchParams: Promi
                                 />
                             </>
                         ) : (
-                            <div className="flex-1 flex flex-col items-center justify-center text-zinc-500 p-8 text-center relative">
-                                <div className="bg-zinc-900/50 p-5 rounded-xl mb-4 border border-zinc-800/50 shadow-[0_0_30px_rgba(191,245,73,0.03)]">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-zinc-500"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-                                </div>
-                                <h3 className="text-base font-medium text-white mb-2">Grupos de Disciplina</h3>
-                                <p className="text-sm max-w-xs text-zinc-500">Selecciona un grupo para chatear.</p>
-                            </div>
+                            <GroupsWelcome />
                         )}
                     </div>
                 </main>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Check, Flame, Trash2, Calendar as CalendarIcon } from "lucide-react";
 import { CreateHabitModal } from "./CreateHabitModal";
@@ -207,32 +207,32 @@ export function HabitCalendar({ initialHabits }: HabitCalendarProps) {
 
 
                     return (
-                        <FramerWrapper key={habit.id} delay={idx * 0.1} className="group relative rounded-[2rem] bg-white/5 border border-white/5 p-4 md:p-8 hover:bg-white/10 transition-all duration-500">
-                            <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-6 overflow-hidden">
+                        <FramerWrapper key={habit.id} delay={idx * 0.1} className="group relative rounded-[2rem] bg-white/5 border border-white/5 p-4 md:p-8 hover:bg-white/10 transition-all duration-500 overflow-hidden">
+                            <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4 md:gap-6">
 
                                 {/* Habit Info */}
-                                <div className="relative flex flex-col md:flex-row items-start gap-4 md:gap-6 w-full xl:w-auto min-w-0 xl:min-w-[300px] mb-2 xl:mb-0">
-                                    <div className="flex items-center gap-4 w-full min-w-0">
+                                <div className="relative flex flex-col gap-3 w-full xl:w-auto xl:min-w-[300px]">
+                                    <div className="flex items-center gap-3 md:gap-4 w-full min-w-0">
                                         <div className="h-10 w-10 md:h-16 md:w-16 rounded-2xl bg-gradient-to-br from-white/5 to-white/10 border border-white/10 flex items-center justify-center text-lg md:text-2xl shadow-inner shrink-0">
                                             {getEmoji(habit.category)}
                                         </div>
                                         <div className="space-y-0.5 min-w-0 flex-1">
-                                            <h3 className="text-lg md:text-2xl font-bold text-white truncate pr-2" title={habit.title}>{habit.title}</h3>
+                                            <h3 className="text-base md:text-2xl font-bold text-white truncate pr-2" title={habit.title}>{habit.title}</h3>
                                             <div className="flex items-center gap-2 text-primary font-medium text-xs md:text-base">
-                                                <Flame className="h-3 w-3 md:h-4 md:w-4 fill-primary" />
-                                                <span>{currentStreak} day streak</span>
+                                                <Flame className="h-3 w-3 md:h-4 md:w-4 fill-primary shrink-0" />
+                                                <span className="truncate">{currentStreak} day streak</span>
                                             </div>
                                         </div>
                                     </div>
 
-                                    {/* Actions */}
-                                    <div className="flex items-center gap-1 mt-2 md:mt-0 md:absolute md:top-0 md:right-0 lg:-top-2 lg:-right-4 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-all duration-300 md:bg-black/50 md:backdrop-blur-sm p-1 rounded-xl md:border md:border-white/10 z-20">
+                                    {/* Actions - Mobile: horizontal scroll, Desktop: positioned */}
+                                    <div className="flex items-center gap-1.5 overflow-x-auto pb-1 -mb-1 scrollbar-none md:absolute md:top-0 md:right-0 lg:-top-2 lg:-right-4 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300 md:bg-black/50 md:backdrop-blur-sm md:p-1 md:rounded-xl md:border md:border-white/10 z-20">
                                         <Popover>
                                             <PopoverTrigger asChild>
                                                 <Button
                                                     variant="ghost"
                                                     size="icon"
-                                                    className="h-8 w-8 md:h-9 md:w-9 bg-white/5 hover:bg-white/10 text-muted-foreground hover:text-white rounded-xl border border-white/5"
+                                                    className="h-8 w-8 md:h-9 md:w-9 bg-white/5 hover:bg-white/10 text-muted-foreground hover:text-white rounded-xl border border-white/5 shrink-0"
                                                     title="Ver historial completo"
                                                 >
                                                     <CalendarIcon className="h-3 w-3 md:h-4 md:w-4" />
@@ -253,22 +253,22 @@ export function HabitCalendar({ initialHabits }: HabitCalendarProps) {
                                             </PopoverContent>
                                         </Popover>
 
+                                        <div className="shrink-0">
+                                            <ShareHabitDialog
+                                                habitId={habit.id}
+                                                habitTitle={habit.title}
+                                                streak={currentStreak}
+                                                category={habit.category}
+                                            />
+                                        </div>
 
-                                        <ShareHabitDialog
-                                            habitId={habit.id}
-                                            habitTitle={habit.title}
-                                            streak={currentStreak}
-                                            category={habit.category}
-                                        />
-
-                                        <div className="scale-90 md:scale-100 origin-center">
+                                        <div className="shrink-0">
                                             <QuickShareToggle habitId={habit.id} />
                                         </div>
 
-
                                         <button
                                             onClick={() => handleDeleteClick(habit.id, habit.title)}
-                                            className="h-8 w-8 md:h-9 md:w-9 flex items-center justify-center rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 hover:border-red-500/40 transition-all duration-300"
+                                            className="h-8 w-8 md:h-9 md:w-9 flex items-center justify-center rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 hover:border-red-500/40 transition-all duration-300 shrink-0"
                                             title="Eliminar hábito"
                                         >
                                             <Trash2 className="h-3 w-3 md:h-4 md:w-4" />
@@ -276,8 +276,8 @@ export function HabitCalendar({ initialHabits }: HabitCalendarProps) {
                                     </div>
                                 </div>
 
-                                {/* Days Grid */}
-                                <div className="flex-1 w-full grid grid-cols-7 gap-1.5 md:gap-4 min-w-0">
+                                {/* Days Grid - Fixed for mobile */}
+                                <div className="w-full xl:flex-1 grid grid-cols-7 gap-1 md:gap-4">
                                     {DAYS.map((date, i) => {
                                         const isToday = date.toDateString() === new Date().toDateString();
                                         const completed = isCompleted(habit, date);
@@ -330,7 +330,7 @@ export function HabitCalendar({ initialHabits }: HabitCalendarProps) {
                     <AlertDialogHeader>
                         <AlertDialogTitle>¿Eliminar este hábito?</AlertDialogTitle>
                         <AlertDialogDescription>
-                            ¿Estás seguro de que quieres eliminar "{habitToDelete?.title}"? Esta acción no se puede deshacer y perderás todo tu progreso.
+                            ¿Estás seguro de que quieres eliminar &ldquo;{habitToDelete?.title}&rdquo;? Esta acción no se puede deshacer y perderás todo tu progreso.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>

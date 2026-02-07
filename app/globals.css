@@ -163,6 +163,16 @@
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     @apply bg-zinc-700;
   }
+
+  /* Hide scrollbar utility */
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 @layer base {

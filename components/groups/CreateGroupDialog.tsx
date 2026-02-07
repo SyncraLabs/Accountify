@@ -41,10 +41,10 @@ export function CreateGroupDialog() {
             <DialogTrigger asChild>
                 <Button
                     variant="outline"
-                    className="w-full justify-start gap-2 border-zinc-700/50 bg-zinc-800/30 hover:bg-zinc-800/80 text-zinc-300 hover:text-white h-10 transition-all duration-200 hover:border-primary/30 hover:shadow-[0_0_15px_rgba(191,245,73,0.08)]"
+                    className="w-full justify-center gap-2 border-primary/30 bg-primary/10 hover:bg-primary/20 text-primary hover:text-primary h-10 transition-all duration-200 hover:shadow-[0_0_15px_rgba(191,245,73,0.15)] font-medium"
                 >
-                    <PlusCircle className="h-4 w-4 text-primary" />
-                    Crear Nuevo Grupo
+                    <PlusCircle className="h-4 w-4" />
+                    <span className="text-xs">Crear</span>
                 </Button>
             </DialogTrigger>
             <DialogContent className="bg-zinc-900/95 backdrop-blur-xl border-zinc-800 shadow-[0_0_50px_rgba(0,0,0,0.5)]">

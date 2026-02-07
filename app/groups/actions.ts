@@ -122,7 +122,23 @@ export async function sendMessage(
 ) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return { error: 'Not authenticated' }
+    if (!user) {
+        console.error('[sendMessage] User not authenticated')
+        return { error: 'Not authenticated' }
+    }
+
+    // Verify user is a member of this group first
+    const { data: membership, error: membershipError } = await supabase
+        .from('group_members')
+        .select('role')
+        .eq('group_id', groupId)
+        .eq('user_id', user.id)
+        .single()
+
+    if (membershipError || !membership) {
+        console.error('[sendMessage] User is not a member of group:', groupId, membershipError)
+        return { error: 'You are not a member of this group' }
+    }
 
     // Get sender profile for notifications
     const { data: senderProfile } = await supabase
@@ -140,7 +156,8 @@ export async function sendMessage(
         .single()
     const groupName = group?.name || 'Grupo'
 
-    const { error } = await supabase
+    // Insert the message
+    const { data: insertedMessage, error } = await supabase
         .from('messages')
         .insert({
             group_id: groupId,
@@ -149,8 +166,15 @@ export async function sendMessage(
             type,
             media_url: mediaUrl
         })
+        .select()
+        .single()
 
-    if (error) return { error: error.message }
+    if (error) {
+        console.error('[sendMessage] Failed to insert message:', error)
+        return { error: error.message }
+    }
+
+    console.log('[sendMessage] Message inserted successfully:', insertedMessage?.id)
 
     // Send mention notifications
     for (const mentionedUserId of mentionedUserIds) {
@@ -208,7 +232,23 @@ export async function getGroupMessages(
 ) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return { error: 'Not authenticated' }
+    if (!user) {
+        console.error('[getGroupMessages] User not authenticated')
+        return { error: 'Not authenticated', data: [] }
+    }
+
+    // Verify user is a member of this group
+    const { data: membership } = await supabase
+        .from('group_members')
+        .select('role')
+        .eq('group_id', groupId)
+        .eq('user_id', user.id)
+        .single()
+
+    if (!membership) {
+        console.error('[getGroupMessages] User is not a member of group:', groupId)
+        return { error: 'Not a member of this group', data: [] }
+    }
 
     let query = supabase
         .from('messages')
@@ -232,9 +272,11 @@ export async function getGroupMessages(
     const { data, error } = await query
 
     if (error) {
-        console.error('Error fetching messages:', error)
-        return { error: error.message }
+        console.error('[getGroupMessages] Error fetching messages:', error)
+        return { error: error.message, data: [] }
     }
+
+    console.log(`[getGroupMessages] Fetched ${data?.length || 0} messages for group ${groupId}`)
 
     // Return reversed array so it renders chronologically (oldest to newest)
     return { data: data ? data.reverse() : [] }
