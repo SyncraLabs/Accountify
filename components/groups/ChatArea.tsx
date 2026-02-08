@@ -297,19 +297,52 @@ export function ChatArea({ groupId, initialMessages, groupName, currentUserId }:
 
             const fetchInitial = async () => {
                 try {
-                    const { data, error } = await getGroupMessages(groupId, 50)
-                    if (data && data.length > 0) {
-                        setMessages(data)
-                        setHasMore(data.length >= 50)
+                    // Manual join strategy to bypass potential schema cache/relationship errors
+                    // 1. Fetch messages only (no join yet)
+                    const { data: rawMessages, error: msgError } = await supabase
+                        .from('messages')
+                        .select('*')
+                        .eq('group_id', groupId)
+                        .order('created_at', { ascending: false })
+                        .limit(50)
 
-                        // Fetch profiles
-                        const userIds = Array.from(new Set(data.map((m: any) => m.user_id)));
-                        fetchProfiles(userIds as string[]);
+                    if (msgError) {
+                        console.error('[ChatArea] Error fetching raw messages:', msgError)
+                        setHasMore(false)
+                        return
+                    }
+
+                    if (rawMessages && rawMessages.length > 0) {
+                        // 2. Fetch profiles for these messages manually
+                        const userIds = Array.from(new Set(rawMessages.map((m: any) => m.user_id)))
+                        const { data: profiles, error: profileError } = await supabase
+                            .from('profiles')
+                            .select('id, username, full_name, avatar_url')
+                            .in('id', userIds)
+
+                        if (profileError) console.error('[ChatArea] Error fetching profiles:', profileError)
+
+                        // 3. Merge data locally
+                        const profileMap = new Map(profiles?.map((p: any) => [p.id, p]))
+                        const joinedMessages = rawMessages.map((m: any) => ({
+                            ...m,
+                            profiles: profileMap.get(m.user_id) || null
+                        }))
+
+                        // Sort by created_at ascending (oldest first)
+                        const sortedMessages = joinedMessages.sort((a: any, b: any) =>
+                            new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+                        )
+
+                        setMessages(sortedMessages)
+                        setHasMore(sortedMessages.length >= 50)
                     } else {
+                        setMessages([])
                         setHasMore(false)
                     }
                 } catch (err) {
                     console.error('[ChatArea] Client-side fetch failed', err)
+                    setHasMore(false)
                 }
             }
             fetchInitial()
@@ -459,5 +492,3 @@ export function ChatArea({ groupId, initialMessages, groupName, currentUserId }:
         </div >
     )
 }
-
-
