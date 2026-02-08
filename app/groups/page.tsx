@@ -54,20 +54,15 @@ export default async function GroupsPage({ searchParams }: { searchParams: Promi
                     </div>
 
                     {/* Chat Area: Hidden on mobile if NO group selected */}
-                    <div className={`${selectedGroupId ? 'flex absolute inset-0 md:static z-50' : 'hidden md:flex'} flex-1 h-full overflow-hidden border-l border-zinc-800/50 bg-zinc-950 relative w-full`}>
-                        {/* Subtle ambient glow */}
-                        <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.02] via-transparent to-transparent pointer-events-none" />
-
+                    <div className={`${selectedGroupId ? 'flex flex-col absolute inset-0 md:static z-50' : 'hidden md:flex md:flex-col'} flex-1 h-full border-l border-zinc-800/50 bg-zinc-950 w-full`}>
                         {selectedGroupId && selectedGroup ? (
-                            <>
-                                <ChatArea
-                                    key={selectedGroupId} // Force remount on group change
-                                    groupId={selectedGroupId}
-                                    groupName={selectedGroup.name}
-                                    initialMessages={messages}
-                                    currentUserId={user.id}
-                                />
-                            </>
+                            <ChatArea
+                                key={selectedGroupId}
+                                groupId={selectedGroupId}
+                                groupName={selectedGroup.name}
+                                initialMessages={messages}
+                                currentUserId={user.id}
+                            />
                         ) : (
                             <GroupsWelcome />
                         )}

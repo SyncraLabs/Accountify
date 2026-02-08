@@ -171,21 +171,34 @@
     -webkit-overflow-scrolling: touch;
   }
 
-  /* Fix for mobile chat scroll */
-  .chat-container {
-    height: 100%;
+  /* Fix for mobile chat scroll - proper flex layout */
+  .chat-layout {
     display: flex;
     flex-direction: column;
+    height: 100%;
+    width: 100%;
     position: relative;
-    overflow: hidden;
+  }
+
+  .chat-header {
+    flex-shrink: 0;
+    position: relative;
+    z-index: 20;
   }
 
   .chat-messages {
-    flex: 1;
+    flex: 1 1 0%;
+    min-height: 0; /* Critical for flex overflow */
     overflow-y: auto;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior-y: contain;
+  }
+
+  .chat-footer {
+    flex-shrink: 0;
+    position: relative;
+    z-index: 20;
   }
 
   .glass {

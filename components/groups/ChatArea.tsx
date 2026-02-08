@@ -356,55 +356,21 @@ export function ChatArea({ groupId, initialMessages, groupName, currentUserId }:
     }, [initialMessages, groupId])
 
     return (
-        <div className="chat-container flex-1 bg-zinc-950">
+        <div className="chat-layout flex-1 bg-zinc-950">
             {/* Subtle ambient glow */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[200px] bg-primary/[0.03] blur-[100px] pointer-events-none z-0" />
 
-            {/* Header - Sticky */}
-            <div className="h-14 border-b border-zinc-800/50 flex items-center justify-between px-5 shrink-0 bg-zinc-900/80 backdrop-blur-md sticky top-0 z-20">
-                <div className="flex items-center gap-3">
-                    <Link href="/groups" className="md:hidden text-zinc-400 hover:text-white">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
-                    </Link>
-                    <h2 className="font-medium text-sm text-white">{groupName}</h2>
-                </div>
-
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setShowGroupDetails(true)}
-                    className="text-zinc-400 hover:text-white hover:bg-zinc-800/50 rounded-full"
-                >
-                    <Menu className="h-5 w-5" />
-                </Button>
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setShowChallenges(true)}
-                    className="text-zinc-400 hover:text-white hover:bg-zinc-800/50 rounded-full"
-                >
-                    <Trophy className="h-5 w-5" />
-                </Button>
-            </div>
-
+            {/* Dialogs/Drawers - outside the layout flow */}
             <ActiveChallengesDrawer
                 isOpen={showChallenges}
                 onOpenChange={setShowChallenges}
                 groupId={groupId}
             />
-
-            {/* Always-visible challenge progress */}
-            <ChallengeProgressBar
-                groupId={groupId}
-                onOpenChallenges={() => setShowChallenges(true)}
-            />
-
             <MemberProfileDialog
                 isOpen={!!selectedMember}
                 onOpenChange={(open) => !open && setSelectedMember(null)}
                 member={selectedMember}
             />
-
             <GroupDetails
                 isOpen={showGroupDetails}
                 onOpenChange={setShowGroupDetails}
@@ -413,6 +379,44 @@ export function ChatArea({ groupId, initialMessages, groupName, currentUserId }:
                 currentUserId={currentUserId}
             />
 
+            {/* Header - Fixed at top */}
+            <div className="chat-header">
+                <div className="h-14 border-b border-zinc-800/50 flex items-center justify-between px-4 bg-zinc-900/95 backdrop-blur-md">
+                    <div className="flex items-center gap-3">
+                        <Link href="/groups" className="md:hidden text-zinc-400 hover:text-white p-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
+                        </Link>
+                        <h2 className="font-medium text-sm text-white">{groupName}</h2>
+                    </div>
+
+                    <div className="flex items-center gap-1">
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => setShowChallenges(true)}
+                            className="text-zinc-400 hover:text-white hover:bg-zinc-800/50 rounded-full h-9 w-9"
+                        >
+                            <Trophy className="h-4 w-4" />
+                        </Button>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => setShowGroupDetails(true)}
+                            className="text-zinc-400 hover:text-white hover:bg-zinc-800/50 rounded-full h-9 w-9"
+                        >
+                            <Menu className="h-4 w-4" />
+                        </Button>
+                    </div>
+                </div>
+
+                {/* Challenge progress bar - part of header section */}
+                <ChallengeProgressBar
+                    groupId={groupId}
+                    onOpenChallenges={() => setShowChallenges(true)}
+                />
+            </div>
+
+            {/* Messages - Scrollable area */}
             <div className="chat-messages p-4 custom-scrollbar" onScroll={handleScroll}>
                 {isLoadingMore && (
                     <div className="flex justify-center py-2">
@@ -497,35 +501,38 @@ export function ChatArea({ groupId, initialMessages, groupName, currentUserId }:
                 </div>
             </div>
 
-            <div className="p-4 pb-safe border-t border-zinc-800/50 bg-zinc-900/80 backdrop-blur-md shrink-0 sticky bottom-0 z-20">
-                <div className="max-w-3xl mx-auto flex gap-2">
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => fileInputRef.current?.click()}
-                        disabled={uploading}
-                        className="shrink-0 text-zinc-500 hover:text-white hover:bg-zinc-800/50 transition-all duration-200"
-                    >
-                        {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Paperclip className="h-4 w-4" />}
-                    </Button>
-                    <input type="file" ref={fileInputRef} className="hidden" onChange={handleFileUpload} accept="image/*,video/*" />
+            {/* Footer - Fixed at bottom */}
+            <div className="chat-footer border-t border-zinc-800/50 bg-zinc-900/95 backdrop-blur-md">
+                <div className="p-3 pb-safe">
+                    <div className="max-w-3xl mx-auto flex gap-2">
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => fileInputRef.current?.click()}
+                            disabled={uploading}
+                            className="shrink-0 text-zinc-500 hover:text-white hover:bg-zinc-800/50 transition-all duration-200 h-10 w-10"
+                        >
+                            {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Paperclip className="h-4 w-4" />}
+                        </Button>
+                        <input type="file" ref={fileInputRef} className="hidden" onChange={handleFileUpload} accept="image/*,video/*" />
 
-                    <Input
-                        placeholder="Escribe un mensaje... Usa @nombre para mencionar"
-                        value={input}
-                        onChange={(e) => setInput(e.target.value)}
-                        onKeyDown={(e) => e.key === "Enter" && handleSend()}
-                        className="flex-1 bg-zinc-800/50 border-zinc-700/50 text-sm h-11 focus-visible:ring-1 focus-visible:ring-primary/50 focus-visible:border-primary/50 transition-all rounded-xl placeholder:text-zinc-500"
-                    />
-                    <Button
-                        onClick={handleSend}
-                        size="icon"
-                        className="bg-primary text-black h-11 w-11 rounded-xl transition-all duration-200 hover:scale-105 hover:shadow-[0_0_20px_rgba(191,245,73,0.3)] shadow-[0_0_10px_rgba(191,245,73,0.1)]"
-                    >
-                        <Send className="h-4 w-4" />
-                    </Button>
+                        <Input
+                            placeholder="Escribe un mensaje..."
+                            value={input}
+                            onChange={(e) => setInput(e.target.value)}
+                            onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
+                            className="flex-1 bg-zinc-800/50 border-zinc-700/50 text-sm h-10 focus-visible:ring-1 focus-visible:ring-primary/50 focus-visible:border-primary/50 transition-all rounded-xl placeholder:text-zinc-500"
+                        />
+                        <Button
+                            onClick={handleSend}
+                            size="icon"
+                            className="bg-primary text-black h-10 w-10 rounded-xl transition-all duration-200 hover:scale-105 hover:shadow-[0_0_20px_rgba(191,245,73,0.3)] shadow-[0_0_10px_rgba(191,245,73,0.1)]"
+                        >
+                            <Send className="h-4 w-4" />
+                        </Button>
+                    </div>
                 </div>
             </div>
-        </div >
+        </div>
     )
 }
