@@ -3,13 +3,14 @@
 import { useState, useEffect } from "react"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area" // Ensure this is usable or use div
-import { User, Settings, Image as ImageIcon, Info, Shield, LogOut } from "lucide-react"
+import { Info, LogOut } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import { GroupHabitsProgress } from "./GroupHabitsProgress"
 import { GroupChallenges } from "./GroupChallenges"
+import { MemberLeaderboard } from "./MemberLeaderboard"
+import { MemberProfileDialog } from "./MemberProfileDialog"
 
 interface GroupDetailsProps {
     isOpen: boolean
@@ -23,6 +24,7 @@ interface GroupDetailsProps {
 export function GroupDetails({ isOpen, onOpenChange, groupId, groupName, groupDescription, currentUserId }: GroupDetailsProps) {
     const [members, setMembers] = useState<any[]>([])
     const [isLoadingMembers, setIsLoadingMembers] = useState(false)
+    const [selectedMember, setSelectedMember] = useState<any>(null)
     const supabase = createClient()
 
     useEffect(() => {
@@ -72,23 +74,46 @@ export function GroupDetails({ isOpen, onOpenChange, groupId, groupName, groupDe
                     </SheetDescription>
                 </SheetHeader>
 
-                <Tabs defaultValue="challenges" className="flex-1 flex flex-col overflow-hidden">
+                <MemberProfileDialog
+                    isOpen={!!selectedMember}
+                    onOpenChange={(open) => !open && setSelectedMember(null)}
+                    member={selectedMember}
+                />
+
+                <Tabs defaultValue="ranking" className="flex-1 flex flex-col overflow-hidden">
                     <div className="px-6 pt-4 pb-2">
                         <TabsList className="w-full bg-zinc-900/50 border border-zinc-800/50 p-1 grid grid-cols-4">
+                            <TabsTrigger value="ranking" className="data-[state=active]:bg-primary data-[state=active]:text-black text-xs">
+                                Ranking
+                            </TabsTrigger>
                             <TabsTrigger value="challenges" className="data-[state=active]:bg-primary data-[state=active]:text-black text-xs">
                                 Retos
                             </TabsTrigger>
                             <TabsTrigger value="progress" className="data-[state=active]:bg-primary data-[state=active]:text-black text-xs">
                                 Progreso
                             </TabsTrigger>
-                            <TabsTrigger value="members" className="data-[state=active]:bg-primary data-[state=active]:text-black text-xs">
-                                Miembros
-                            </TabsTrigger>
                             <TabsTrigger value="info" className="data-[state=active]:bg-primary data-[state=active]:text-black text-xs">
                                 Info
                             </TabsTrigger>
                         </TabsList>
                     </div>
+
+                    <TabsContent value="ranking" className="flex-1 overflow-y-auto px-6 py-4 data-[state=inactive]:hidden">
+                        <div className="space-y-4">
+                            <h3 className="text-sm font-medium text-zinc-400 uppercase tracking-wider text-xs">Clasificacion del Grupo</h3>
+                            <MemberLeaderboard
+                                groupId={groupId}
+                                onMemberClick={(member) => setSelectedMember({
+                                    id: member.userId,
+                                    username: member.profile?.username,
+                                    full_name: member.profile?.full_name,
+                                    avatar_url: member.profile?.avatar_url,
+                                    role: member.role,
+                                    joined_at: member.joinedAt
+                                })}
+                            />
+                        </div>
+                    </TabsContent>
 
                     <TabsContent value="challenges" className="flex-1 overflow-y-auto px-6 py-4 data-[state=inactive]:hidden">
                         <div className="space-y-4">
@@ -101,33 +126,6 @@ export function GroupDetails({ isOpen, onOpenChange, groupId, groupName, groupDe
                         <div className="space-y-4">
                             <h3 className="text-sm font-medium text-zinc-400 uppercase tracking-wider text-xs">Progreso Diario</h3>
                             <GroupHabitsProgress groupId={groupId} />
-                        </div>
-                    </TabsContent>
-
-                    <TabsContent value="members" className="flex-1 overflow-y-auto px-6 py-4 data-[state=inactive]:hidden">
-                        <div className="space-y-4">
-                            <h3 className="text-sm font-medium text-zinc-400 uppercase tracking-wider text-xs">Miembros ({members.length})</h3>
-                            <div className="space-y-2">
-                                {members.map((member) => (
-                                    <div key={member.id} className="flex items-center justify-between p-3 rounded-xl bg-zinc-900/30 border border-zinc-800/50">
-                                        <div className="flex items-center gap-3">
-                                            <Avatar className="h-10 w-10 border border-zinc-700/50">
-                                                <AvatarImage src={member.avatarUrl} />
-                                                <AvatarFallback className="bg-zinc-800 text-zinc-400">
-                                                    {member.username?.slice(0, 2).toUpperCase() || "U"}
-                                                </AvatarFallback>
-                                            </Avatar>
-                                            <div>
-                                                <div className="font-medium text-zinc-200 text-sm">{member.username || member.fullName || 'Usuario'}</div>
-                                                <div className="text-xs text-zinc-500 capitalize flex items-center gap-1">
-                                                    {member.role === 'admin' && <Shield className="h-3 w-3 text-primary" />}
-                                                    {member.role === 'admin' ? 'Administrador' : 'Miembro'}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
                         </div>
                     </TabsContent>
 

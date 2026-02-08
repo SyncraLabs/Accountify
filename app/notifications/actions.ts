@@ -3,7 +3,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 
-export type NotificationType = 'mention' | 'group_message' | 'habit_reminder' | 'feature_update'
+export type NotificationType = 'mention' | 'group_message' | 'habit_reminder' | 'feature_update' | 'challenge_created' | 'challenge_ending' | 'challenge_completed' | 'challenge_progress'
 
 export interface Notification {
     id: string
@@ -301,5 +301,141 @@ export async function deleteNotification(notificationId: string) {
     }
 
     revalidatePath('/')
+    return { success: true }
+}
+
+// ============================================================================
+// CHALLENGE NOTIFICATIONS
+// ============================================================================
+
+export async function createChallengeCreatedNotification(
+    userIds: string[],
+    challengeTitle: string,
+    groupId: string,
+    groupName: string,
+    challengeId: string
+) {
+    const supabase = await createClient()
+
+    const notifications = userIds.map(userId => ({
+        user_id: userId,
+        type: 'challenge_created' as NotificationType,
+        title: 'Nuevo reto disponible',
+        body: `"${challengeTitle}" en ${groupName}`,
+        data: { group_id: groupId, group_name: groupName, challenge_id: challengeId }
+    }))
+
+    const { error } = await supabase
+        .from('notifications')
+        .insert(notifications)
+
+    if (error) {
+        console.error('Error creating challenge notifications:', error)
+        return { error: error.message }
+    }
+
+    return { success: true }
+}
+
+export async function createChallengeEndingNotification(
+    userIds: string[],
+    challengeTitle: string,
+    groupId: string,
+    groupName: string,
+    challengeId: string,
+    hoursLeft: number
+) {
+    const supabase = await createClient()
+
+    const timeText = hoursLeft <= 1 ? 'menos de 1 hora' :
+        hoursLeft < 24 ? `${hoursLeft} horas` :
+        `${Math.ceil(hoursLeft / 24)} dia(s)`
+
+    const notifications = userIds.map(userId => ({
+        user_id: userId,
+        type: 'challenge_ending' as NotificationType,
+        title: 'Reto por terminar',
+        body: `"${challengeTitle}" termina en ${timeText}`,
+        data: { group_id: groupId, group_name: groupName, challenge_id: challengeId }
+    }))
+
+    const { error } = await supabase
+        .from('notifications')
+        .insert(notifications)
+
+    if (error) {
+        console.error('Error creating challenge ending notifications:', error)
+        return { error: error.message }
+    }
+
+    return { success: true }
+}
+
+export async function createChallengeCompletedNotification(
+    userId: string,
+    challengeTitle: string,
+    groupId: string,
+    groupName: string,
+    challengeId: string
+) {
+    const supabase = await createClient()
+
+    const { error } = await supabase
+        .from('notifications')
+        .insert({
+            user_id: userId,
+            type: 'challenge_completed' as NotificationType,
+            title: 'Reto completado!',
+            body: `Completaste "${challengeTitle}"`,
+            data: { group_id: groupId, group_name: groupName, challenge_id: challengeId }
+        })
+
+    if (error) {
+        console.error('Error creating challenge completed notification:', error)
+        return { error: error.message }
+    }
+
+    return { success: true }
+}
+
+export async function createChallengeProgressNotification(
+    userId: string,
+    challengeTitle: string,
+    groupId: string,
+    groupName: string,
+    challengeId: string,
+    milestone: number // e.g., 50, 75, 90 percent
+) {
+    const supabase = await createClient()
+
+    // Batch key to avoid duplicate milestone notifications
+    const batchKey = `challenge_progress:${challengeId}:${userId}:${milestone}`
+
+    // Check if already notified for this milestone
+    const { data: existing } = await supabase
+        .from('notifications')
+        .select('id')
+        .eq('user_id', userId)
+        .eq('batch_key', batchKey)
+        .single()
+
+    if (existing) return { batched: true }
+
+    const { error } = await supabase
+        .from('notifications')
+        .insert({
+            user_id: userId,
+            type: 'challenge_progress' as NotificationType,
+            title: `${milestone}% completado`,
+            body: `Vas muy bien en "${challengeTitle}"`,
+            data: { group_id: groupId, group_name: groupName, challenge_id: challengeId, milestone },
+            batch_key: batchKey
+        })
+
+    if (error) {
+        console.error('Error creating challenge progress notification:', error)
+        return { error: error.message }
+    }
+
     return { success: true }
 }

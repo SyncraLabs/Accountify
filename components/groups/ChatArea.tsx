@@ -16,6 +16,7 @@ import { Play, Settings, Menu } from "lucide-react"
 import { GroupDetails } from "./GroupDetails"
 import { ActiveChallengesDrawer } from "./ActiveChallengesDrawer"
 import { MemberProfileDialog } from "./MemberProfileDialog"
+import { ChallengeProgressBar } from "./ChallengeProgressBar"
 import { Trophy } from "lucide-react"
 
 
@@ -355,12 +356,12 @@ export function ChatArea({ groupId, initialMessages, groupName, currentUserId }:
     }, [initialMessages, groupId])
 
     return (
-        <div className="flex-1 flex flex-col relative h-full bg-zinc-950">
+        <div className="chat-container flex-1 bg-zinc-950">
             {/* Subtle ambient glow */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[200px] bg-primary/[0.03] blur-[100px] pointer-events-none" />
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[200px] bg-primary/[0.03] blur-[100px] pointer-events-none z-0" />
 
-            {/* Header */}
-            <div className="h-14 border-b border-zinc-800/50 flex items-center justify-between px-5 shrink-0 bg-zinc-900/30 backdrop-blur-sm relative">
+            {/* Header - Sticky */}
+            <div className="h-14 border-b border-zinc-800/50 flex items-center justify-between px-5 shrink-0 bg-zinc-900/80 backdrop-blur-md sticky top-0 z-20">
                 <div className="flex items-center gap-3">
                     <Link href="/groups" className="md:hidden text-zinc-400 hover:text-white">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
@@ -392,6 +393,12 @@ export function ChatArea({ groupId, initialMessages, groupName, currentUserId }:
                 groupId={groupId}
             />
 
+            {/* Always-visible challenge progress */}
+            <ChallengeProgressBar
+                groupId={groupId}
+                onOpenChallenges={() => setShowChallenges(true)}
+            />
+
             <MemberProfileDialog
                 isOpen={!!selectedMember}
                 onOpenChange={(open) => !open && setSelectedMember(null)}
@@ -406,7 +413,7 @@ export function ChatArea({ groupId, initialMessages, groupName, currentUserId }:
                 currentUserId={currentUserId}
             />
 
-            <div className="flex-1 overflow-y-auto p-4 custom-scrollbar" onScroll={handleScroll}>
+            <div className="chat-messages p-4 custom-scrollbar" onScroll={handleScroll}>
                 {isLoadingMore && (
                     <div className="flex justify-center py-2">
                         <Loader2 className="h-4 w-4 animate-spin text-zinc-500" />
@@ -490,7 +497,7 @@ export function ChatArea({ groupId, initialMessages, groupName, currentUserId }:
                 </div>
             </div>
 
-            <div className="p-4 pb-4 border-t border-zinc-800/50 bg-zinc-900/30 backdrop-blur-sm shrink-0">
+            <div className="p-4 pb-safe border-t border-zinc-800/50 bg-zinc-900/80 backdrop-blur-md shrink-0 sticky bottom-0 z-20">
                 <div className="max-w-3xl mx-auto flex gap-2">
                     <Button
                         variant="ghost"

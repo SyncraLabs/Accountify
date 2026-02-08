@@ -1,9 +1,13 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { Trophy, Flame, Target, CalendarDays, Medal } from "lucide-react"
+import { Progress } from "@/components/ui/progress"
+import { Trophy, Flame, Target, CalendarDays, Medal, Star, Loader2 } from "lucide-react"
+import { getMemberStats, type MemberStats } from "@/app/groups/actions"
+import { cn } from "@/lib/utils"
 
 interface MemberProfileDialogProps {
     isOpen: boolean
@@ -16,24 +20,42 @@ interface MemberProfileDialogProps {
         role?: string
         joined_at?: string
     } | null
-    stats?: {
-        streak: number
-        habitsCompleted: number
-        challengesWon: number
-        commitmentScore: number // 0-100
-    }
 }
 
-export function MemberProfileDialog({ isOpen, onOpenChange, member, stats }: MemberProfileDialogProps) {
-    if (!member) return null
+const rankColors: Record<MemberStats['rank'], string> = {
+    'Novato': 'text-zinc-400 bg-zinc-800',
+    'Aprendiz': 'text-green-400 bg-green-500/20',
+    'Guerrero': 'text-blue-400 bg-blue-500/20',
+    'Maestro': 'text-purple-400 bg-purple-500/20',
+    'Leyenda': 'text-yellow-400 bg-yellow-500/20'
+}
 
-    // Mock stats if not provided (placeholder for now as per plan)
-    const secureStats = stats || {
-        streak: Math.floor(Math.random() * 20),
-        habitsCompleted: Math.floor(Math.random() * 100),
-        challengesWon: Math.floor(Math.random() * 5),
-        commitmentScore: Math.floor(Math.random() * 40) + 60
-    }
+const rankIcons: Record<MemberStats['rank'], string> = {
+    'Novato': '🌱',
+    'Aprendiz': '📚',
+    'Guerrero': '⚔️',
+    'Maestro': '🎯',
+    'Leyenda': '👑'
+}
+
+export function MemberProfileDialog({ isOpen, onOpenChange, member }: MemberProfileDialogProps) {
+    const [stats, setStats] = useState<MemberStats | null>(null)
+    const [loading, setLoading] = useState(false)
+
+    useEffect(() => {
+        if (isOpen && member?.id) {
+            setLoading(true)
+            getMemberStats(member.id)
+                .then(result => {
+                    if (result.stats) {
+                        setStats(result.stats)
+                    }
+                })
+                .finally(() => setLoading(false))
+        }
+    }, [isOpen, member?.id])
+
+    if (!member) return null
 
     return (
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -62,47 +84,81 @@ export function MemberProfileDialog({ isOpen, onOpenChange, member, stats }: Mem
                         <p className="text-zinc-500">@{member.username || "usuario"}</p>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="bg-zinc-900/50 p-4 rounded-xl border border-white/5 flex flex-col items-center justify-center text-center gap-2">
-                            <div className="h-10 w-10 rounded-full bg-orange-500/10 flex items-center justify-center text-orange-500">
-                                <Flame className="h-5 w-5 fill-current" />
-                            </div>
-                            <div>
-                                <span className="block text-xl font-bold text-white">{secureStats.streak}</span>
-                                <span className="text-xs text-zinc-500">Racha Actual</span>
-                            </div>
+                    {loading ? (
+                        <div className="flex items-center justify-center py-8">
+                            <Loader2 className="h-6 w-6 animate-spin text-zinc-500" />
                         </div>
+                    ) : stats ? (
+                        <>
+                            {/* Rank Section */}
+                            <div className="bg-gradient-to-br from-zinc-900 to-zinc-900/50 p-4 rounded-xl border border-white/5">
+                                <div className="flex items-center justify-between mb-3">
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-2xl">{rankIcons[stats.rank]}</span>
+                                        <div>
+                                            <span className={cn("text-sm font-semibold px-2 py-0.5 rounded", rankColors[stats.rank])}>
+                                                {stats.rank}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <span className="text-xs text-zinc-500">
+                                        {stats.rankProgress}% al siguiente nivel
+                                    </span>
+                                </div>
+                                <Progress
+                                    value={stats.rankProgress}
+                                    className="h-2 bg-zinc-800 [&>div]:bg-gradient-to-r [&>div]:from-primary [&>div]:to-green-400"
+                                />
+                            </div>
 
-                        <div className="bg-zinc-900/50 p-4 rounded-xl border border-white/5 flex flex-col items-center justify-center text-center gap-2">
-                            <div className="h-10 w-10 rounded-full bg-green-500/10 flex items-center justify-center text-green-500">
-                                <Target className="h-5 w-5" />
-                            </div>
-                            <div>
-                                <span className="block text-xl font-bold text-white">{secureStats.habitsCompleted}</span>
-                                <span className="text-xs text-zinc-500">Hábitos Completados</span>
-                            </div>
-                        </div>
+                            {/* Stats Grid */}
+                            <div className="grid grid-cols-2 gap-3">
+                                <div className="bg-zinc-900/50 p-3 rounded-xl border border-white/5 flex items-center gap-3">
+                                    <div className="h-10 w-10 rounded-full bg-orange-500/10 flex items-center justify-center text-orange-500 shrink-0">
+                                        <Flame className="h-5 w-5 fill-current" />
+                                    </div>
+                                    <div>
+                                        <span className="block text-lg font-bold text-white">{stats.streak}</span>
+                                        <span className="text-[10px] text-zinc-500">Racha</span>
+                                    </div>
+                                </div>
 
-                        <div className="bg-zinc-900/50 p-4 rounded-xl border border-white/5 flex flex-col items-center justify-center text-center gap-2">
-                            <div className="h-10 w-10 rounded-full bg-yellow-500/10 flex items-center justify-center text-yellow-500">
-                                <Trophy className="h-5 w-5 fill-current" />
-                            </div>
-                            <div>
-                                <span className="block text-xl font-bold text-white">{secureStats.challengesWon}</span>
-                                <span className="text-xs text-zinc-500">Retos Ganados</span>
-                            </div>
-                        </div>
+                                <div className="bg-zinc-900/50 p-3 rounded-xl border border-white/5 flex items-center gap-3">
+                                    <div className="h-10 w-10 rounded-full bg-green-500/10 flex items-center justify-center text-green-500 shrink-0">
+                                        <Target className="h-5 w-5" />
+                                    </div>
+                                    <div>
+                                        <span className="block text-lg font-bold text-white">{stats.habitsCompleted}</span>
+                                        <span className="text-[10px] text-zinc-500">Completados</span>
+                                    </div>
+                                </div>
 
-                        <div className="bg-zinc-900/50 p-4 rounded-xl border border-white/5 flex flex-col items-center justify-center text-center gap-2">
-                            <div className="h-10 w-10 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500">
-                                <Medal className="h-5 w-5" />
+                                <div className="bg-zinc-900/50 p-3 rounded-xl border border-white/5 flex items-center gap-3">
+                                    <div className="h-10 w-10 rounded-full bg-yellow-500/10 flex items-center justify-center text-yellow-500 shrink-0">
+                                        <Trophy className="h-5 w-5 fill-current" />
+                                    </div>
+                                    <div>
+                                        <span className="block text-lg font-bold text-white">{stats.challengesWon}</span>
+                                        <span className="text-[10px] text-zinc-500">Retos Ganados</span>
+                                    </div>
+                                </div>
+
+                                <div className="bg-zinc-900/50 p-3 rounded-xl border border-white/5 flex items-center gap-3">
+                                    <div className="h-10 w-10 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500 shrink-0">
+                                        <Medal className="h-5 w-5" />
+                                    </div>
+                                    <div>
+                                        <span className="block text-lg font-bold text-white">{stats.commitmentScore}%</span>
+                                        <span className="text-[10px] text-zinc-500">Compromiso</span>
+                                    </div>
+                                </div>
                             </div>
-                            <div>
-                                <span className="block text-xl font-bold text-white">{secureStats.commitmentScore}%</span>
-                                <span className="text-xs text-zinc-500">Compromiso</span>
-                            </div>
+                        </>
+                    ) : (
+                        <div className="text-center py-4 text-zinc-500 text-sm">
+                            No se pudieron cargar las estadisticas
                         </div>
-                    </div>
+                    )}
 
                     <div className="flex items-center gap-2 text-xs text-zinc-600 justify-center pt-2">
                         <CalendarDays className="h-3 w-3" />

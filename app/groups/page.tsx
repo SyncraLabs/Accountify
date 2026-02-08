@@ -38,7 +38,7 @@ export default async function GroupsPage({ searchParams }: { searchParams: Promi
 
     return (
         <GroupsPageClient showOnboarding={!hasCompletedOnboarding}>
-            <div className="flex h-screen bg-black overflow-hidden pointer-events-auto">
+            <div className="flex h-screen-safe bg-black overflow-hidden pointer-events-auto no-overscroll">
                 {/* Global Sidebar */}
                 <div className="hidden md:block w-64 fixed inset-y-0 z-50">
                     <AppSidebar />

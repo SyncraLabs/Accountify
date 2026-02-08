@@ -2,7 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
-import { createMentionNotification, createGroupMessageNotification } from '@/app/notifications/actions'
+import { createMentionNotification, createGroupMessageNotification, createChallengeCreatedNotification, createChallengeCompletedNotification, createChallengeProgressNotification } from '@/app/notifications/actions'
 
 export type CreateGroupState = {
     error?: string
@@ -553,6 +553,30 @@ export async function createChallenge(
     // Auto-join creator
     await joinChallenge(challenge.id)
 
+    // Notify all group members about the new challenge
+    const { data: group } = await supabase
+        .from('groups')
+        .select('name')
+        .eq('id', groupId)
+        .single()
+
+    const { data: members } = await supabase
+        .from('group_members')
+        .select('user_id')
+        .eq('group_id', groupId)
+        .neq('user_id', user.id) // Don't notify creator
+
+    if (members && members.length > 0) {
+        const userIds = members.map(m => m.user_id)
+        await createChallengeCreatedNotification(
+            userIds,
+            challenge.title,
+            groupId,
+            group?.name || 'Grupo',
+            challenge.id
+        )
+    }
+
     revalidatePath('/groups')
     return { success: true, challenge }
 }
@@ -601,6 +625,7 @@ export async function getGroupChallenges(groupId: string) {
         return {
             ...c,
             isJoined: !!participation,
+            isParticipant: !!participation,
             participantCount: c.participants[0].count,
             userProgress
         }
@@ -653,6 +678,21 @@ export async function logChallengeProgress(challengeId: string, value: number, n
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return { error: 'Not authenticated' }
 
+    // Get challenge info and current progress before logging
+    const { data: challenge } = await supabase
+        .from('group_challenges')
+        .select('title, target_value, group_id')
+        .eq('id', challengeId)
+        .single()
+
+    const { data: currentProgress } = await supabase
+        .from('challenge_progress')
+        .select('value')
+        .eq('challenge_id', challengeId)
+        .eq('user_id', user.id)
+
+    const previousTotal = currentProgress?.reduce((sum, p) => sum + p.value, 0) || 0
+
     const { error } = await supabase
         .from('challenge_progress')
         .insert({
@@ -663,6 +703,48 @@ export async function logChallengeProgress(challengeId: string, value: number, n
         })
 
     if (error) return { error: error.message }
+
+    // Check for milestones and completion
+    if (challenge) {
+        const newTotal = previousTotal + value
+        const previousPercent = (previousTotal / challenge.target_value) * 100
+        const newPercent = (newTotal / challenge.target_value) * 100
+
+        // Get group name for notifications
+        const { data: group } = await supabase
+            .from('groups')
+            .select('name')
+            .eq('id', challenge.group_id)
+            .single()
+        const groupName = group?.name || 'Grupo'
+
+        // Check for completion
+        if (newPercent >= 100 && previousPercent < 100) {
+            await createChallengeCompletedNotification(
+                user.id,
+                challenge.title,
+                challenge.group_id,
+                groupName,
+                challengeId
+            )
+        } else {
+            // Check for milestone notifications (50%, 75%, 90%)
+            const milestones = [50, 75, 90]
+            for (const milestone of milestones) {
+                if (newPercent >= milestone && previousPercent < milestone) {
+                    await createChallengeProgressNotification(
+                        user.id,
+                        challenge.title,
+                        challenge.group_id,
+                        groupName,
+                        challengeId,
+                        milestone
+                    )
+                    break // Only one milestone notification at a time
+                }
+            }
+        }
+    }
 
     revalidatePath('/groups')
     return { success: true }
@@ -985,4 +1067,170 @@ export async function getGroupMembersProgress(groupId: string, date?: string) {
         .sort((a: any, b: any) => b.progress - a.progress)
 
     return { members: filteredMembers }
+}
+
+// ========= Member Stats & Ranking =========
+
+export interface MemberStats {
+    streak: number
+    habitsCompleted: number
+    challengesWon: number
+    commitmentScore: number
+    rank: 'Novato' | 'Aprendiz' | 'Guerrero' | 'Maestro' | 'Leyenda'
+    rankProgress: number
+}
+
+export async function getMemberStats(userId: string): Promise<{ stats: MemberStats | null, error?: string }> {
+    const supabase = await createClient()
+
+    // Get profile with current streak
+    const { data: profile } = await supabase
+        .from('profiles')
+        .select('current_streak')
+        .eq('id', userId)
+        .single()
+
+    // Get total habit completions (all time)
+    const { count: habitsCompleted } = await supabase
+        .from('habit_logs')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', userId)
+
+    // Get challenges where user completed 100%
+    const { data: participations } = await supabase
+        .from('challenge_participants')
+        .select(`
+            challenge_id,
+            group_challenges (
+                id,
+                target_value
+            )
+        `)
+        .eq('user_id', userId)
+
+    let challengesWon = 0
+    if (participations) {
+        for (const p of participations) {
+            const { data: progress } = await supabase
+                .from('challenge_progress')
+                .select('value')
+                .eq('challenge_id', p.challenge_id)
+                .eq('user_id', userId)
+
+            const totalProgress = progress?.reduce((sum, pr) => sum + pr.value, 0) || 0
+            const target = (p.group_challenges as any)?.target_value || 0
+            if (target > 0 && totalProgress >= target) {
+                challengesWon++
+            }
+        }
+    }
+
+    // Calculate commitment score (last 30 days habit completion rate)
+    const thirtyDaysAgo = new Date()
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+    const thirtyDaysAgoStr = thirtyDaysAgo.toISOString().split('T')[0]
+
+    const { data: userHabits } = await supabase
+        .from('habits')
+        .select('id')
+        .eq('user_id', userId)
+        .eq('is_active', true)
+
+    let commitmentScore = 0
+    if (userHabits && userHabits.length > 0) {
+        const habitIds = userHabits.map(h => h.id)
+        const { count: completions } = await supabase
+            .from('habit_logs')
+            .select('*', { count: 'exact', head: true })
+            .in('habit_id', habitIds)
+            .gte('completed_date', thirtyDaysAgoStr)
+
+        // Expected completions = habits * 30 days (simplified)
+        const expectedCompletions = userHabits.length * 30
+        commitmentScore = Math.min(100, Math.round(((completions || 0) / expectedCompletions) * 100))
+    }
+
+    // Calculate rank based on total score
+    const totalScore = (profile?.current_streak || 0) + (habitsCompleted || 0) + (challengesWon * 50)
+    let rank: MemberStats['rank'] = 'Novato'
+    let rankProgress = 0
+
+    if (totalScore >= 1000) {
+        rank = 'Leyenda'
+        rankProgress = 100
+    } else if (totalScore >= 500) {
+        rank = 'Maestro'
+        rankProgress = ((totalScore - 500) / 500) * 100
+    } else if (totalScore >= 200) {
+        rank = 'Guerrero'
+        rankProgress = ((totalScore - 200) / 300) * 100
+    } else if (totalScore >= 50) {
+        rank = 'Aprendiz'
+        rankProgress = ((totalScore - 50) / 150) * 100
+    } else {
+        rank = 'Novato'
+        rankProgress = (totalScore / 50) * 100
+    }
+
+    return {
+        stats: {
+            streak: profile?.current_streak || 0,
+            habitsCompleted: habitsCompleted || 0,
+            challengesWon,
+            commitmentScore,
+            rank,
+            rankProgress: Math.round(rankProgress)
+        }
+    }
+}
+
+// Get group leaderboard with ranks
+export async function getGroupLeaderboard(groupId: string) {
+    const supabase = await createClient()
+
+    const { data: members } = await supabase
+        .from('group_members')
+        .select(`
+            user_id,
+            role,
+            joined_at,
+            profiles (
+                id,
+                username,
+                full_name,
+                avatar_url,
+                current_streak
+            )
+        `)
+        .eq('group_id', groupId)
+
+    if (!members) return { leaderboard: [] }
+
+    // Get stats for each member
+    const leaderboard = await Promise.all(members.map(async (m: any) => {
+        const { stats } = await getMemberStats(m.user_id)
+        return {
+            userId: m.user_id,
+            role: m.role,
+            joinedAt: m.joined_at,
+            profile: m.profiles,
+            stats: stats || {
+                streak: 0,
+                habitsCompleted: 0,
+                challengesWon: 0,
+                commitmentScore: 0,
+                rank: 'Novato' as const,
+                rankProgress: 0
+            }
+        }
+    }))
+
+    // Sort by total score (streak + habits + challenges*50)
+    leaderboard.sort((a, b) => {
+        const scoreA = a.stats.streak + a.stats.habitsCompleted + a.stats.challengesWon * 50
+        const scoreB = b.stats.streak + b.stats.habitsCompleted + b.stats.challengesWon * 50
+        return scoreB - scoreA
+    })
+
+    return { leaderboard }
 }
