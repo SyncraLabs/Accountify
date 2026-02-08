@@ -14,6 +14,9 @@ import { HabitShareMessage } from "@/components/groups/HabitShareMessage"
 import { GroupHabitsProgress } from "@/components/groups/GroupHabitsProgress"
 import { Play, Settings, Menu } from "lucide-react"
 import { GroupDetails } from "./GroupDetails"
+import { ActiveChallengesDrawer } from "./ActiveChallengesDrawer"
+import { MemberProfileDialog } from "./MemberProfileDialog"
+import { Trophy } from "lucide-react"
 
 
 export function ChatArea({ groupId, initialMessages, groupName, currentUserId }: { groupId: string, initialMessages?: any[], groupName: string, currentUserId: string }) {
@@ -25,6 +28,8 @@ export function ChatArea({ groupId, initialMessages, groupName, currentUserId }:
     const fileInputRef = useRef<HTMLInputElement>(null)
     const [uploading, setUploading] = useState(false)
     const [showGroupDetails, setShowGroupDetails] = useState(false)
+    const [showChallenges, setShowChallenges] = useState(false)
+    const [selectedMember, setSelectedMember] = useState<any>(null)
     const supabase = createClient()
 
     // Fetch profiles function
@@ -350,7 +355,7 @@ export function ChatArea({ groupId, initialMessages, groupName, currentUserId }:
     }, [initialMessages, groupId])
 
     return (
-        <div className="flex-1 flex flex-col relative h-[100dvh] bg-zinc-950">
+        <div className="flex-1 flex flex-col relative h-full bg-zinc-950">
             {/* Subtle ambient glow */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[200px] bg-primary/[0.03] blur-[100px] pointer-events-none" />
 
@@ -371,7 +376,27 @@ export function ChatArea({ groupId, initialMessages, groupName, currentUserId }:
                 >
                     <Menu className="h-5 w-5" />
                 </Button>
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setShowChallenges(true)}
+                    className="text-zinc-400 hover:text-white hover:bg-zinc-800/50 rounded-full"
+                >
+                    <Trophy className="h-5 w-5" />
+                </Button>
             </div>
+
+            <ActiveChallengesDrawer
+                isOpen={showChallenges}
+                onOpenChange={setShowChallenges}
+                groupId={groupId}
+            />
+
+            <MemberProfileDialog
+                isOpen={!!selectedMember}
+                onOpenChange={(open) => !open && setSelectedMember(null)}
+                member={selectedMember}
+            />
 
             <GroupDetails
                 isOpen={showGroupDetails}
@@ -400,10 +425,15 @@ export function ChatArea({ groupId, initialMessages, groupName, currentUserId }:
                                     transition={{ duration: 0.2, ease: "easeOut" }}
                                     className={`flex gap-3 ${isMe ? "flex-row-reverse" : ""}`}
                                 >
-                                    <Avatar className="h-8 w-8 border border-zinc-700/50 transition-transform duration-200 hover:scale-105">
-                                        <AvatarImage src={profiles[msg.user_id]?.avatar_url} />
-                                        <AvatarFallback className="bg-zinc-800 text-zinc-400 text-xs">{profiles[msg.user_id]?.username?.slice(0, 2).toUpperCase() || (isMe ? 'TU' : 'U')}</AvatarFallback>
-                                    </Avatar>
+                                    <div className="cursor-pointer" onClick={() => setSelectedMember({
+                                        id: msg.user_id,
+                                        ...profiles[msg.user_id]
+                                    })}>
+                                        <Avatar className="h-8 w-8 border border-zinc-700/50 transition-transform duration-200 hover:scale-105">
+                                            <AvatarImage src={profiles[msg.user_id]?.avatar_url} />
+                                            <AvatarFallback className="bg-zinc-800 text-zinc-400 text-xs">{profiles[msg.user_id]?.username?.slice(0, 2).toUpperCase() || (isMe ? 'TU' : 'U')}</AvatarFallback>
+                                        </Avatar>
+                                    </div>
                                     <div className={`flex flex-col ${isMe ? 'items-end' : 'items-start'} max-w-[80%]`}>
                                         <span className="text-[10px] text-zinc-500 mb-1 px-1">
                                             {profiles[msg.user_id]?.username || profiles[msg.user_id]?.full_name || (isMe ? 'Tú' : 'Desconocido')}
