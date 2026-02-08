@@ -7,7 +7,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft, Loader2, MoreVertical, Paperclip, Send, Phone, Video, Info } from 'lucide-react'
-import { DebugMessages } from './DebugMessages'
 import { sendMessage, getGroupMessages } from "@/app/groups/actions"
 import { createClient } from "@/lib/supabase/client"
 import { motion, AnimatePresence } from "framer-motion"
@@ -350,7 +349,6 @@ export function ChatArea({ groupId, initialMessages, groupName, currentUserId }:
             />
 
             <div className="flex-1 overflow-y-auto p-4 custom-scrollbar" onScroll={handleScroll}>
-                <DebugMessages groupId={groupId} />
                 {isLoadingMore && (
                     <div className="flex justify-center py-2">
                         <Loader2 className="h-4 w-4 animate-spin text-zinc-500" />
