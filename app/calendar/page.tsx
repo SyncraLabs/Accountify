@@ -20,6 +20,7 @@ export default async function CalendarPage() {
             id,
             title,
             category,
+            frequency,
             streak,
             habit_logs (
                 completed_date
@@ -33,6 +34,7 @@ export default async function CalendarPage() {
         id: habit.id,
         title: habit.title,
         category: habit.category,
+        frequency: habit.frequency || 'daily',
         streak: habit.streak || 0,
         logs: habit.habit_logs || []
     }));

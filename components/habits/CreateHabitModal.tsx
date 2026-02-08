@@ -159,7 +159,11 @@ export function CreateHabitModal({ trigger, onSuccess }: CreateHabitModalProps) 
                                         <SelectContent>
                                             <SelectItem value="daily">Diario</SelectItem>
                                             <SelectItem value="weekdays">Lunes a Viernes</SelectItem>
-                                            <SelectItem value="weekly">Semanal</SelectItem>
+                                            <SelectItem value="weekends">Fines de semana</SelectItem>
+                                            <SelectItem value="3x_week">3 veces por semana</SelectItem>
+                                            <SelectItem value="4x_week">4 veces por semana</SelectItem>
+                                            <SelectItem value="5x_week">5 veces por semana</SelectItem>
+                                            <SelectItem value="weekly">1 vez por semana</SelectItem>
                                         </SelectContent>
                                     </Select>
                                     <FormMessage />

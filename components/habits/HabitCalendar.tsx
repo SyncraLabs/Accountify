@@ -2,7 +2,13 @@
 
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { Check, Flame, Trash2, Calendar as CalendarIcon } from "lucide-react";
+import { Check, Flame, Trash2, Calendar as CalendarIcon, X, Minus } from "lucide-react";
+import {
+    getHabitStatusForDay,
+    getWeekProgress,
+    isFlexibleFrequency,
+    formatDateStr
+} from "@/lib/habit-utils";
 import { CreateHabitModal } from "./CreateHabitModal";
 import { ShareHabitDialog } from "./ShareHabitDialog";
 import { QuickShareToggle } from "./QuickShareToggle";
@@ -39,6 +45,7 @@ interface Habit {
     id: string;
     title: string;
     category: string;
+    frequency: string;
     streak: number;
     logs: { completed_date: string }[];
 }
@@ -116,11 +123,6 @@ export function HabitCalendar({ initialHabits }: HabitCalendarProps) {
         } finally {
             setHabitToDelete(null);
         }
-    };
-
-    const isCompleted = (habit: Habit, date: Date) => {
-        const dateStr = date.toISOString().split('T')[0];
-        return habit.logs.some(log => log.completed_date === dateStr);
     };
 
     const calculateStreak = (habit: Habit) => {
@@ -221,6 +223,11 @@ export function HabitCalendar({ initialHabits }: HabitCalendarProps) {
                                             <div className="flex items-center gap-2 text-primary font-medium text-xs md:text-base">
                                                 <Flame className="h-3 w-3 md:h-4 md:w-4 fill-primary shrink-0" />
                                                 <span className="truncate">{currentStreak} day streak</span>
+                                                {isFlexibleFrequency(habit.frequency) && (
+                                                    <span className="ml-1 px-2 py-0.5 bg-white/10 rounded-full text-[10px] md:text-xs text-white/70">
+                                                        {getWeekProgress(habit).completed}/{getWeekProgress(habit).target} esta semana
+                                                    </span>
+                                                )}
                                             </div>
                                         </div>
                                     </div>
@@ -280,8 +287,8 @@ export function HabitCalendar({ initialHabits }: HabitCalendarProps) {
                                 <div className="w-full xl:flex-1 grid grid-cols-7 gap-1 md:gap-4">
                                     {DAYS.map((date, i) => {
                                         const isToday = date.toDateString() === new Date().toDateString();
-                                        const completed = isCompleted(habit, date);
-                                        const loadingKey = `${habit.id}-${date.toISOString().split('T')[0]}`;
+                                        const status = getHabitStatusForDay(habit, date);
+                                        const loadingKey = `${habit.id}-${formatDateStr(date)}`;
                                         const isLoading = loading === loadingKey;
 
                                         return (
@@ -298,19 +305,27 @@ export function HabitCalendar({ initialHabits }: HabitCalendarProps) {
 
                                                 <button
                                                     onClick={() => handleToggle(habit.id, date)}
-                                                    disabled={isLoading}
+                                                    disabled={isLoading || status === 'not_required'}
                                                     className={cn(
                                                         "w-full aspect-square rounded-lg md:rounded-2xl border flex items-center justify-center transition-all duration-300 relative overflow-hidden",
-                                                        completed
-                                                            ? "bg-primary border-primary text-black shadow-[0_0_20px_rgba(191,245,73,0.3)] hover:scale-105"
-                                                            : "bg-transparent border-white/10 text-muted-foreground hover:border-white/30 hover:bg-white/5",
-                                                        isToday && !completed && "border-primary/50 animate-pulse",
+                                                        status === 'completed' && "bg-primary border-primary text-black shadow-[0_0_20px_rgba(191,245,73,0.3)] hover:scale-105",
+                                                        status === 'pending' && "bg-transparent border-white/10 text-muted-foreground hover:border-white/30 hover:bg-white/5",
+                                                        status === 'not_required' && "bg-transparent border-white/5 text-white/20 cursor-default",
+                                                        status === 'failed' && "bg-red-500/10 border-red-500/30 text-red-400",
+                                                        isToday && status === 'pending' && "border-primary/50 animate-pulse",
                                                         isLoading && "opacity-50 cursor-not-allowed"
                                                     )}
                                                 >
-                                                    {completed ? (
+                                                    {status === 'completed' && (
                                                         <Check className="h-3 w-3 md:h-6 md:w-6 stroke-[3px]" />
-                                                    ) : (
+                                                    )}
+                                                    {status === 'failed' && (
+                                                        <X className="h-3 w-3 md:h-5 md:w-5 stroke-[2px]" />
+                                                    )}
+                                                    {status === 'not_required' && (
+                                                        <Minus className="h-3 w-3 md:h-4 md:w-4 stroke-[2px]" />
+                                                    )}
+                                                    {status === 'pending' && (
                                                         <span className={cn("text-xs md:text-lg font-medium", isToday && "text-primary")}>{date.getDate()}</span>
                                                     )}
                                                 </button>

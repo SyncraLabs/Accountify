@@ -101,7 +101,7 @@ export function MemberLeaderboard({ groupId, onMemberClick, compact = false }: M
                                 <span className="text-sm font-medium text-white truncate">
                                     {member.profile?.full_name || member.profile?.username || "Usuario"}
                                 </span>
-                                <span className={cn("text-[10px] font-medium", rankColors[member.stats.rank])}>
+                                <span className={cn("text-[10px] font-medium", rankColors[member.stats.rank as MemberStats['rank']])}>
                                     {member.stats.rank}
                                 </span>
                             </div>

@@ -30,14 +30,13 @@ export default async function DayPage({ params }: PageProps) {
     }
 
     // Fetch habits with their logs
-    // We fetch all logs for simplicity in checking completion on Client, 
-    // though in production with massive data we might want to filter this more efficiently.
     const { data: habits } = await supabase
         .from('habits')
         .select(`
             id,
             title,
             category,
+            frequency,
             streak,
             habit_logs (
                 completed_date
@@ -51,6 +50,7 @@ export default async function DayPage({ params }: PageProps) {
         id: habit.id,
         title: habit.title,
         category: habit.category,
+        frequency: habit.frequency || 'daily',
         streak: habit.streak || 0,
         logs: habit.habit_logs || []
     }));

@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { Check, Flame, Calendar as CalendarIcon, ArrowLeft } from "lucide-react";
+import { Check, Flame, Calendar as CalendarIcon, ArrowLeft, X, Minus } from "lucide-react";
+import { getHabitStatusForDay, isFlexibleFrequency, getWeekProgress, getFrequencyLabel } from "@/lib/habit-utils";
 import { toggleHabitLog } from "@/app/actions";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -13,6 +14,7 @@ interface Habit {
     id: string;
     title: string;
     category: string;
+    frequency: string;
     streak: number;
     logs: { completed_date: string }[];
 }
@@ -36,10 +38,6 @@ export function DayHabitView({ initialHabits, dateStr }: DayHabitViewProps) {
         month: "long",
         year: "numeric"
     });
-
-    const isCompleted = (habit: Habit) => {
-        return habit.logs.some(log => log.completed_date === dateStr);
-    };
 
     const handleToggle = async (habitId: string) => {
         setLoading(habitId);
@@ -82,10 +80,14 @@ export function DayHabitView({ initialHabits, dateStr }: DayHabitViewProps) {
         return emojiMap[category] || "⭐";
     };
 
-    // Calculate progress for the day
-    const completedCount = habits.filter(h => isCompleted(h)).length;
-    const totalHabits = habits.length;
-    const progressPercentage = totalHabits > 0 ? Math.round((completedCount / totalHabits) * 100) : 0;
+    // Calculate progress for the day (only count required habits)
+    const requiredHabits = habits.filter(h => {
+        const status = getHabitStatusForDay(h, date);
+        return status !== 'not_required';
+    });
+    const completedCount = requiredHabits.filter(h => getHabitStatusForDay(h, date) === 'completed').length;
+    const totalRequired = requiredHabits.length;
+    const progressPercentage = totalRequired > 0 ? Math.round((completedCount / totalRequired) * 100) : 0;
 
     return (
         <div className="space-y-8">
@@ -142,8 +144,12 @@ export function DayHabitView({ initialHabits, dateStr }: DayHabitViewProps) {
             {/* Habits Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {habits.map((habit, idx) => {
-                    const completed = isCompleted(habit);
+                    const status = getHabitStatusForDay(habit, date);
                     const isLoading = loading === habit.id;
+                    const isNotRequired = status === 'not_required';
+                    const isFailed = status === 'failed';
+                    const isCompleted = status === 'completed';
+                    const weekProgress = isFlexibleFrequency(habit.frequency) ? getWeekProgress(habit, date) : null;
 
                     return (
                         <FramerWrapper
@@ -151,28 +157,36 @@ export function DayHabitView({ initialHabits, dateStr }: DayHabitViewProps) {
                             delay={idx * 0.05}
                             className={cn(
                                 "group relative overflow-hidden rounded-[2rem] p-6 transition-all duration-300 border h-full flex flex-col justify-between",
-                                completed
-                                    ? "bg-primary/10 border-primary/20"
-                                    : "bg-white/5 border-white/5 hover:bg-white/10"
+                                isCompleted && "bg-primary/10 border-primary/20",
+                                isFailed && "bg-red-500/5 border-red-500/20",
+                                isNotRequired && "bg-white/[0.02] border-white/5 opacity-50",
+                                !isCompleted && !isFailed && !isNotRequired && "bg-white/5 border-white/5 hover:bg-white/10"
                             )}
                         >
                             {/* Background completion effect */}
                             <div className={cn(
-                                "absolute inset-0 bg-primary/5 transition-transform duration-500 ease-out origin-bottom",
-                                completed ? "scale-y-100" : "scale-y-0"
+                                "absolute inset-0 transition-transform duration-500 ease-out origin-bottom",
+                                isCompleted ? "bg-primary/5 scale-y-100" : "scale-y-0"
                             )} />
 
                             <div className="relative z-10 flex items-start justify-between gap-4 mb-6">
                                 <div className="h-12 w-12 md:h-14 md:w-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-xl md:text-2xl shadow-inner">
                                     {getEmoji(habit.category)}
                                 </div>
-                                <div className={cn(
-                                    "px-3 py-1 rounded-full text-xs font-medium border transition-colors",
-                                    completed
-                                        ? "bg-primary text-black border-primary"
-                                        : "bg-white/5 text-muted-foreground border-white/10"
-                                )}>
-                                    {completed ? "Completado" : "Pendiente"}
+                                <div className="flex flex-col items-end gap-1">
+                                    <div className={cn(
+                                        "px-3 py-1 rounded-full text-xs font-medium border transition-colors",
+                                        isCompleted && "bg-primary text-black border-primary",
+                                        isFailed && "bg-red-500/20 text-red-400 border-red-500/30",
+                                        isNotRequired && "bg-white/5 text-white/40 border-white/10",
+                                        !isCompleted && !isFailed && !isNotRequired && "bg-white/5 text-muted-foreground border-white/10"
+                                    )}>
+                                        {isCompleted && "Completado"}
+                                        {isFailed && "No cumplido"}
+                                        {isNotRequired && "No requerido"}
+                                        {!isCompleted && !isFailed && !isNotRequired && "Pendiente"}
+                                    </div>
+                                    <span className="text-[10px] text-white/40">{getFrequencyLabel(habit.frequency)}</span>
                                 </div>
                             </div>
 
@@ -180,28 +194,47 @@ export function DayHabitView({ initialHabits, dateStr }: DayHabitViewProps) {
                                 <div>
                                     <h3 className="text-lg md:text-xl font-bold text-white mb-1">{habit.title}</h3>
                                     <div className="flex items-center gap-2 text-sm text-zinc-400">
-                                        <Flame className={cn("h-4 w-4", completed ? "fill-primary text-primary" : "text-zinc-600")} />
-                                        <span className={completed ? "text-primary" : ""}>{habit.streak} racha actual</span>
+                                        <Flame className={cn("h-4 w-4", isCompleted ? "fill-primary text-primary" : "text-zinc-600")} />
+                                        <span className={isCompleted ? "text-primary" : ""}>{habit.streak} racha actual</span>
+                                        {weekProgress && (
+                                            <span className="ml-1 px-2 py-0.5 bg-white/10 rounded-full text-[10px] text-white/70">
+                                                {weekProgress.completed}/{weekProgress.target}
+                                            </span>
+                                        )}
                                     </div>
                                 </div>
 
                                 <button
                                     onClick={() => handleToggle(habit.id)}
-                                    disabled={isLoading}
+                                    disabled={isLoading || isNotRequired}
                                     className={cn(
                                         "w-full py-4 rounded-xl font-bold transition-all duration-300 flex items-center justify-center gap-2",
-                                        completed
-                                            ? "bg-primary text-black shadow-[0_0_20px_rgba(191,245,73,0.3)] hover:bg-primary/90"
-                                            : "bg-white/10 text-white hover:bg-white/20",
+                                        isCompleted && "bg-primary text-black shadow-[0_0_20px_rgba(191,245,73,0.3)] hover:bg-primary/90",
+                                        isFailed && "bg-red-500/20 text-red-400 hover:bg-red-500/30",
+                                        isNotRequired && "bg-white/5 text-white/30 cursor-not-allowed",
+                                        !isCompleted && !isFailed && !isNotRequired && "bg-white/10 text-white hover:bg-white/20",
                                         isLoading && "opacity-50 cursor-not-allowed"
                                     )}
                                 >
-                                    {completed ? (
+                                    {isCompleted && (
                                         <>
                                             <Check className="h-5 w-5 stroke-[3px]" />
                                             <span>¡Hecho!</span>
                                         </>
-                                    ) : (
+                                    )}
+                                    {isFailed && (
+                                        <>
+                                            <X className="h-5 w-5 stroke-[2px]" />
+                                            <span>No cumplido</span>
+                                        </>
+                                    )}
+                                    {isNotRequired && (
+                                        <>
+                                            <Minus className="h-5 w-5 stroke-[2px]" />
+                                            <span>No aplica hoy</span>
+                                        </>
+                                    )}
+                                    {!isCompleted && !isFailed && !isNotRequired && (
                                         <span>Marcar como hecho</span>
                                     )}
                                 </button>
