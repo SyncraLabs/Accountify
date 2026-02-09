@@ -7,6 +7,8 @@ import { JoinGroupDialog } from './JoinGroupDialog'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Users, Trophy, Flame, MessageCircle, Sparkles } from 'lucide-react'
 
+import { GroupsWelcome } from './GroupsWelcome'
+
 export function Sidebar({ groups, selectedGroupId }: { groups: any[], selectedGroupId?: string }) {
     return (
         <div className="w-full md:w-80 border-r border-zinc-800/50 bg-zinc-950 flex flex-col h-full relative">
@@ -36,6 +38,10 @@ export function Sidebar({ groups, selectedGroupId }: { groups: any[], selectedGr
 
             {/* Groups List */}
             <div className="flex-1 overflow-auto p-3 space-y-2 relative pb-24 md:pb-3">
+                {/* Mobile Welcome Section */}
+                <div className="md:hidden mb-6">
+                    <GroupsWelcome className="p-0 py-4 min-h-0 flex-none" />
+                </div>
                 {groups.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
                         <div className="w-16 h-16 rounded-2xl bg-zinc-900/80 border border-zinc-800 flex items-center justify-center mb-4">
