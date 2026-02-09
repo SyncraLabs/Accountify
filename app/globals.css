@@ -3,7 +3,7 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Syncra Brand Font */
+/* Accountify Brand Theme */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);

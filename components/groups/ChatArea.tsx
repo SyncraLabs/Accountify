@@ -20,7 +20,23 @@ import { ChallengeProgressBar } from "./ChallengeProgressBar"
 import { Trophy } from "lucide-react"
 
 
-export function ChatArea({ groupId, initialMessages, groupName, currentUserId }: { groupId: string, initialMessages?: any[], groupName: string, currentUserId: string }) {
+export function ChatArea({
+    groupId,
+    initialMessages,
+    groupName,
+    groupDescription,
+    groupAvatarUrl,
+    inviteCode,
+    currentUserId
+}: {
+    groupId: string,
+    initialMessages?: any[],
+    groupName: string,
+    groupDescription?: string,
+    groupAvatarUrl?: string,
+    inviteCode: string,
+    currentUserId: string
+}) {
     const [messages, setMessages] = useState<any[]>(initialMessages || [])
     const [profiles, setProfiles] = useState<Record<string, any>>({})
     const [members, setMembers] = useState<any[]>([])
@@ -376,6 +392,9 @@ export function ChatArea({ groupId, initialMessages, groupName, currentUserId }:
                 onOpenChange={setShowGroupDetails}
                 groupId={groupId}
                 groupName={groupName}
+                groupDescription={groupDescription}
+                groupAvatarUrl={groupAvatarUrl}
+                inviteCode={inviteCode}
                 currentUserId={currentUserId}
             />
 

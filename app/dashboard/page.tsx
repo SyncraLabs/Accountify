@@ -13,6 +13,8 @@ import { getUserGroups } from "@/app/groups/actions";
 import { hasCompletedAppOnboarding } from "@/app/onboarding/actions";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Plus } from "lucide-react";
+import Image from "next/image";
+import { BrandLogo } from "@/components/ui/BrandLogo";
 
 export default async function Dashboard() {
     const supabase = await createClient();
@@ -114,11 +116,9 @@ export default async function Dashboard() {
                     <div className="h-full px-8 py-8 pb-24 md:pb-8 space-y-8 max-w-[1600px] mx-auto">
                         {/* Header */}
                         <div className="flex flex-col gap-1 mb-8">
-                            <h2 className="text-3xl font-bold tracking-tight text-white">
-                                Dashboard
-                            </h2>
+                            <BrandLogo size="lg" className="mb-2" />
                             <p className="text-zinc-500">
-                                Bienvenido, alcancemos tus metas hoy.
+                                Tu centro de control para la excelencia personal.
                             </p>
                         </div>
 

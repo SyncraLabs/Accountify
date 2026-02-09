@@ -463,6 +463,73 @@ export async function removeMember(groupId: string, userId: string) {
     return { success: true }
 }
 
+export async function leaveGroup(groupId: string) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { error: 'Not authenticated' }
+
+    // Check if user is member and their role
+    const { data: membership } = await supabase
+        .from('group_members')
+        .select('role')
+        .eq('group_id', groupId)
+        .eq('user_id', user.id)
+        .single()
+
+    if (!membership) return { error: 'No eres miembro de este grupo' }
+
+    // If admin, check if they're the only admin
+    if (membership.role === 'admin') {
+        const { data: admins } = await supabase
+            .from('group_members')
+            .select('user_id')
+            .eq('group_id', groupId)
+            .eq('role', 'admin')
+
+        if (admins && admins.length === 1) {
+            return { error: 'No puedes salir siendo el único administrador. Promueve a otro miembro o elimina el grupo.' }
+        }
+    }
+
+    const { error } = await supabase
+        .from('group_members')
+        .delete()
+        .eq('group_id', groupId)
+        .eq('user_id', user.id)
+
+    if (error) {
+        console.error('Error leaving group:', error)
+        return { error: error.message }
+    }
+
+    revalidatePath('/groups')
+    return { success: true }
+}
+
+export async function deleteGroup(groupId: string) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { error: 'Not authenticated' }
+
+    // Verify admin status
+    const isAdmin = await isUserGroupAdmin(groupId)
+    if (!isAdmin) return { error: 'Solo los administradores pueden eliminar el grupo' }
+
+    // Delete the group (CASCADE will handle group_members, messages, challenges, etc.)
+    const { error } = await supabase
+        .from('groups')
+        .delete()
+        .eq('id', groupId)
+
+    if (error) {
+        console.error('Error deleting group:', error)
+        return { error: error.message }
+    }
+
+    revalidatePath('/groups')
+    return { success: true }
+}
+
 export async function generateInviteLink(inviteCode: string): Promise<string> {
     // Use window.location.origin for client-side or env var for server
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'

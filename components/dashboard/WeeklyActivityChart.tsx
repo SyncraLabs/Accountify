@@ -94,7 +94,7 @@ export function WeeklyActivityChart({ data }: WeeklyActivityChartProps) {
 
                 <div className="relative h-full w-full">
                     <svg
-                        viewBox="0 -10 100 120" // Expand viewbox slightly to accommodate glow and thick strokes
+                        viewBox="-10 -20 120 140" // Increased padding to prevent clipping of thick strokes and glow
                         preserveAspectRatio="none"
                         className="w-full h-full overflow-visible"
                     >

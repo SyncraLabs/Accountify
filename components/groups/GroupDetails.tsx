@@ -1,16 +1,22 @@
 'use client'
 
 import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
-import { ScrollArea } from "@/components/ui/scroll-area" // Ensure this is usable or use div
-import { Info, LogOut } from "lucide-react"
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
+import { Info, LogOut, Trash2, Loader2 } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
+import { toast } from "sonner"
 import { GroupHabitsProgress } from "./GroupHabitsProgress"
 import { GroupChallenges } from "./GroupChallenges"
 import { MemberLeaderboard } from "./MemberLeaderboard"
 import { MemberProfileDialog } from "./MemberProfileDialog"
+import { InviteDialog } from "./InviteDialog"
+import { MembersListDialog } from "./MembersListDialog"
+import { GroupSettingsDialog } from "./GroupSettingsDialog"
+import { leaveGroup, deleteGroup } from "@/app/groups/actions"
 
 interface GroupDetailsProps {
     isOpen: boolean
@@ -18,14 +24,30 @@ interface GroupDetailsProps {
     groupId: string
     groupName: string
     groupDescription?: string
+    groupAvatarUrl?: string
+    inviteCode: string
     currentUserId: string
 }
 
-export function GroupDetails({ isOpen, onOpenChange, groupId, groupName, groupDescription, currentUserId }: GroupDetailsProps) {
+export function GroupDetails({
+    isOpen,
+    onOpenChange,
+    groupId,
+    groupName,
+    groupDescription,
+    groupAvatarUrl,
+    inviteCode,
+    currentUserId
+}: GroupDetailsProps) {
     const [members, setMembers] = useState<any[]>([])
     const [isLoadingMembers, setIsLoadingMembers] = useState(false)
     const [selectedMember, setSelectedMember] = useState<any>(null)
+    const [isAdmin, setIsAdmin] = useState(false)
+    const [showLeaveConfirm, setShowLeaveConfirm] = useState(false)
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+    const [actionLoading, setActionLoading] = useState(false)
     const supabase = createClient()
+    const router = useRouter()
 
     useEffect(() => {
         if (isOpen) {
@@ -50,110 +72,262 @@ export function GroupDetails({ isOpen, onOpenChange, groupId, groupName, groupDe
             .eq('group_id', groupId)
 
         if (data) {
-            setMembers(data.map((m: any) => ({
+            const mappedMembers = data.map((m: any) => ({
                 id: m.profiles.id,
                 username: m.profiles.username,
                 fullName: m.profiles.full_name,
                 avatarUrl: m.profiles.avatar_url,
                 role: m.role
-            })))
+            }))
+            setMembers(mappedMembers)
+
+            // Check if current user is admin
+            const currentMember = mappedMembers.find(m => m.id === currentUserId)
+            setIsAdmin(currentMember?.role === 'admin')
         }
         setIsLoadingMembers(false)
     }
 
+    const handleLeaveGroup = async () => {
+        setActionLoading(true)
+        const result = await leaveGroup(groupId)
+        setActionLoading(false)
+        setShowLeaveConfirm(false)
+
+        if (result.error) {
+            toast.error(result.error)
+        } else {
+            toast.success('Has salido del grupo')
+            onOpenChange(false)
+            router.push('/groups')
+        }
+    }
+
+    const handleDeleteGroup = async () => {
+        setActionLoading(true)
+        const result = await deleteGroup(groupId)
+        setActionLoading(false)
+        setShowDeleteConfirm(false)
+
+        if (result.error) {
+            toast.error(result.error)
+        } else {
+            toast.success('Grupo eliminado')
+            onOpenChange(false)
+            router.push('/groups')
+        }
+    }
+
     return (
-        <Sheet open={isOpen} onOpenChange={onOpenChange}>
-            <SheetContent className="bg-zinc-950 border-zinc-800 w-full sm:max-w-md p-0 flex flex-col h-full bg-gradient-to-br from-zinc-950 to-zinc-900/50">
-                <SheetHeader className="px-6 py-5 border-b border-zinc-800/50 bg-zinc-900/20 backdrop-blur-md">
-                    <SheetTitle className="text-white text-lg flex items-center gap-2">
-                        <Info className="h-5 w-5 text-primary" />
-                        Detalles del Grupo
-                    </SheetTitle>
-                    <SheetDescription className="hidden">
-                        Información y ajustes del grupo
-                    </SheetDescription>
-                </SheetHeader>
+        <>
+            <Sheet open={isOpen} onOpenChange={onOpenChange}>
+                <SheetContent className="bg-zinc-950 border-zinc-800 w-full sm:max-w-md p-0 flex flex-col h-full bg-gradient-to-br from-zinc-950 to-zinc-900/50">
+                    <SheetHeader className="px-6 py-5 border-b border-zinc-800/50 bg-zinc-900/20 backdrop-blur-md">
+                        <SheetTitle className="text-white text-lg flex items-center gap-2">
+                            <Info className="h-5 w-5 text-primary" />
+                            Detalles del Grupo
+                        </SheetTitle>
+                        <SheetDescription className="hidden">
+                            Informacion y ajustes del grupo
+                        </SheetDescription>
+                    </SheetHeader>
 
-                <MemberProfileDialog
-                    isOpen={!!selectedMember}
-                    onOpenChange={(open) => !open && setSelectedMember(null)}
-                    member={selectedMember}
-                />
+                    <MemberProfileDialog
+                        isOpen={!!selectedMember}
+                        onOpenChange={(open) => !open && setSelectedMember(null)}
+                        member={selectedMember}
+                    />
 
-                <Tabs defaultValue="ranking" className="flex-1 flex flex-col overflow-hidden">
-                    <div className="px-6 pt-4 pb-2">
-                        <TabsList className="w-full bg-zinc-900/50 border border-zinc-800/50 p-1 grid grid-cols-4">
-                            <TabsTrigger value="ranking" className="data-[state=active]:bg-primary data-[state=active]:text-black text-xs">
-                                Ranking
-                            </TabsTrigger>
-                            <TabsTrigger value="challenges" className="data-[state=active]:bg-primary data-[state=active]:text-black text-xs">
-                                Retos
-                            </TabsTrigger>
-                            <TabsTrigger value="progress" className="data-[state=active]:bg-primary data-[state=active]:text-black text-xs">
-                                Progreso
-                            </TabsTrigger>
-                            <TabsTrigger value="info" className="data-[state=active]:bg-primary data-[state=active]:text-black text-xs">
-                                Info
-                            </TabsTrigger>
-                        </TabsList>
-                    </div>
-
-                    <TabsContent value="ranking" className="flex-1 overflow-y-auto px-6 py-4 data-[state=inactive]:hidden">
-                        <div className="space-y-4">
-                            <h3 className="text-sm font-medium text-zinc-400 uppercase tracking-wider text-xs">Clasificacion del Grupo</h3>
-                            <MemberLeaderboard
-                                groupId={groupId}
-                                onMemberClick={(member) => setSelectedMember({
-                                    id: member.userId,
-                                    username: member.profile?.username,
-                                    full_name: member.profile?.full_name,
-                                    avatar_url: member.profile?.avatar_url,
-                                    role: member.role,
-                                    joined_at: member.joinedAt
-                                })}
-                            />
+                    <Tabs defaultValue="ranking" className="flex-1 flex flex-col overflow-hidden">
+                        <div className="px-6 pt-4 pb-2">
+                            <TabsList className="w-full bg-zinc-900/50 border border-zinc-800/50 p-1 grid grid-cols-4">
+                                <TabsTrigger value="ranking" className="data-[state=active]:bg-primary data-[state=active]:text-black text-xs">
+                                    Ranking
+                                </TabsTrigger>
+                                <TabsTrigger value="challenges" className="data-[state=active]:bg-primary data-[state=active]:text-black text-xs">
+                                    Retos
+                                </TabsTrigger>
+                                <TabsTrigger value="progress" className="data-[state=active]:bg-primary data-[state=active]:text-black text-xs">
+                                    Progreso
+                                </TabsTrigger>
+                                <TabsTrigger value="info" className="data-[state=active]:bg-primary data-[state=active]:text-black text-xs">
+                                    Info
+                                </TabsTrigger>
+                            </TabsList>
                         </div>
-                    </TabsContent>
 
-                    <TabsContent value="challenges" className="flex-1 overflow-y-auto px-6 py-4 data-[state=inactive]:hidden">
-                        <div className="space-y-4">
-                            <h3 className="text-sm font-medium text-zinc-400 uppercase tracking-wider text-xs">Retos del Grupo</h3>
-                            <GroupChallenges groupId={groupId} isAdmin={members.find(m => m.id === currentUserId)?.role === 'admin'} />
-                        </div>
-                    </TabsContent>
-
-                    <TabsContent value="progress" className="flex-1 overflow-y-auto px-6 py-4 data-[state=inactive]:hidden">
-                        <div className="space-y-4">
-                            <h3 className="text-sm font-medium text-zinc-400 uppercase tracking-wider text-xs">Progreso Diario</h3>
-                            <GroupHabitsProgress groupId={groupId} />
-                        </div>
-                    </TabsContent>
-
-                    <TabsContent value="info" className="flex-1 overflow-y-auto px-6 py-4 data-[state=inactive]:hidden">
-                        <div className="space-y-6">
-                            <div className="space-y-2">
-                                <h3 className="text-sm font-medium text-zinc-400 uppercase tracking-wider text-xs">Nombre del Grupo</h3>
-                                <p className="text-white text-lg font-medium">{groupName}</p>
+                        <TabsContent value="ranking" className="flex-1 overflow-y-auto px-6 py-4 data-[state=inactive]:hidden">
+                            <div className="space-y-4">
+                                <h3 className="text-sm font-medium text-zinc-400 uppercase tracking-wider text-xs">Clasificacion del Grupo</h3>
+                                <MemberLeaderboard
+                                    groupId={groupId}
+                                    onMemberClick={(member) => setSelectedMember({
+                                        id: member.userId,
+                                        username: member.profile?.username,
+                                        full_name: member.profile?.full_name,
+                                        avatar_url: member.profile?.avatar_url,
+                                        role: member.role,
+                                        joined_at: member.joinedAt
+                                    })}
+                                />
                             </div>
-                            {groupDescription && (
+                        </TabsContent>
+
+                        <TabsContent value="challenges" className="flex-1 overflow-y-auto px-6 py-4 data-[state=inactive]:hidden">
+                            <div className="space-y-4">
+                                <h3 className="text-sm font-medium text-zinc-400 uppercase tracking-wider text-xs">Retos del Grupo</h3>
+                                <GroupChallenges groupId={groupId} isAdmin={isAdmin} />
+                            </div>
+                        </TabsContent>
+
+                        <TabsContent value="progress" className="flex-1 overflow-y-auto px-6 py-4 data-[state=inactive]:hidden">
+                            <div className="space-y-4">
+                                <h3 className="text-sm font-medium text-zinc-400 uppercase tracking-wider text-xs">Progreso Diario</h3>
+                                <GroupHabitsProgress groupId={groupId} />
+                            </div>
+                        </TabsContent>
+
+                        <TabsContent value="info" className="flex-1 overflow-y-auto px-6 py-4 data-[state=inactive]:hidden">
+                            <div className="space-y-6">
+                                {/* Group Info */}
                                 <div className="space-y-2">
-                                    <h3 className="text-sm font-medium text-zinc-400 uppercase tracking-wider text-xs">Descripción</h3>
-                                    <p className="text-zinc-300 text-sm leading-relaxed bg-zinc-900/30 p-4 rounded-xl border border-zinc-800/50">
-                                        {groupDescription}
-                                    </p>
+                                    <h3 className="text-sm font-medium text-zinc-400 uppercase tracking-wider text-xs">Nombre del Grupo</h3>
+                                    <p className="text-white text-lg font-medium">{groupName}</p>
                                 </div>
-                            )}
+                                {groupDescription && (
+                                    <div className="space-y-2">
+                                        <h3 className="text-sm font-medium text-zinc-400 uppercase tracking-wider text-xs">Descripcion</h3>
+                                        <p className="text-zinc-300 text-sm leading-relaxed bg-zinc-900/30 p-4 rounded-xl border border-zinc-800/50">
+                                            {groupDescription}
+                                        </p>
+                                    </div>
+                                )}
 
-                            <div className="pt-8">
-                                <Button variant="destructive" className="w-full bg-red-900/20 text-red-400 hover:bg-red-900/40 border border-red-900/50">
-                                    <LogOut className="h-4 w-4 mr-2" />
-                                    Salir del Grupo
-                                </Button>
+                                {/* Group Actions */}
+                                <div className="border-t border-zinc-800/50 pt-6">
+                                    <h3 className="text-sm font-medium text-zinc-400 uppercase tracking-wider text-xs mb-4">
+                                        Acciones del Grupo
+                                    </h3>
+                                    <div className="space-y-2">
+                                        {/* Invite Members */}
+                                        <InviteDialog inviteCode={inviteCode} groupName={groupName} />
+
+                                        {/* View Members */}
+                                        <MembersListDialog
+                                            groupId={groupId}
+                                            isAdmin={isAdmin}
+                                            currentUserId={currentUserId}
+                                        />
+
+                                        {/* Settings - Admin only */}
+                                        {isAdmin && (
+                                            <GroupSettingsDialog
+                                                group={{
+                                                    id: groupId,
+                                                    name: groupName,
+                                                    description: groupDescription,
+                                                    avatar_url: groupAvatarUrl
+                                                }}
+                                                onUpdate={() => {
+                                                    router.refresh()
+                                                }}
+                                            />
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Danger Zone */}
+                                <div className="border-t border-red-900/30 pt-6">
+                                    <h3 className="text-sm font-medium text-red-400/80 uppercase tracking-wider text-xs mb-4">
+                                        Zona de Peligro
+                                    </h3>
+                                    <div className="space-y-2">
+                                        {/* Leave Group */}
+                                        <Button
+                                            variant="ghost"
+                                            onClick={() => setShowLeaveConfirm(true)}
+                                            className="w-full justify-start gap-2 text-zinc-400 hover:text-red-400 hover:bg-red-900/20 h-9 transition-all duration-200"
+                                        >
+                                            <LogOut className="h-4 w-4" />
+                                            Salir del Grupo
+                                        </Button>
+
+                                        {/* Delete Group - Admin only */}
+                                        {isAdmin && (
+                                            <Button
+                                                variant="ghost"
+                                                onClick={() => setShowDeleteConfirm(true)}
+                                                className="w-full justify-start gap-2 text-red-400 hover:text-red-300 hover:bg-red-900/30 h-9 transition-all duration-200"
+                                            >
+                                                <Trash2 className="h-4 w-4" />
+                                                Eliminar Grupo
+                                            </Button>
+                                        )}
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </TabsContent>
-                </Tabs>
-            </SheetContent>
-        </Sheet>
+                        </TabsContent>
+                    </Tabs>
+                </SheetContent>
+            </Sheet>
+
+            {/* Leave Group Confirmation */}
+            <AlertDialog open={showLeaveConfirm} onOpenChange={setShowLeaveConfirm}>
+                <AlertDialogContent className="bg-zinc-900 border-zinc-800">
+                    <AlertDialogHeader>
+                        <AlertDialogTitle className="text-white">Salir del grupo?</AlertDialogTitle>
+                        <AlertDialogDescription className="text-zinc-400">
+                            Vas a salir de &ldquo;{groupName}&rdquo;. Podras volver a unirte con el codigo de invitacion.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel className="bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700">
+                            Cancelar
+                        </AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={handleLeaveGroup}
+                            className="bg-red-600 hover:bg-red-700 text-white"
+                            disabled={actionLoading}
+                        >
+                            {actionLoading ? (
+                                <>
+                                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                    Saliendo...
+                                </>
+                            ) : 'Salir'}
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+
+            {/* Delete Group Confirmation */}
+            <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+                <AlertDialogContent className="bg-zinc-900 border-zinc-800">
+                    <AlertDialogHeader>
+                        <AlertDialogTitle className="text-white">Eliminar grupo permanentemente?</AlertDialogTitle>
+                        <AlertDialogDescription className="text-zinc-400">
+                            Esta accion no se puede deshacer. Se eliminaran todos los mensajes, retos y miembros del grupo &ldquo;{groupName}&rdquo;.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel className="bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700">
+                            Cancelar
+                        </AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={handleDeleteGroup}
+                            className="bg-red-600 hover:bg-red-700 text-white"
+                            disabled={actionLoading}
+                        >
+                            {actionLoading ? (
+                                <>
+                                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                    Eliminando...
+                                </>
+                            ) : 'Eliminar Permanentemente'}
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+        </>
     )
 }

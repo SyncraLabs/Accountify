@@ -60,6 +60,9 @@ export default async function GroupsPage({ searchParams }: { searchParams: Promi
                                 key={selectedGroupId}
                                 groupId={selectedGroupId}
                                 groupName={selectedGroup.name}
+                                groupDescription={selectedGroup.description}
+                                groupAvatarUrl={selectedGroup.avatar_url}
+                                inviteCode={selectedGroup.invite_code}
                                 initialMessages={messages}
                                 currentUserId={user.id}
                             />
