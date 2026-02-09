@@ -25,7 +25,7 @@ export default async function CoachPage() {
             <AppSidebar user={user} className="hidden md:flex" />
             <MobileNav />
 
-            <main className="md:pl-64 flex-1 relative flex flex-col h-screen">
+            <main className="md:pl-64 flex-1 relative flex flex-col h-[100dvh]">
                 {/* Simple Header */}
                 <div className="px-6 py-4 lg:px-8 border-b border-zinc-800">
                     <div className="flex items-center gap-3 max-w-[1400px] mx-auto">

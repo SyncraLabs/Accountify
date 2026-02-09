@@ -130,33 +130,30 @@
   }
 
   /* Prevent mobile browser zoom and scroll issues */
+  /* Prevent mobile browser zoom and scroll issues */
   html {
     touch-action: manipulation;
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
-    overflow: hidden;
-    height: 100%;
-    height: -webkit-fill-available;
   }
 
   body {
     @apply bg-background text-foreground antialiased;
-    overflow: hidden;
-    height: 100%;
-    height: -webkit-fill-available;
-    position: fixed;
-    width: 100%;
-    overscroll-behavior: none;
     -webkit-overflow-scrolling: touch;
   }
 
   /* Prevent double-tap zoom */
-  button, a, input, textarea, select {
+  button,
+  a,
+  input,
+  textarea,
+  select {
     touch-action: manipulation;
   }
 }
 
 @layer utilities {
+
   /* Mobile-safe viewport height */
   .h-screen-safe {
     height: 100vh;
@@ -210,7 +207,8 @@
 
   .chat-messages {
     flex: 1 1 0%;
-    min-height: 0; /* Critical for flex overflow */
+    min-height: 0;
+    /* Critical for flex overflow */
     overflow-y: auto;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
