@@ -139,13 +139,19 @@ export interface AnimatedAIChatProps {
     subtitle?: string;
     onSubmit?: (value: string) => void;
     isThinking?: boolean;
+    placeholder?: string;
+    sendLabel?: string;
+    thinkingLabel?: string;
 }
 
 export function AnimatedAIChat({
     title = "How can I help today?",
     subtitle = "Type a command or ask a question",
     onSubmit,
-    isThinking = false
+    isThinking = false,
+    placeholder = "Ask Coach a question...",
+    sendLabel = "Send",
+    thinkingLabel = "Thinking"
 }: AnimatedAIChatProps) {
     const [value, setValue] = useState("");
     const [attachments, setAttachments] = useState<string[]>([]);
@@ -408,7 +414,7 @@ export function AnimatedAIChat({
                                 onKeyDown={handleKeyDown}
                                 onFocus={() => setInputFocused(true)}
                                 onBlur={() => setInputFocused(false)}
-                                placeholder="Ask Coach a question..."
+                                placeholder={placeholder}
                                 containerClassName="w-full"
                                 className={cn(
                                     "w-full px-4 py-3",
@@ -510,7 +516,7 @@ export function AnimatedAIChat({
                                 ) : (
                                     <SendIcon className="w-4 h-4" />
                                 )}
-                                <span>Send</span>
+                                <span>{sendLabel}</span>
                             </motion.button>
                         </div>
                     </motion.div>
@@ -558,7 +564,7 @@ export function AnimatedAIChat({
                                 <span className="text-xs font-medium text-white/90 mb-0.5">Coach</span>
                             </div>
                             <div className="flex items-center gap-2 text-sm text-white/70">
-                                <span>Thinking</span>
+                                <span>{thinkingLabel}</span>
                                 <TypingDots />
                             </div>
                         </div>

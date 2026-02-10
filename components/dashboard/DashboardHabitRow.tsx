@@ -17,8 +17,25 @@ interface DashboardHabitRowProps {
     };
 }
 
+// Map database category keys to translation keys
+const categoryKeyMap: Record<string, string> = {
+    'health': 'health',
+    'Health': 'health',
+    'mindset': 'mindset',
+    'Mindset': 'mindset',
+    'productivity': 'productivity',
+    'Productivity': 'productivity',
+    'creativity': 'creativity',
+    'Creativity': 'creativity',
+    'social': 'social',
+    'Social': 'social',
+    'finance': 'finance',
+    'Finance': 'finance',
+};
+
 export function DashboardHabitRow({ habit: initialHabit }: DashboardHabitRowProps) {
     const t = useTranslations('dashboard.habits');
+    const tCategories = useTranslations('common.categories');
     const [isCompleted, setIsCompleted] = useState(initialHabit.completedToday);
     const [isLoading, setIsLoading] = useState(false);
     const [explosion, setExplosion] = useState(false);
@@ -86,7 +103,9 @@ export function DashboardHabitRow({ habit: initialHabit }: DashboardHabitRowProp
                         {initialHabit.title}
                     </span>
                     <span className="text-xs text-zinc-600 capitalize">
-                        {initialHabit.category}
+                        {categoryKeyMap[initialHabit.category]
+                            ? tCategories(categoryKeyMap[initialHabit.category])
+                            : initialHabit.category}
                     </span>
                 </div>
             </div>

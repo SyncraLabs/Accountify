@@ -189,6 +189,9 @@ export function CoachInterface({ currentHabits }: CoachInterfaceProps) {
                             subtitle={t('tellMeGoals')}
                             onSubmit={handleSendMessage}
                             isThinking={loading}
+                            placeholder={t('placeholder')}
+                            sendLabel={t('send')}
+                            thinkingLabel={t('thinking')}
                         />
                     </div>
                 ) : (
