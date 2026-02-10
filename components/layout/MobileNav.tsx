@@ -1,41 +1,44 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { Link, usePathname } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
 import { LayoutDashboard, Calendar, Users, Bot, Settings } from "lucide-react";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 export function MobileNav() {
     const pathname = usePathname();
 
+    const t = useTranslations('navigation');
+
     const routes = [
         {
-            label: "Inicio",
+            label: t('dashboard'),
             icon: LayoutDashboard,
             href: "/dashboard",
             active: pathname === "/dashboard",
         },
         {
-            label: "Calendario",
+            label: t('calendar'),
             icon: Calendar,
             href: "/calendar",
             active: pathname === "/calendar",
         },
         {
-            label: "Grupos",
+            label: t('groups'),
             icon: Users,
             href: "/groups",
             active: pathname.startsWith("/groups"),
         },
         {
-            label: "Coach",
+            label: t('coach'),
             icon: Bot,
             href: "/coach",
             active: pathname === "/coach",
         },
         {
-            label: "Ajustes",
+            label: t('settings'),
             icon: Settings,
             href: "/settings",
             active: pathname === "/settings",
@@ -44,9 +47,10 @@ export function MobileNav() {
 
     return (
         <>
-            {/* Floating notification bell for mobile */}
+            {/* Floating notification bell and language switcher for mobile */}
             <div className="md:hidden fixed top-4 right-4 z-50">
-                <div className="bg-zinc-900/90 backdrop-blur-lg border border-white/10 rounded-full p-1 shadow-[0_4px_24px_rgba(0,0,0,0.4)]">
+                <div className="flex items-center gap-1 bg-zinc-900/90 backdrop-blur-lg border border-white/10 rounded-full px-1 py-1 shadow-[0_4px_24px_rgba(0,0,0,0.4)]">
+                    <LanguageSwitcher />
                     <NotificationBell />
                 </div>
             </div>

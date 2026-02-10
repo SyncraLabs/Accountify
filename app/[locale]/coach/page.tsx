@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { AppSidebar } from "@/components/layout/AppSidebar";
@@ -6,6 +7,7 @@ import { CoachInterface } from "@/components/coach/CoachInterface";
 import { Sparkles } from "lucide-react";
 
 export default async function CoachPage() {
+    const t = await getTranslations('coach');
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -31,10 +33,10 @@ export default async function CoachPage() {
                     <div className="flex items-center gap-3 max-w-[1400px] mx-auto">
                         <div className="flex items-center gap-2 text-primary">
                             <Sparkles className="h-4 w-4" />
-                            <span className="text-xs font-medium uppercase tracking-wider">AI Coach</span>
+                            <span className="text-xs font-medium uppercase tracking-wider">{t('title')}</span>
                         </div>
                         <span className="text-sm text-zinc-500">
-                            Describe tus objetivos y crearé una rutina personalizada
+                            {t('tellMeGoals')}
                         </span>
                     </div>
                 </div>

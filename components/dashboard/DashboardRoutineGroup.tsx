@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { toggleHabitLog } from "@/app/actions";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 interface HabitWithCompletion {
     id: string;
@@ -38,6 +39,7 @@ const categoryColors: Record<string, string> = {
 };
 
 function RoutineHabitRow({ habit }: { habit: HabitWithCompletion }) {
+    const t = useTranslations('dashboard.habits');
     const [isCompleted, setIsCompleted] = useState(habit.completedToday);
     const [isLoading, setIsLoading] = useState(false);
 
@@ -56,7 +58,7 @@ function RoutineHabitRow({ habit }: { habit: HabitWithCompletion }) {
                 setIsCompleted(!newState);
             }
         } catch (error) {
-            toast.error("Error al actualizar hábito");
+            toast.error(t('updateFailed'));
             setIsCompleted(!isCompleted);
         } finally {
             setIsLoading(false);

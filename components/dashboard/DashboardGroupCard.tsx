@@ -1,5 +1,6 @@
 import { Users } from "lucide-react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 interface DashboardGroupCardProps {
     group: {
@@ -10,6 +11,7 @@ interface DashboardGroupCardProps {
 }
 
 export function DashboardGroupCard({ group }: DashboardGroupCardProps) {
+    const t = useTranslations('dashboard.habits');
     return (
         <Link
             href={`/groups?id=${group.id}`}
@@ -22,14 +24,14 @@ export function DashboardGroupCard({ group }: DashboardGroupCardProps) {
                 {group.memberCount !== undefined && (
                     <div className="flex items-center gap-1.5 text-xs text-zinc-500">
                         <Users className="h-3.5 w-3.5" />
-                        <span>{group.memberCount} members</span>
+                        <span>{t('members', { count: group.memberCount })}</span>
                     </div>
                 )}
             </div>
             <h3 className="text-sm font-medium text-zinc-200 group-hover:text-white transition-colors truncate">
                 {group.name}
             </h3>
-            <p className="text-xs text-zinc-500 mt-1">View group activity</p>
+            <p className="text-xs text-zinc-500 mt-1">{t('viewActivity')}</p>
         </Link>
     );
 }

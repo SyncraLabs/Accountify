@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { AnimatePresence } from 'framer-motion'
 import { GroupsOnboarding } from './GroupsOnboarding'
-import { completeGroupsOnboarding } from '@/app/groups/actions'
+import { completeGroupsOnboarding } from '@/app/[locale]/groups/actions'
 
 interface GroupsPageClientProps {
     children: React.ReactNode

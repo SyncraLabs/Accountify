@@ -1,214 +1,215 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { useTranslations } from "next-intl";
 
 interface WeeklyActivityChartProps {
     data: {
         date: string;
         count: number;
-        label: string; // e.g. "Mon", "Tue"
+        label: string;
     }[];
 }
 
 export function WeeklyActivityChart({ data }: WeeklyActivityChartProps) {
+    const t = useTranslations('dashboard.habits');
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-
-    // Calculate dimensions and scales
-    const height = 180;
-    const width = 100; // Percent
-    const padding = 20;
 
     const maxCount = useMemo(() => {
         const max = Math.max(...data.map(d => d.count));
-        return max === 0 ? 5 : max + 1; // Ensure some height if all 0
+        return max === 0 ? 5 : max + 2;
     }, [data]);
 
-    // Generate points for the SVG path
+    // Generate points with padding for better visuals
     const points = useMemo(() => {
+        const padding = 8; // percentage padding on sides
+        const usableWidth = 100 - padding * 2;
+
         return data.map((d, i) => {
-            const x = (i / (data.length - 1)) * 100;
-            const y = 100 - (d.count / maxCount) * 100;
+            const x = padding + (i / (data.length - 1)) * usableWidth;
+            const y = 85 - (d.count / maxCount) * 70; // Keep within 15-85 range
             return { x, y, ...d };
         });
     }, [data, maxCount]);
 
-    // Helper to generate smooth path command
-    const getSmoothPath = (points: { x: number; y: number }[]) => {
-        if (points.length === 0) return "";
-        if (points.length === 1) return `M ${points[0].x} ${points[0].y}`;
+    // Smooth catmull-rom spline
+    const getSmoothPath = (pts: { x: number; y: number }[]) => {
+        if (pts.length < 2) return "";
 
-        let d = `M ${points[0].x} ${points[0].y}`;
+        const tension = 0.3;
+        let d = `M ${pts[0].x} ${pts[0].y}`;
 
-        for (let i = 0; i < points.length - 1; i++) {
-            const current = points[i];
-            const next = points[i + 1];
+        for (let i = 0; i < pts.length - 1; i++) {
+            const p0 = pts[Math.max(0, i - 1)];
+            const p1 = pts[i];
+            const p2 = pts[i + 1];
+            const p3 = pts[Math.min(pts.length - 1, i + 2)];
 
-            // Simple smoothing: control points at 1/3 and 2/3 of the way
-            // For a more advanced "catmull-rom" style, we'd need p-1 and p+2
-            // But for a simple smooth chart, cubic bezier with CP's parallel to the axis 
-            // often looks odd. Let's use a "tension" based approach or simple midpoint smoothing.
+            const cp1x = p1.x + (p2.x - p0.x) * tension;
+            const cp1y = p1.y + (p2.y - p0.y) * tension;
+            const cp2x = p2.x - (p3.x - p1.x) * tension;
+            const cp2y = p2.y - (p3.y - p1.y) * tension;
 
-            // Let's use a standard "catmull-rom" to cubic conversion substitute for simplicity
-            // or just simple cubic bezier interpolation.
-            // Using a simple technique: Control Point 1 is (current + (next-prev)*smoothing)
-            // But we don't have prev for first.
-
-            const p0 = points[i === 0 ? 0 : i - 1];
-            const p1 = points[i];
-            const p2 = points[i + 1];
-            const p3 = points[i + 2] || p2;
-
-            const cp1x = p1.x + (p2.x - p0.x) * 0.15; // 0.15 is tension
-            const cp1y = p1.y + (p2.y - p0.y) * 0.15;
-
-            const cp2x = p2.x - (p3.x - p1.x) * 0.15;
-            const cp2y = p2.y - (p3.y - p1.y) * 0.15;
-
-            d += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p2.x} ${p2.y}`;
+            d += ` C ${cp1x},${cp1y} ${cp2x},${cp2y} ${p2.x},${p2.y}`;
         }
         return d;
     };
 
-    // Create the path string (smooth curve)
-    const pathString = useMemo(() => {
-        return getSmoothPath(points);
-    }, [points]);
+    const pathString = useMemo(() => getSmoothPath(points), [points]);
 
-    // Create area path logic for gradient
     const areaPathString = useMemo(() => {
-        if (!pathString) return "";
-        return `${pathString} L 100 100 L 0 100 Z`;
-    }, [pathString]);
+        if (!pathString || points.length === 0) return "";
+        return `${pathString} L ${points[points.length - 1].x} 100 L ${points[0].x} 100 Z`;
+    }, [pathString, points]);
 
     return (
         <div className="w-full relative select-none">
+            <div className="h-[140px] w-full relative">
+                <svg
+                    viewBox="0 0 100 100"
+                    preserveAspectRatio="none"
+                    className="w-full h-full"
+                >
+                    <defs>
+                        {/* Subtle gradient fill */}
+                        <linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="#a3e635" stopOpacity="0.15" />
+                            <stop offset="100%" stopColor="#a3e635" stopOpacity="0" />
+                        </linearGradient>
 
-            <div className="h-[200px] w-full flex flex-col justify-end relative">
-                {/* Grid lines (optional) */}
-                <div className="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-20">
-                    {[0, 0.5, 1].map((tick) => (
-                        <div key={tick} className="border-t border-dashed border-zinc-600 w-full h-0" style={{ top: `${tick * 100}%` }} />
+                        {/* Soft glow for the line */}
+                        <filter id="lineGlow" x="-20%" y="-20%" width="140%" height="140%">
+                            <feGaussianBlur in="SourceGraphic" stdDeviation="1" result="blur" />
+                            <feColorMatrix in="blur" type="matrix" values="
+                                0 0 0 0 0.639
+                                0 0 0 0 0.902
+                                0 0 0 0 0.208
+                                0 0 0 0.4 0" />
+                        </filter>
+                    </defs>
+
+                    {/* Area fill with animation */}
+                    <motion.path
+                        d={areaPathString}
+                        fill="url(#areaGradient)"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.8, ease: "easeOut" }}
+                    />
+
+                    {/* Glow layer */}
+                    <motion.path
+                        d={pathString}
+                        fill="none"
+                        stroke="#a3e635"
+                        strokeWidth="3"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        filter="url(#lineGlow)"
+                        initial={{ pathLength: 0 }}
+                        animate={{ pathLength: 1 }}
+                        transition={{ duration: 1, ease: "easeOut" }}
+                        vectorEffect="non-scaling-stroke"
+                    />
+
+                    {/* Main line */}
+                    <motion.path
+                        d={pathString}
+                        fill="none"
+                        stroke="#a3e635"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        initial={{ pathLength: 0 }}
+                        animate={{ pathLength: 1 }}
+                        transition={{ duration: 1, ease: "easeOut" }}
+                        vectorEffect="non-scaling-stroke"
+                    />
+                </svg>
+
+                {/* Interactive layer with points */}
+                <div className="absolute inset-0">
+                    {points.map((point, i) => (
+                        <div
+                            key={i}
+                            className="absolute cursor-pointer"
+                            style={{
+                                left: `${point.x}%`,
+                                top: 0,
+                                bottom: 0,
+                                width: `${100 / data.length}%`,
+                                transform: 'translateX(-50%)',
+                            }}
+                            onMouseEnter={() => setHoveredIndex(i)}
+                            onMouseLeave={() => setHoveredIndex(null)}
+                        >
+                            {/* Data point */}
+                            <motion.div
+                                className="absolute"
+                                style={{
+                                    left: '50%',
+                                    top: `${point.y}%`,
+                                    transform: 'translate(-50%, -50%)',
+                                }}
+                                initial={{ scale: 0, opacity: 0 }}
+                                animate={{
+                                    scale: hoveredIndex === i ? 1 : 0.6,
+                                    opacity: hoveredIndex === i ? 1 : 0
+                                }}
+                                transition={{ duration: 0.2, ease: "easeOut" }}
+                            >
+                                <div className="w-3 h-3 rounded-full bg-[#a3e635] shadow-[0_0_12px_rgba(163,230,53,0.6)]" />
+                            </motion.div>
+                        </div>
                     ))}
                 </div>
 
-                <div className="relative h-full w-full">
-                    <svg
-                        viewBox="-10 -20 120 140" // Increased padding to prevent clipping of thick strokes and glow
-                        preserveAspectRatio="none"
-                        className="w-full h-full overflow-visible"
-                    >
-                        {/* Gradient definition */}
-                        <defs>
-                            <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stopColor="#a3e635" stopOpacity="0.2" />
-                                <stop offset="100%" stopColor="#a3e635" stopOpacity="0" />
-                            </linearGradient>
-                            {/* Glow Filter */}
-                            <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-                                <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur" />
-                                <feColorMatrix in="blur" type="matrix" values="
-                                    0 0 0 0 0.639
-                                    0 0 0 0 0.902
-                                    0 0 0 0 0.208
-                                    0 0 0 0.5 0" result="coloredBlur" />
-                                <feMerge>
-                                    <feMergeNode in="coloredBlur" />
-                                    <feMergeNode in="SourceGraphic" />
-                                </feMerge>
-                            </filter>
-                        </defs>
-
-                        {/* Area Fill */}
-                        <motion.path
-                            d={areaPathString}
-                            fill="url(#chartGradient)"
-                            stroke="none"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ duration: 0.5 }}
-                        />
-
-                        {/* Line Path */}
-                        <motion.path
-                            d={pathString}
-                            fill="none"
-                            stroke="#a3e635"
-                            strokeWidth="4" // Bold line
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            filter="url(#glow)" // Apply glow
-                            initial={{ pathLength: 0, opacity: 0 }}
-                            animate={{ pathLength: 1, opacity: 1 }}
-                            transition={{ duration: 1.2, ease: "easeOut" }} // Smooth easing
-                            vectorEffect="non-scaling-stroke"
-                        />
-
-                        {/* Hover Points & Tooltip Trigger Areas */}
-                        {points.map((point, i) => (
-                            <g key={i}>
-                                {/* Invisible touch targets for full height */}
-                                <rect
-                                    x={point.x - 5}
-                                    y="0"
-                                    width="10"
-                                    height="100"
-                                    fill="transparent"
-                                    onMouseEnter={() => setHoveredIndex(i)}
-                                    onMouseLeave={() => setHoveredIndex(null)}
-                                    className="cursor-pointer"
-                                />
-
-                                {/* Visible Point on Hover */}
-                                {hoveredIndex === i && (
-                                    <circle
-                                        cx={point.x}
-                                        cy={point.y}
-                                        r="4" // Slightly larger for interaction
-                                        fill="#a3e635"
-                                        stroke="#000"
-                                        strokeWidth="2"
-                                        className="drop-shadow-lg"
-                                    />
-                                )}
-                            </g>
-                        ))}
-                    </svg>
-
-                    {/* Tooltip */}
+                {/* Tooltip */}
+                <AnimatePresence>
                     {hoveredIndex !== null && (
                         <motion.div
-                            initial={{ opacity: 0, y: 10, scale: 0.9 }}
-                            animate={{ opacity: 1, y: 0, scale: 1 }}
-                            className="absolute pointer-events-none bg-zinc-900/90 backdrop-blur-md border border-zinc-700/50 rounded-xl p-2.5 shadow-xl z-20 flex flex-col items-center min-w-[100px]"
+                            initial={{ opacity: 0, y: 8 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 4 }}
+                            transition={{ duration: 0.15, ease: "easeOut" }}
+                            className="absolute pointer-events-none z-10"
                             style={{
                                 left: `${points[hoveredIndex].x}%`,
-                                top: `${points[hoveredIndex].y}%`,
-                                transform: 'translate(-50%, -130%)' // Move up above the point
+                                top: `${Math.max(points[hoveredIndex].y - 12, 8)}%`,
+                                transform: 'translate(-50%, -100%)',
                             }}
                         >
-                            <span className="text-[10px] text-zinc-400 font-medium mb-1 uppercase tracking-wider">{data[hoveredIndex].label}</span>
-                            <div className="flex items-center gap-2">
-                                <div className="w-2 h-2 rounded-full bg-[#a3e635] shadow-[0_0_8px_rgba(163,230,53,0.8)]" />
-                                <span className="text-sm font-bold text-white whitespace-nowrap">
-                                    {data[hoveredIndex].count} Hábitos
-                                </span>
+                            <div className="bg-zinc-900/95 backdrop-blur-sm border border-zinc-800 rounded-lg px-3 py-2 shadow-xl">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-[#a3e635]" />
+                                    <span className="text-sm font-semibold text-white">
+                                        {data[hoveredIndex].count}
+                                    </span>
+                                    <span className="text-xs text-zinc-500">
+                                        {t('tooltipLabel')}
+                                    </span>
+                                </div>
                             </div>
                         </motion.div>
                     )}
-                </div>
+                </AnimatePresence>
+            </div>
 
-                {/* X Axis Labels */}
-                <div className="flex justify-between w-full mt-2 px-2">
-                    {data.map((d, i) => (
-                        <span
-                            key={i}
-                            className={`text-[10px] uppercase font-medium transition-all duration-300 ${hoveredIndex === i ? 'text-[#a3e635] scale-110' : 'text-zinc-600'}`}
-                        >
-                            {d.label}
-                        </span>
-                    ))}
-                </div>
+            {/* X Axis Labels */}
+            <div className="flex justify-between w-full mt-3 px-1">
+                {data.map((d, i) => (
+                    <motion.span
+                        key={i}
+                        className="text-[11px] font-medium text-zinc-600 w-6 text-center"
+                        animate={{
+                            color: hoveredIndex === i ? '#a3e635' : '#52525b',
+                        }}
+                        transition={{ duration: 0.15 }}
+                    >
+                        {d.label}
+                    </motion.span>
+                ))}
             </div>
         </div>
     );

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronDown, ChevronRight, Check, Flame, Users, Loader2 } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { getGroupMembersProgress } from '@/app/groups/actions'
+import { getGroupMembersProgress } from '@/app/[locale]/groups/actions'
 import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/utils'
 

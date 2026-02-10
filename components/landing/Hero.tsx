@@ -1,10 +1,11 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Star, Sparkles } from "lucide-react";
 import { DashboardPreview } from "@/components/landing/DashboardPreview";
+import { useTranslations } from "next-intl";
 
 // Floating particles component
 function FloatingParticles() {
@@ -51,6 +52,8 @@ const textRevealVariants = {
 };
 
 export function Hero() {
+    const t = useTranslations('landing.hero');
+
     return (
         <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden pt-32 pb-24">
             {/* Animated gradient background */}
@@ -103,7 +106,7 @@ export function Hero() {
                             animate={{ scale: [1, 1.3, 1], opacity: [1, 0.7, 1] }}
                             transition={{ duration: 2, repeat: Infinity }}
                         />
-                        Tu Accountability Partner
+                        {t('badge')}
                         <Sparkles className="h-3 w-3 ml-1" />
                     </motion.div>
                 </motion.div>
@@ -116,7 +119,7 @@ export function Hero() {
                     animate="visible"
                     custom={0.2}
                 >
-                    Construye{" "}
+                    {t('title')}{" "}
                     <motion.span
                         className="text-primary inline-block"
                         animate={{
@@ -128,9 +131,9 @@ export function Hero() {
                         }}
                         transition={{ duration: 3, repeat: Infinity }}
                     >
-                        Hábitos
+                        {t('titleHighlight')}
                     </motion.span>
-                    <br className="hidden md:block" /> Que Sí Duran
+                    <br className="hidden md:block" /> {t('titleEnd')}
                 </motion.h1>
 
                 {/* Subheadline */}
@@ -141,7 +144,7 @@ export function Hero() {
                     animate="visible"
                     custom={0.35}
                 >
-                    Transforma tu vida un hábito a la vez. Seguimiento inteligente, rachas y recomendaciones personalizadas para mantenerte motivado.
+                    {t('subtitle')}
                 </motion.p>
 
                 {/* CTA Buttons */}
@@ -158,7 +161,7 @@ export function Hero() {
                             whileTap={{ scale: 0.98 }}
                         >
                             <Button className="h-12 px-8 rounded-full bg-primary text-black font-semibold hover:bg-primary/90 transition-all text-base shadow-[0_0_20px_rgba(74,222,128,0.2)] hover:shadow-[0_0_30px_rgba(74,222,128,0.4)]">
-                                Comenzar Gratis <ArrowRight className="ml-2 h-5 w-5" />
+                                {t('cta')} <ArrowRight className="ml-2 h-5 w-5" />
                             </Button>
                         </motion.div>
                     </Link>
@@ -168,7 +171,7 @@ export function Hero() {
                             whileTap={{ scale: 0.98 }}
                         >
                             <Button variant="outline" className="h-12 px-8 rounded-full border-white/10 text-white hover:bg-white/5 hover:text-white transition-colors text-base">
-                                Cómo Funciona
+                                {t('howItWorks')}
                             </Button>
                         </motion.div>
                     </Link>
@@ -186,16 +189,16 @@ export function Hero() {
                         className="flex flex-col items-center"
                         whileHover={{ scale: 1.05 }}
                     >
-                        <span className="text-2xl font-bold text-white">Acceso</span>
-                        <span className="text-xs text-zinc-500 uppercase tracking-wider">Anticipado</span>
+                        <span className="text-2xl font-bold text-white">{t('earlyAccess')}</span>
+                        <span className="text-xs text-zinc-500 uppercase tracking-wider">{t('earlyAccessSub')}</span>
                     </motion.div>
                     <div className="w-px h-10 bg-white/10" />
                     <motion.div
                         className="flex flex-col items-center"
                         whileHover={{ scale: 1.05 }}
                     >
-                        <span className="text-2xl font-bold text-white">IA</span>
-                        <span className="text-xs text-zinc-500 uppercase tracking-wider">Coach Personal</span>
+                        <span className="text-2xl font-bold text-white">{t('personalCoach')}</span>
+                        <span className="text-xs text-zinc-500 uppercase tracking-wider">{t('personalCoachSub')}</span>
                     </motion.div>
                     <div className="w-px h-10 bg-white/10" />
                     <motion.div
@@ -203,7 +206,7 @@ export function Hero() {
                         whileHover={{ scale: 1.05 }}
                     >
                         <span className="text-2xl font-bold text-white flex items-center gap-1">
-                            4.9{" "}
+                            {t('rating')}{" "}
                             <motion.span
                                 animate={{ rotate: [0, 10, -10, 0] }}
                                 transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
@@ -211,7 +214,7 @@ export function Hero() {
                                 <Star className="h-4 w-4 fill-primary text-primary" />
                             </motion.span>
                         </span>
-                        <span className="text-xs text-zinc-500 uppercase tracking-wider">Valoración</span>
+                        <span className="text-xs text-zinc-500 uppercase tracking-wider">{t('ratingSub')}</span>
                     </motion.div>
                 </motion.div>
 

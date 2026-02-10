@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from "react"
+import { useTranslations } from "next-intl"
 import { useRouter } from "next/navigation"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -16,7 +17,7 @@ import { MemberProfileDialog } from "./MemberProfileDialog"
 import { InviteDialog } from "./InviteDialog"
 import { MembersListDialog } from "./MembersListDialog"
 import { GroupSettingsDialog } from "./GroupSettingsDialog"
-import { leaveGroup, deleteGroup } from "@/app/groups/actions"
+import { leaveGroup, deleteGroup } from "@/app/[locale]/groups/actions"
 
 interface GroupDetailsProps {
     isOpen: boolean
@@ -48,6 +49,7 @@ export function GroupDetails({
     const [actionLoading, setActionLoading] = useState(false)
     const supabase = createClient()
     const router = useRouter()
+    const t = useTranslations('groups.details')
 
     useEffect(() => {
         if (isOpen) {
@@ -97,7 +99,7 @@ export function GroupDetails({
         if (result.error) {
             toast.error(result.error)
         } else {
-            toast.success('Has salido del grupo')
+            toast.success(t('success.left'))
             onOpenChange(false)
             router.push('/groups')
         }
@@ -112,7 +114,7 @@ export function GroupDetails({
         if (result.error) {
             toast.error(result.error)
         } else {
-            toast.success('Grupo eliminado')
+            toast.success(t('success.deleted'))
             onOpenChange(false)
             router.push('/groups')
         }
@@ -125,10 +127,10 @@ export function GroupDetails({
                     <SheetHeader className="px-6 py-5 border-b border-zinc-800/50 bg-zinc-900/20 backdrop-blur-md">
                         <SheetTitle className="text-white text-lg flex items-center gap-2">
                             <Info className="h-5 w-5 text-primary" />
-                            Detalles del Grupo
+                            {t('title')}
                         </SheetTitle>
                         <SheetDescription className="hidden">
-                            Informacion y ajustes del grupo
+                            {t('desc')}
                         </SheetDescription>
                     </SheetHeader>
 
@@ -142,23 +144,23 @@ export function GroupDetails({
                         <div className="px-6 pt-4 pb-2">
                             <TabsList className="w-full bg-zinc-900/50 border border-zinc-800/50 p-1 grid grid-cols-4">
                                 <TabsTrigger value="ranking" className="data-[state=active]:bg-primary data-[state=active]:text-black text-xs">
-                                    Ranking
+                                    {t('tabs.ranking')}
                                 </TabsTrigger>
                                 <TabsTrigger value="challenges" className="data-[state=active]:bg-primary data-[state=active]:text-black text-xs">
-                                    Retos
+                                    {t('tabs.challenges')}
                                 </TabsTrigger>
                                 <TabsTrigger value="progress" className="data-[state=active]:bg-primary data-[state=active]:text-black text-xs">
-                                    Progreso
+                                    {t('tabs.progress')}
                                 </TabsTrigger>
                                 <TabsTrigger value="info" className="data-[state=active]:bg-primary data-[state=active]:text-black text-xs">
-                                    Info
+                                    {t('tabs.info')}
                                 </TabsTrigger>
                             </TabsList>
                         </div>
 
                         <TabsContent value="ranking" className="flex-1 overflow-y-auto px-6 py-4 data-[state=inactive]:hidden">
                             <div className="space-y-4">
-                                <h3 className="text-sm font-medium text-zinc-400 uppercase tracking-wider text-xs">Clasificacion del Grupo</h3>
+                                <h3 className="text-sm font-medium text-zinc-400 uppercase tracking-wider text-xs">{t('sections.ranking')}</h3>
                                 <MemberLeaderboard
                                     groupId={groupId}
                                     onMemberClick={(member) => setSelectedMember({
@@ -175,14 +177,14 @@ export function GroupDetails({
 
                         <TabsContent value="challenges" className="flex-1 overflow-y-auto px-6 py-4 data-[state=inactive]:hidden">
                             <div className="space-y-4">
-                                <h3 className="text-sm font-medium text-zinc-400 uppercase tracking-wider text-xs">Retos del Grupo</h3>
+                                <h3 className="text-sm font-medium text-zinc-400 uppercase tracking-wider text-xs">{t('sections.challenges')}</h3>
                                 <GroupChallenges groupId={groupId} isAdmin={isAdmin} />
                             </div>
                         </TabsContent>
 
                         <TabsContent value="progress" className="flex-1 overflow-y-auto px-6 py-4 data-[state=inactive]:hidden">
                             <div className="space-y-4">
-                                <h3 className="text-sm font-medium text-zinc-400 uppercase tracking-wider text-xs">Progreso Diario</h3>
+                                <h3 className="text-sm font-medium text-zinc-400 uppercase tracking-wider text-xs">{t('sections.progress')}</h3>
                                 <GroupHabitsProgress groupId={groupId} />
                             </div>
                         </TabsContent>
@@ -191,12 +193,12 @@ export function GroupDetails({
                             <div className="space-y-6">
                                 {/* Group Info */}
                                 <div className="space-y-2">
-                                    <h3 className="text-sm font-medium text-zinc-400 uppercase tracking-wider text-xs">Nombre del Grupo</h3>
+                                    <h3 className="text-sm font-medium text-zinc-400 uppercase tracking-wider text-xs">{t('sections.info')}</h3>
                                     <p className="text-white text-lg font-medium">{groupName}</p>
                                 </div>
                                 {groupDescription && (
                                     <div className="space-y-2">
-                                        <h3 className="text-sm font-medium text-zinc-400 uppercase tracking-wider text-xs">Descripcion</h3>
+                                        <h3 className="text-sm font-medium text-zinc-400 uppercase tracking-wider text-xs">{t('sections.description')}</h3>
                                         <p className="text-zinc-300 text-sm leading-relaxed bg-zinc-900/30 p-4 rounded-xl border border-zinc-800/50">
                                             {groupDescription}
                                         </p>
@@ -206,7 +208,7 @@ export function GroupDetails({
                                 {/* Group Actions */}
                                 <div className="border-t border-zinc-800/50 pt-6">
                                     <h3 className="text-sm font-medium text-zinc-400 uppercase tracking-wider text-xs mb-4">
-                                        Acciones del Grupo
+                                        {t('sections.actions')}
                                     </h3>
                                     <div className="space-y-2">
                                         {/* Invite Members */}
@@ -239,7 +241,7 @@ export function GroupDetails({
                                 {/* Danger Zone */}
                                 <div className="border-t border-red-900/30 pt-6">
                                     <h3 className="text-sm font-medium text-red-400/80 uppercase tracking-wider text-xs mb-4">
-                                        Zona de Peligro
+                                        {t('sections.danger')}
                                     </h3>
                                     <div className="space-y-2">
                                         {/* Leave Group */}
@@ -249,7 +251,7 @@ export function GroupDetails({
                                             className="w-full justify-start gap-2 text-zinc-400 hover:text-red-400 hover:bg-red-900/20 h-9 transition-all duration-200"
                                         >
                                             <LogOut className="h-4 w-4" />
-                                            Salir del Grupo
+                                            {t('actions.leave')}
                                         </Button>
 
                                         {/* Delete Group - Admin only */}
@@ -260,7 +262,7 @@ export function GroupDetails({
                                                 className="w-full justify-start gap-2 text-red-400 hover:text-red-300 hover:bg-red-900/30 h-9 transition-all duration-200"
                                             >
                                                 <Trash2 className="h-4 w-4" />
-                                                Eliminar Grupo
+                                                {t('actions.delete')}
                                             </Button>
                                         )}
                                     </div>
@@ -275,14 +277,14 @@ export function GroupDetails({
             <AlertDialog open={showLeaveConfirm} onOpenChange={setShowLeaveConfirm}>
                 <AlertDialogContent className="bg-zinc-900 border-zinc-800">
                     <AlertDialogHeader>
-                        <AlertDialogTitle className="text-white">Salir del grupo?</AlertDialogTitle>
+                        <AlertDialogTitle className="text-white">{t('dialogs.leaveTitle')}</AlertDialogTitle>
                         <AlertDialogDescription className="text-zinc-400">
-                            Vas a salir de &ldquo;{groupName}&rdquo;. Podras volver a unirte con el codigo de invitacion.
+                            {t('dialogs.leaveDesc', { name: groupName })}
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel className="bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700">
-                            Cancelar
+                            {t('dialogs.cancel')}
                         </AlertDialogCancel>
                         <AlertDialogAction
                             onClick={handleLeaveGroup}
@@ -292,9 +294,9 @@ export function GroupDetails({
                             {actionLoading ? (
                                 <>
                                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                                    Saliendo...
+                                    {t('dialogs.leaving')}
                                 </>
-                            ) : 'Salir'}
+                            ) : t('actions.leave')}
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
@@ -304,14 +306,14 @@ export function GroupDetails({
             <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
                 <AlertDialogContent className="bg-zinc-900 border-zinc-800">
                     <AlertDialogHeader>
-                        <AlertDialogTitle className="text-white">Eliminar grupo permanentemente?</AlertDialogTitle>
+                        <AlertDialogTitle className="text-white">{t('dialogs.deleteTitle')}</AlertDialogTitle>
                         <AlertDialogDescription className="text-zinc-400">
-                            Esta accion no se puede deshacer. Se eliminaran todos los mensajes, retos y miembros del grupo &ldquo;{groupName}&rdquo;.
+                            {t('dialogs.deleteDesc', { name: groupName })}
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel className="bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700">
-                            Cancelar
+                            {t('dialogs.cancel')}
                         </AlertDialogCancel>
                         <AlertDialogAction
                             onClick={handleDeleteGroup}
@@ -321,9 +323,9 @@ export function GroupDetails({
                             {actionLoading ? (
                                 <>
                                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                                    Eliminando...
+                                    {t('dialogs.deleting')}
                                 </>
-                            ) : 'Eliminar Permanentemente'}
+                            ) : t('dialogs.confirmDelete')}
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>

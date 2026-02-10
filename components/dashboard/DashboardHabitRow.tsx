@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { toggleHabitLog } from "@/app/actions";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 interface DashboardHabitRowProps {
     habit: {
@@ -16,6 +17,7 @@ interface DashboardHabitRowProps {
 }
 
 export function DashboardHabitRow({ habit: initialHabit }: DashboardHabitRowProps) {
+    const t = useTranslations('dashboard.habits');
     const [isCompleted, setIsCompleted] = useState(initialHabit.completedToday);
     const [isLoading, setIsLoading] = useState(false);
 
@@ -35,10 +37,10 @@ export function DashboardHabitRow({ habit: initialHabit }: DashboardHabitRowProp
                 // Revert if error
                 setIsCompleted(!newState);
             } else {
-                toast.success(newState ? "Habit completed!" : "Habit unchecked");
+                toast.success(newState ? t('completed') : t('unchecked'));
             }
         } catch (error) {
-            toast.error("Failed to update habit");
+            toast.error(t('updateFailed'));
             setIsCompleted(!isCompleted);
         } finally {
             setIsLoading(false);

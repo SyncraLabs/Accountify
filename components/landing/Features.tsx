@@ -3,45 +3,7 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { Zap, Shield, BarChart3, Users, Smartphone, Clock } from "lucide-react";
-
-const features = [
-    {
-        icon: Zap,
-        title: "Ultrarrápido",
-        description: "Construido para velocidad. Registra hábitos en segundos y vuelve a tus objetivos.",
-        color: "yellow"
-    },
-    {
-        icon: BarChart3,
-        title: "Analíticas Profundas",
-        description: "Visualiza tu progreso con gráficos y métricas que te mantienen motivado.",
-        color: "blue"
-    },
-    {
-        icon: Users,
-        title: "Responsabilidad Grupal",
-        description: "Únete a tribus de ganadores. Compite, comparte y crece en comunidad.",
-        color: "purple"
-    },
-    {
-        icon: Shield,
-        title: "Privado y Seguro",
-        description: "Tus datos son tuyos. Encriptación de nivel empresarial para tu privacidad.",
-        color: "green"
-    },
-    {
-        icon: Smartphone,
-        title: "Mobile First",
-        description: "Diseñado para tu teléfono. Lleva tu compañero de responsabilidad a todas partes.",
-        color: "cyan"
-    },
-    {
-        icon: Clock,
-        title: "Recordatorios Inteligentes",
-        description: "Notificaciones inteligentes que te avisan exactamente cuando lo necesitas.",
-        color: "orange"
-    }
-];
+import { useTranslations } from "next-intl";
 
 const colorVariants: Record<string, string> = {
     yellow: "bg-yellow-500/10 text-yellow-400 group-hover:bg-yellow-500/20",
@@ -77,8 +39,48 @@ const itemVariants = {
 };
 
 export function Features() {
+    const t = useTranslations('landing.features');
     const ref = useRef(null);
     const isInView = useInView(ref, { once: true, margin: "-100px" });
+
+    const features = [
+        {
+            icon: Zap,
+            title: t('ultrafast.title'),
+            description: t('ultrafast.description'),
+            color: "yellow"
+        },
+        {
+            icon: BarChart3,
+            title: t('analytics.title'),
+            description: t('analytics.description'),
+            color: "blue"
+        },
+        {
+            icon: Users,
+            title: t('accountability.title'),
+            description: t('accountability.description'),
+            color: "purple"
+        },
+        {
+            icon: Shield,
+            title: t('privacy.title'),
+            description: t('privacy.description'),
+            color: "green"
+        },
+        {
+            icon: Smartphone,
+            title: t('mobile.title'),
+            description: t('mobile.description'),
+            color: "cyan"
+        },
+        {
+            icon: Clock,
+            title: t('reminders.title'),
+            description: t('reminders.description'),
+            color: "orange"
+        }
+    ];
 
     return (
         <section id="features" className="py-32 px-6 relative bg-black overflow-hidden">
@@ -94,10 +96,10 @@ export function Features() {
                     className="text-center mb-20 space-y-4"
                 >
                     <h2 className="text-3xl md:text-4xl font-semibold text-white tracking-tight">
-                        Todo lo que necesitas para <span className="text-primary">Ganar</span>
+                        {t('title')} <span className="text-primary">{t('titleHighlight')}</span>
                     </h2>
                     <p className="text-zinc-400 max-w-xl mx-auto text-base">
-                        Potentes funciones en una interfaz impresionante. La simplicidad se encuentra con el poder.
+                        {t('subtitle')}
                     </p>
                 </motion.div>
 

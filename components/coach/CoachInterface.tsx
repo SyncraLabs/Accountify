@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -47,6 +49,7 @@ interface CoachInterfaceProps {
 }
 
 export function CoachInterface({ currentHabits }: CoachInterfaceProps) {
+    const t = useTranslations('coach');
     const router = useRouter();
     const [messages, setMessages] = useState<LocalChatMessage[]>([]);
     const [loading, setLoading] = useState(false);
@@ -108,7 +111,7 @@ export function CoachInterface({ currentHabits }: CoachInterfaceProps) {
             }
 
         } catch (error) {
-            toast.error("Error al comunicarse con el coach");
+            toast.error(t('communicationError'));
         } finally {
             setLoading(false);
         }
@@ -124,13 +127,13 @@ export function CoachInterface({ currentHabits }: CoachInterfaceProps) {
             if (result.error) {
                 toast.error(result.error);
             } else {
-                toast.success(`Rutina "${currentSuggestion.title}" creada!`);
+                toast.success(t('routineCreated', { title: currentSuggestion.title }));
 
                 // Add confirmation message
                 const confirmMessage: LocalChatMessage = {
                     id: crypto.randomUUID(),
                     role: 'assistant',
-                    content: `He creado la rutina "${currentSuggestion.title}" con ${currentSuggestion.habits.length} hábitos. Puedes verlos en tu calendario y dashboard.`,
+                    content: t('routineCreatedConfirm', { title: currentSuggestion.title, count: currentSuggestion.habits.length }),
                     timestamp: new Date()
                 };
                 setMessages(prev => [...prev, confirmMessage]);
@@ -142,7 +145,7 @@ export function CoachInterface({ currentHabits }: CoachInterfaceProps) {
                 }, 1500);
             }
         } catch (error) {
-            toast.error("Error al crear la rutina");
+            toast.error(t('routineCreatedError'));
         } finally {
             setCreating(false);
         }
@@ -150,7 +153,7 @@ export function CoachInterface({ currentHabits }: CoachInterfaceProps) {
 
     const handleModifyRequest = () => {
         // The user can just type their modification request
-        toast.info("Escribe qué te gustaría cambiar de la rutina");
+        toast.info(t('modifyRequest'));
     };
 
     const handleHabitChange = () => {
@@ -169,8 +172,8 @@ export function CoachInterface({ currentHabits }: CoachInterfaceProps) {
                         <Sparkles className="h-5 w-5 text-primary" />
                     </div>
                     <div>
-                        <h2 className="text-white font-semibold">AI Coach</h2>
-                        <p className="text-xs text-zinc-500">Tu entrenador de alto rendimiento</p>
+                        <h2 className="text-white font-semibold">{t('title')}</h2>
+                        <p className="text-xs text-zinc-500">{t('subtitle')}</p>
                     </div>
                 </div>
                 <HabitManagementPanel habits={habits} onHabitChange={handleHabitChange} />
@@ -182,8 +185,8 @@ export function CoachInterface({ currentHabits }: CoachInterfaceProps) {
                     /* Initial State - AnimatedAIChat */
                     <div className="flex-1 relative rounded-xl overflow-hidden">
                         <AnimatedAIChat
-                            title="¿Qué quieres lograr?"
-                            subtitle="Cuéntame tus objetivos y diseñaré una Rutina de Alto Rendimiento personalizada para ti."
+                            title={t('whatToAchieve')}
+                            subtitle={t('tellMeGoals')}
                             onSubmit={handleSendMessage}
                             isThinking={loading}
                         />
@@ -247,7 +250,7 @@ export function CoachInterface({ currentHabits }: CoachInterfaceProps) {
                                                     {/* Habits List */}
                                                     <div className="p-4 space-y-2">
                                                         <p className="text-xs text-zinc-500 uppercase tracking-wider mb-3">
-                                                            {message.suggestion.habits.length} Hábitos incluidos
+                                                            {t('habitsIncluded', { count: message.suggestion.habits.length })}
                                                         </p>
                                                         {message.suggestion.habits.map((habit, idx) => (
                                                             <CompactHabitCard
@@ -270,7 +273,7 @@ export function CoachInterface({ currentHabits }: CoachInterfaceProps) {
                                                                 className="flex-1 border-zinc-700 w-full"
                                                             >
                                                                 <RefreshCw className="h-4 w-4 mr-2" />
-                                                                Modificar
+                                                                {t('modify')}
                                                             </Button>
                                                             <Button
                                                                 onClick={handleAcceptRoutine}
@@ -280,12 +283,12 @@ export function CoachInterface({ currentHabits }: CoachInterfaceProps) {
                                                                 {creating ? (
                                                                     <>
                                                                         <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                                                                        Creando...
+                                                                        {t('creating')}
                                                                     </>
                                                                 ) : (
                                                                     <>
                                                                         <Check className="h-4 w-4 mr-2" />
-                                                                        Aceptar Rutina
+                                                                        {t('acceptRoutine')}
                                                                     </>
                                                                 )}
                                                             </Button>
@@ -342,7 +345,7 @@ export function CoachInterface({ currentHabits }: CoachInterfaceProps) {
                                 <input
                                     name="message"
                                     type="text"
-                                    placeholder="Escribe tu mensaje..."
+                                    placeholder={t('writeMessage')}
                                     disabled={loading}
                                     className="flex-1 bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
                                 />

@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { createClient } from '@/lib/supabase/client'
-import { getNotifications, getUnreadCount, markAsRead, markAllAsRead, type Notification } from '@/app/notifications/actions'
+import { getNotifications, getUnreadCount, markAsRead, markAllAsRead, type Notification } from '@/app/[locale]/notifications/actions'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 

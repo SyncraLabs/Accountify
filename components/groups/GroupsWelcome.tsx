@@ -2,41 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { Users, Trophy, MessageCircle, Share2, Target, Flame, Sparkles, ArrowRight } from 'lucide-react'
-
-const features = [
-    {
-        icon: MessageCircle,
-        title: 'Chat en Tiempo Real',
-        description: 'Comunícate con tu grupo al instante',
-        color: 'text-blue-400',
-        bgColor: 'bg-blue-500/10',
-        borderColor: 'border-blue-500/20'
-    },
-    {
-        icon: Trophy,
-        title: 'Retos Grupales',
-        description: 'Compite en desafíos con tu equipo',
-        color: 'text-amber-400',
-        bgColor: 'bg-amber-500/10',
-        borderColor: 'border-amber-500/20'
-    },
-    {
-        icon: Share2,
-        title: 'Comparte Hábitos',
-        description: 'Celebra tus logros con el grupo',
-        color: 'text-green-400',
-        bgColor: 'bg-green-500/10',
-        borderColor: 'border-green-500/20'
-    },
-    {
-        icon: Target,
-        title: 'Seguimiento de Progreso',
-        description: 'Mira el avance de cada miembro',
-        color: 'text-purple-400',
-        bgColor: 'bg-purple-500/10',
-        borderColor: 'border-purple-500/20'
-    }
-]
+import { useTranslations } from 'next-intl'
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -55,6 +21,43 @@ const itemVariants = {
 }
 
 export function GroupsWelcome({ className }: { className?: string }) {
+    const t = useTranslations('groups.welcome')
+
+    const features = [
+        {
+            icon: MessageCircle,
+            title: t('features.chat.title'),
+            description: t('features.chat.desc'),
+            color: 'text-blue-400',
+            bgColor: 'bg-blue-500/10',
+            borderColor: 'border-blue-500/20'
+        },
+        {
+            icon: Trophy,
+            title: t('features.challenges.title'),
+            description: t('features.challenges.desc'),
+            color: 'text-amber-400',
+            bgColor: 'bg-amber-500/10',
+            borderColor: 'border-amber-500/20'
+        },
+        {
+            icon: Share2,
+            title: t('features.share.title'),
+            description: t('features.share.desc'),
+            color: 'text-green-400',
+            bgColor: 'bg-green-500/10',
+            borderColor: 'border-green-500/20'
+        },
+        {
+            icon: Target,
+            title: t('features.progress.title'),
+            description: t('features.progress.desc'),
+            color: 'text-purple-400',
+            bgColor: 'bg-purple-500/10',
+            borderColor: 'border-purple-500/20'
+        }
+    ]
+
     return (
         <div className={`flex-1 flex flex-col items-center justify-center p-8 relative overflow-hidden ${className}`}>
             {/* Animated background gradients */}
@@ -73,17 +76,16 @@ export function GroupsWelcome({ className }: { className?: string }) {
                 <motion.div variants={itemVariants} className="mb-10">
                     <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-6">
                         <Sparkles className="h-4 w-4 text-primary" />
-                        <span className="text-xs font-medium text-primary">El corazón de Appcountability</span>
+                        <span className="text-xs font-medium text-primary">{t('badge')}</span>
                     </div>
 
                     <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">
-                        Grupos de{' '}
-                        <span className="text-primary">Disciplina</span>
+                        {t('titlePrefix')}{' '}
+                        <span className="text-primary">{t('titleSuffix')}</span>
                     </h1>
 
                     <p className="text-zinc-400 text-lg max-w-md mx-auto leading-relaxed">
-                        Conecta con personas que comparten tus metas.
-                        Juntos es más fácil mantener la disciplina.
+                        {t('description')}
                     </p>
                 </motion.div>
 
@@ -112,22 +114,22 @@ export function GroupsWelcome({ className }: { className?: string }) {
                     <div className="flex items-center justify-center gap-6 text-sm">
                         <div className="flex items-center gap-2 text-zinc-400">
                             <Users className="h-4 w-4 text-primary" />
-                            <span>Crea tu grupo</span>
+                            <span>{t('cta.create')}</span>
                         </div>
                         <ArrowRight className="h-4 w-4 text-zinc-600" />
                         <div className="flex items-center gap-2 text-zinc-400">
                             <Share2 className="h-4 w-4 text-primary" />
-                            <span>Invita amigos</span>
+                            <span>{t('cta.invite')}</span>
                         </div>
                         <ArrowRight className="h-4 w-4 text-zinc-600" />
                         <div className="flex items-center gap-2 text-zinc-400">
                             <Flame className="h-4 w-4 text-primary" />
-                            <span>Crece juntos</span>
+                            <span>{t('cta.grow')}</span>
                         </div>
                     </div>
 
                     <p className="text-xs text-zinc-500 mt-6">
-                        Selecciona un grupo del panel izquierdo para comenzar
+                        {t('selectGroup')}
                     </p>
                 </motion.div>
             </motion.div>

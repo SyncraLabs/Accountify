@@ -1,8 +1,9 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { useTranslations } from "next-intl"
 import { Trophy, ChevronRight, Flame, Users } from "lucide-react"
-import { getGroupChallenges } from "@/app/groups/actions"
+import { getGroupChallenges } from "@/app/[locale]/groups/actions"
 import { Progress } from "@/components/ui/progress"
 import { cn } from "@/lib/utils"
 
@@ -15,6 +16,7 @@ export function ChallengeProgressBar({ groupId, onOpenChallenges }: ChallengePro
     const [challenges, setChallenges] = useState<any[]>([])
     const [activeIndex, setActiveIndex] = useState(0)
     const [loading, setLoading] = useState(true)
+    const t = useTranslations('groups.challenges')
 
     useEffect(() => {
         setLoading(true)
@@ -52,10 +54,10 @@ export function ChallengeProgressBar({ groupId, onOpenChallenges }: ChallengePro
             >
                 <div className="flex items-center gap-2 text-zinc-500">
                     <Trophy className="h-4 w-4" />
-                    <span className="text-xs">Sin retos activos</span>
+                    <span className="text-xs">{t('bar.empty')}</span>
                 </div>
                 <div className="flex items-center gap-1 text-xs text-primary group-hover:translate-x-1 transition-transform">
-                    <span>Ver retos</span>
+                    <span>{t('bar.view')}</span>
                     <ChevronRight className="h-3 w-3" />
                 </div>
             </button>
@@ -103,10 +105,10 @@ export function ChallengeProgressBar({ groupId, onOpenChallenges }: ChallengePro
                         <span className={cn(
                             "text-[10px] font-medium px-1.5 py-0.5 rounded",
                             daysLeft <= 1 ? "bg-red-500/20 text-red-400" :
-                            daysLeft <= 3 ? "bg-amber-500/20 text-amber-400" :
-                            "bg-zinc-800 text-zinc-400"
+                                daysLeft <= 3 ? "bg-amber-500/20 text-amber-400" :
+                                    "bg-zinc-800 text-zinc-400"
                         )}>
-                            {daysLeft === 0 ? "Hoy" : daysLeft === 1 ? "1 dia" : `${daysLeft} dias`}
+                            {daysLeft === 0 ? t('labels.today') : daysLeft === 1 ? t('labels.dayLeft') : t('labels.daysLeft', { count: daysLeft })}
                         </span>
                         <ChevronRight className="h-4 w-4 text-zinc-600 group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
                     </div>

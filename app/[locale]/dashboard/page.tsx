@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { getLocale, getTranslations } from "next-intl/server";
 import { AppSidebar } from "@/components/layout/AppSidebar";
 import { MobileNav } from "@/components/layout/MobileNav";
 import { DashboardStats } from "@/components/dashboard/DashboardStats";
@@ -9,14 +10,15 @@ import { DashboardRoutineGroup } from "@/components/dashboard/DashboardRoutineGr
 import { DashboardGroupCard } from "@/components/dashboard/DashboardGroupCard";
 import { WeeklyActivityChart } from "@/components/dashboard/WeeklyActivityChart";
 import { DashboardClient } from "@/components/dashboard/DashboardClient";
-import { getUserGroups } from "@/app/groups/actions";
-import { hasCompletedAppOnboarding } from "@/app/onboarding/actions";
+import { getUserGroups } from "@/app/[locale]/groups/actions";
+import { hasCompletedAppOnboarding } from "@/app/[locale]/onboarding/actions";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Plus } from "lucide-react";
-import Image from "next/image";
 import { BrandLogo } from "@/components/ui/BrandLogo";
 
 export default async function Dashboard() {
+    const t = await getTranslations('dashboard');
+    const locale = await getLocale();
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -76,10 +78,6 @@ export default async function Dashboard() {
 
     const weeklyData = last7Days.map(date => {
         const dateString = date.toISOString().split('T')[0];
-        const dayLabel = date.toLocaleDateString('es-ES', { weekday: 'short' }).replace('.', '').slice(0, 1).toUpperCase(); // M, T, W... in Spanish
-        // For full short name: date.toLocaleDateString('es-ES', { weekday: 'short' }) -> "lun", "mar", etc.
-        // User requested "beautiful graph", maybe I'll stick to short 3-letter or 1-letter.
-        // The image shows "M T W T F S S". I'll try to match that single letter style or short.
 
         let count = 0;
         habitsWithCompletion.forEach(habit => {
@@ -91,7 +89,7 @@ export default async function Dashboard() {
         return {
             date: dateString,
             count,
-            label: date.toLocaleDateString('es-ES', { weekday: 'short' }).slice(0, 1).toUpperCase()
+            label: date.toLocaleDateString(locale, { weekday: 'short' }).slice(0, 1).toUpperCase()
         };
     });
 
@@ -115,11 +113,18 @@ export default async function Dashboard() {
                 <main className="md:pl-64 flex-1 relative bg-black min-h-screen">
                     <div className="h-full px-8 py-8 pb-24 md:pb-8 space-y-8 max-w-[1600px] mx-auto">
                         {/* Header */}
-                        <div className="flex flex-col gap-1 mb-8">
-                            <BrandLogo size="lg" className="mb-2" />
-                            <p className="text-zinc-500">
-                                Tu centro de control para la excelencia personal.
-                            </p>
+                        <div className="flex flex-col gap-2 mb-8">
+                            <div className="flex items-center gap-3">
+                                <BrandLogo size="lg" showText={false} />
+                                <div>
+                                    <h1 className="text-3xl font-bold bg-gradient-to-r from-white via-white to-zinc-400 bg-clip-text text-transparent">
+                                        {t('welcome')}
+                                    </h1>
+                                    <p className="text-zinc-500 text-sm">
+                                        {t('subtitle')}
+                                    </p>
+                                </div>
+                            </div>
                         </div>
 
                         {/* Stats Row */}
@@ -134,10 +139,10 @@ export default async function Dashboard() {
                             {/* Main Column: Habits */}
                             <div className="lg:col-span-2 space-y-6">
                                 <div className="flex items-center justify-between">
-                                    <h3 className="text-xl font-semibold text-white">Hábitos de Hoy</h3>
+                                    <h3 className="text-xl font-semibold text-white">{t('todaysHabits')}</h3>
                                     <Link href="/calendar">
                                         <Button variant="ghost" className="text-zinc-400 hover:text-white">
-                                            Ver Calendario <ArrowRight className="ml-2 h-4 w-4" />
+                                            {t('viewCalendar')} <ArrowRight className="ml-2 h-4 w-4" />
                                         </Button>
                                     </Link>
                                 </div>
@@ -145,9 +150,9 @@ export default async function Dashboard() {
                                 <div className="space-y-3">
                                     {habitsWithCompletion.length === 0 ? (
                                         <div className="p-8 border border-dashed border-zinc-800 rounded-xl text-center bg-zinc-950/50">
-                                            <p className="text-zinc-500 text-sm mb-4">No has creado hábitos aún.</p>
+                                            <p className="text-zinc-500 text-sm mb-4">{t('noHabits')}</p>
                                             <Link href="/coach">
-                                                <Button size="sm" className="bg-primary text-black hover:bg-primary/90">Crear con AI Coach</Button>
+                                                <Button size="sm" className="bg-primary text-black hover:bg-primary/90">{t('createWithAI')}</Button>
                                             </Link>
                                         </div>
                                     ) : (
@@ -175,7 +180,7 @@ export default async function Dashboard() {
                                 {/* Groups Section */}
                                 <div className="space-y-4">
                                     <div className="flex items-center justify-between">
-                                        <h3 className="text-lg font-semibold text-white">Tus Grupos</h3>
+                                        <h3 className="text-lg font-semibold text-white">{t('yourGroups')}</h3>
                                         <Link href="/groups">
                                             <Button variant="ghost" size="icon" className="h-8 w-8 text-zinc-400 hover:text-white">
                                                 <Plus className="h-4 w-4" />
@@ -186,9 +191,9 @@ export default async function Dashboard() {
                                     <div className="space-y-3">
                                         {displayedGroups.length === 0 ? (
                                             <div className="p-6 border border-dashed border-zinc-800 rounded-xl text-center bg-zinc-950/50">
-                                                <p className="text-zinc-500 text-xs mb-3">No estás en ningún grupo aún.</p>
+                                                <p className="text-zinc-500 text-xs mb-3">{t('noGroups')}</p>
                                                 <Link href="/groups">
-                                                    <Button variant="outline" size="sm" className="border-zinc-700 text-zinc-300 hover:text-white hover:bg-zinc-800">Buscar Grupos</Button>
+                                                    <Button variant="outline" size="sm" className="border-zinc-700 text-zinc-300 hover:text-white hover:bg-zinc-800">{t('searchGroups')}</Button>
                                                 </Link>
                                             </div>
                                         ) : (
@@ -199,7 +204,7 @@ export default async function Dashboard() {
                                     </div>
                                     {userGroups.length > 3 && (
                                         <Link href="/groups" className="block text-center text-xs text-zinc-500 hover:text-primary transition-colors">
-                                            Ver todos los {userGroups.length} grupos
+                                            {t('viewAllGroups', { count: userGroups.length })}
                                         </Link>
                                     )}
                                 </div>
@@ -208,14 +213,14 @@ export default async function Dashboard() {
                                 <div className="bg-[#0f0f10] border border-zinc-800 rounded-xl p-6">
                                     <div className="flex items-center justify-between mb-6">
                                         <div>
-                                            <h3 className="text-base font-semibold text-white">Actividad Semanal</h3>
-                                            <p className="text-xs text-zinc-500">Últimos 7 días</p>
+                                            <h3 className="text-base font-semibold text-white">{t('weeklyActivity')}</h3>
+                                            <p className="text-xs text-zinc-500">{t('last7Days')}</p>
                                         </div>
                                         <div className="text-right">
                                             <div className="text-2xl font-bold text-white">
                                                 {habitsWithCompletion.reduce((acc, h) => acc + (h.habit_logs?.length || 0), 0)}
                                             </div>
-                                            <p className="text-xs text-zinc-500">Completados Totales</p>
+                                            <p className="text-xs text-zinc-500">{t('totalCompleted')}</p>
                                         </div>
                                     </div>
                                     <WeeklyActivityChart data={weeklyData} />

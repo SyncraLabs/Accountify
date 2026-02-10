@@ -9,7 +9,11 @@ import { Users, Trophy, Flame, MessageCircle, Sparkles } from 'lucide-react'
 
 import { GroupsWelcome } from './GroupsWelcome'
 
+import { useTranslations } from 'next-intl'
+
 export function Sidebar({ groups, selectedGroupId }: { groups: any[], selectedGroupId?: string }) {
+    const t = useTranslations('groups.sidebar')
+
     return (
         <div className="w-full md:w-80 border-r border-zinc-800/50 bg-zinc-950 flex flex-col h-full relative">
             {/* Gradient overlay */}
@@ -22,8 +26,8 @@ export function Sidebar({ groups, selectedGroupId }: { groups: any[], selectedGr
                         <Users className="h-4 w-4 text-primary" />
                     </div>
                     <div>
-                        <h2 className="text-sm font-semibold text-white">Grupos de Disciplina</h2>
-                        <p className="text-[10px] text-zinc-500">Conecta y crece con tu comunidad</p>
+                        <h2 className="text-sm font-semibold text-white">{t('title')}</h2>
+                        <p className="text-[10px] text-zinc-500">{t('subtitle')}</p>
                     </div>
                 </div>
                 <div className="flex gap-2">
@@ -47,16 +51,16 @@ export function Sidebar({ groups, selectedGroupId }: { groups: any[], selectedGr
                         <div className="w-16 h-16 rounded-2xl bg-zinc-900/80 border border-zinc-800 flex items-center justify-center mb-4">
                             <Sparkles className="h-7 w-7 text-zinc-600" />
                         </div>
-                        <h3 className="text-sm font-medium text-zinc-300 mb-1">Sin grupos todavía</h3>
+                        <h3 className="text-sm font-medium text-zinc-300 mb-1">{t('noGroups')}</h3>
                         <p className="text-xs text-zinc-500 max-w-[200px]">
-                            Crea tu primer grupo o únete a uno existente para empezar a compartir tu progreso.
+                            {t('createFirst')}
                         </p>
                     </div>
                 ) : (
                     <>
                         <div className="flex items-center justify-between px-1 mb-2">
                             <span className="text-[10px] font-medium text-zinc-500 uppercase tracking-wider">
-                                Tus Grupos ({groups.length})
+                                {t('yourGroups')} ({groups.length})
                             </span>
                         </div>
                         {groups.map(group => (
@@ -95,22 +99,22 @@ export function Sidebar({ groups, selectedGroupId }: { groups: any[], selectedGr
                                         )}
                                     </div>
                                     <span className="text-xs text-zinc-500 truncate mt-0.5">
-                                        {group.description || 'Grupo de accountability'}
+                                        {group.description || t('defaultDesc')}
                                     </span>
 
                                     {/* Feature Pills - Hidden on mobile */}
                                     <div className="hidden md:flex items-center gap-2 mt-2">
                                         <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-zinc-800/80 text-[10px] text-zinc-400">
                                             <MessageCircle className="h-3 w-3" />
-                                            <span>Chat</span>
+                                            <span>{t('features.chat')}</span>
                                         </div>
                                         <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-zinc-800/80 text-[10px] text-zinc-400">
                                             <Trophy className="h-3 w-3 text-amber-500" />
-                                            <span>Retos</span>
+                                            <span>{t('features.challenges')}</span>
                                         </div>
                                         <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-zinc-800/80 text-[10px] text-zinc-400">
                                             <Flame className="h-3 w-3 text-orange-500" />
-                                            <span>Progreso</span>
+                                            <span>{t('features.progress')}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -128,8 +132,8 @@ export function Sidebar({ groups, selectedGroupId }: { groups: any[], selectedGr
                             <Trophy className="h-4 w-4 text-primary" />
                         </div>
                         <div className="flex-1">
-                            <p className="text-xs font-medium text-zinc-200">Comparte tu progreso</p>
-                            <p className="text-[10px] text-zinc-500">Tus hábitos pueden inspirar a otros</p>
+                            <p className="text-xs font-medium text-zinc-200">{t('shareProgress')}</p>
+                            <p className="text-[10px] text-zinc-500">{t('inspireOthers')}</p>
                         </div>
                     </div>
                 </div>

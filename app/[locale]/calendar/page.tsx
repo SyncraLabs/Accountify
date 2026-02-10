@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 import { AppSidebar } from "@/components/layout/AppSidebar";
 import { MobileNav } from "@/components/layout/MobileNav";
@@ -6,6 +7,8 @@ import { HabitCalendar } from "@/components/habits/HabitCalendar";
 import { Calendar } from "lucide-react";
 
 export default async function CalendarPage() {
+    const t = await getTranslations('calendar');
+    const tNav = await getTranslations('navigation');
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -13,7 +16,7 @@ export default async function CalendarPage() {
         redirect("/login");
     }
 
-    // Fetch habits with their logs
+    // Fetch habits with their logs (unchanged logic)
     const { data: habits } = await supabase
         .from('habits')
         .select(`
@@ -53,11 +56,11 @@ export default async function CalendarPage() {
                     <div className="flex flex-col gap-2">
                         <div className="flex items-center gap-2 text-primary">
                             <Calendar className="h-4 w-4" />
-                            <span className="text-xs font-medium uppercase tracking-wider">Calendario</span>
+                            <span className="text-xs font-medium uppercase tracking-wider">{tNav('calendar')}</span>
                         </div>
-                        <h1 className="text-2xl font-semibold text-white">Tu Legado</h1>
+                        <h1 className="text-2xl font-semibold text-white">{t('pageTitle')}</h1>
                         <p className="text-sm text-zinc-500 max-w-md">
-                            Visualiza tu progreso. Cada día cuenta. No rompas la cadena.
+                            {t('pageSubtitle')}
                         </p>
                     </div>
 

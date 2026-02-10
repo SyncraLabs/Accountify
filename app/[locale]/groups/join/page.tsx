@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { joinGroup } from '@/app/groups/actions'
+import { joinGroup } from '@/app/[locale]/groups/actions'
 import { Button } from '@/components/ui/button'
 import { Loader2, Users, CheckCircle, XCircle } from 'lucide-react'
 import { toast } from 'sonner'

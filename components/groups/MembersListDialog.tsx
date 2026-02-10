@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { getGroupMembers, promoteToAdmin, demoteFromAdmin, removeMember } from '@/app/groups/actions'
+import { getGroupMembers, promoteToAdmin, demoteFromAdmin, removeMember } from '@/app/[locale]/groups/actions'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'

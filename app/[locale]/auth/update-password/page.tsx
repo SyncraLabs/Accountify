@@ -3,16 +3,15 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { resetPassword } from "@/app/auth/actions"
+import { updatePassword } from "@/app/[locale]/auth/actions"
 import { toast } from "sonner"
 import { useEffect, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
-import Link from "next/link"
 import Image from "next/image"
-import { Mail, ArrowLeft, Loader2 } from "lucide-react"
+import { Lock, Loader2 } from "lucide-react"
 import { useFormStatus } from "react-dom"
 
-function ForgotPasswordForm() {
+function UpdatePasswordForm() {
     const searchParams = useSearchParams()
     const message = searchParams.get('message')
 
@@ -21,12 +20,11 @@ function ForgotPasswordForm() {
             if (message.includes("Error")) {
                 toast.error(message.replace("Error:", ""))
             } else {
-                toast.success(message)
+                toast.info(message)
             }
         }
     }, [message])
 
-    // Client component for the button to show loading state
     function SubmitButton() {
         const { pending } = useFormStatus()
 
@@ -36,7 +34,7 @@ function ForgotPasswordForm() {
                 disabled={pending}
                 className="w-full h-11 bg-primary text-black hover:bg-primary/90 font-bold tracking-wide transition-all shadow-[0_0_20px_rgba(var(--primary-rgb),0.3)] hover:shadow-[0_0_30px_rgba(var(--primary-rgb),0.5)]"
             >
-                {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : "Enviar Instrucciones"}
+                {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : "Actualizar Contraseña"}
             </Button>
         )
     }
@@ -56,23 +54,38 @@ function ForgotPasswordForm() {
                         className="object-contain"
                     />
                 </div>
-                <h1 className="text-2xl font-bold text-white tracking-tight">Recuperar Contraseña</h1>
+                <h1 className="text-2xl font-bold text-white tracking-tight">Nueva Contraseña</h1>
                 <p className="text-sm text-zinc-400 mt-2 text-center max-w-[280px]">
-                    Ingresa tu email y te enviaremos un enlace para restablecer tu acceso.
+                    Ingresa tu nueva contraseña para recuperar el acceso a tu cuenta.
                 </p>
             </div>
 
-            <form action={resetPassword} className="relative z-10 space-y-5">
+            <form action={updatePassword} className="relative z-10 space-y-5">
                 <div className="space-y-2">
-                    <Label htmlFor="email" className="text-xs font-semibold text-zinc-400 uppercase tracking-wider ml-1">Email</Label>
+                    <Label htmlFor="password" className="text-xs font-semibold text-zinc-400 uppercase tracking-wider ml-1">Nueva Contraseña</Label>
                     <div className="relative group">
-                        <Mail className="absolute left-3 top-2.5 h-4 w-4 text-zinc-500 group-hover:text-zinc-300 transition-colors" />
+                        <Lock className="absolute left-3 top-2.5 h-4 w-4 text-zinc-500 group-hover:text-zinc-300 transition-colors" />
                         <Input
-                            id="email"
-                            name="email"
-                            type="email"
-                            placeholder="tu@email.com"
+                            id="password"
+                            name="password"
+                            type="password"
                             required
+                            placeholder="Min. 6 caracteres"
+                            className="pl-9 h-10 bg-zinc-900/50 border-white/10 text-white placeholder:text-zinc-600 focus:border-primary/50 focus:ring-primary/20 transition-all"
+                        />
+                    </div>
+                </div>
+
+                <div className="space-y-2">
+                    <Label htmlFor="confirmPassword" className="text-xs font-semibold text-zinc-400 uppercase tracking-wider ml-1">Confirmar Contraseña</Label>
+                    <div className="relative group">
+                        <Lock className="absolute left-3 top-2.5 h-4 w-4 text-zinc-500 group-hover:text-zinc-300 transition-colors" />
+                        <Input
+                            id="confirmPassword"
+                            name="confirmPassword"
+                            type="password"
+                            required
+                            placeholder="Repite tu contraseña"
                             className="pl-9 h-10 bg-zinc-900/50 border-white/10 text-white placeholder:text-zinc-600 focus:border-primary/50 focus:ring-primary/20 transition-all"
                         />
                     </div>
@@ -81,22 +94,16 @@ function ForgotPasswordForm() {
                 <div className="pt-2">
                     <SubmitButton />
                 </div>
-
-                <div className="text-center">
-                    <Link href="/login" className="inline-flex items-center text-sm text-zinc-500 hover:text-white transition-colors">
-                        <ArrowLeft className="mr-2 h-4 w-4" /> Volver a Iniciar Sesión
-                    </Link>
-                </div>
             </form>
         </div>
     )
 }
 
-export default function ForgotPasswordPage() {
+export default function UpdatePasswordPage() {
     return (
         <div className="flex h-screen items-center justify-center bg-black p-4 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]">
             <Suspense fallback={<div className="text-zinc-500">Cargando...</div>}>
-                <ForgotPasswordForm />
+                <UpdatePasswordForm />
             </Suspense>
         </div>
     )

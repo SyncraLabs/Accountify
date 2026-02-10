@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from "react"
-import { getGroupChallenges, joinChallenge, leaveChallenge, logChallengeProgress } from "@/app/groups/actions"
+import { getGroupChallenges, joinChallenge, leaveChallenge, logChallengeProgress } from "@/app/[locale]/groups/actions"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { Trophy, Users, Calendar, ArrowRight, Loader2, Target, CheckCircle2 } from "lucide-react"

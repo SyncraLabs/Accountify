@@ -36,28 +36,32 @@ import {
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 
-const formSchema = z.object({
-    title: z.string().min(2, {
-        message: "El título debe tener al menos 2 caracteres.",
-    }),
-    category: z.string().min(1, {
-        message: "Selecciona una categoría.",
-    }),
-    frequency: z.string().min(1, {
-        message: "Selecciona una frecuencia.",
-    }),
-    description: z.string().optional(),
-})
-
-type FormValues = z.infer<typeof formSchema>
+import { useTranslations } from "next-intl";
 
 interface CreateHabitModalProps {
     trigger?: React.ReactNode;
-    onSuccess?: (data: FormValues) => void;
+    onSuccess?: (data: any) => void;
 }
 
 export function CreateHabitModal({ trigger, onSuccess }: CreateHabitModalProps) {
+    const t = useTranslations('habits');
+    const tCommon = useTranslations('common');
     const [open, setOpen] = useState(false);
+
+    const formSchema = z.object({
+        title: z.string().min(2, {
+            message: t('validation.titleMinChars'),
+        }),
+        category: z.string().min(1, {
+            message: t('validation.selectCategory'),
+        }),
+        frequency: z.string().min(1, {
+            message: t('validation.selectFrequency'),
+        }),
+        description: z.string().optional(),
+    })
+
+    type FormValues = z.infer<typeof formSchema>
 
     const form = useForm<FormValues>({
         resolver: zodResolver(formSchema),
@@ -78,13 +82,13 @@ export function CreateHabitModal({ trigger, onSuccess }: CreateHabitModalProps) 
                 toast.error(result.error)
                 return
             }
-            toast.success("¡Hábito creado exitosamente!")
+            toast.success(t('habitCreatedSuccess'))
             if (onSuccess) onSuccess(values)
             form.reset()
             setOpen(false)
         } catch (e) {
             console.error("Submission failed", e)
-            toast.error("Error al crear el hábito")
+            toast.error(t('habitCreatedError'))
         }
     }
 
@@ -93,15 +97,15 @@ export function CreateHabitModal({ trigger, onSuccess }: CreateHabitModalProps) 
             <DialogTrigger asChild>
                 {trigger || (
                     <Button>
-                        <Plus className="mr-2 h-4 w-4" /> Nuevo Hábito
+                        <Plus className="mr-2 h-4 w-4" /> {t('newHabit')}
                     </Button>
                 )}
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
-                    <DialogTitle>Crear Nuevo Hábito</DialogTitle>
+                    <DialogTitle>{t('createNewHabit')}</DialogTitle>
                     <DialogDescription>
-                        Define tu nueva rutina. La consistencia es la clave.
+                        {t('defineRoutine')}
                     </DialogDescription>
                 </DialogHeader>
                 <Form {...form}>
@@ -111,9 +115,9 @@ export function CreateHabitModal({ trigger, onSuccess }: CreateHabitModalProps) 
                             name="title"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Título</FormLabel>
+                                    <FormLabel>{t('title')}</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="Ej. Leer 30 min, Gym..." {...field} />
+                                        <Input placeholder={t('titlePlaceholder')} {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -125,18 +129,18 @@ export function CreateHabitModal({ trigger, onSuccess }: CreateHabitModalProps) 
                             name="category"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Categoría</FormLabel>
+                                    <FormLabel>{t('category')}</FormLabel>
                                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                                         <FormControl>
                                             <SelectTrigger>
-                                                <SelectValue placeholder="Selecciona una categoría" />
+                                                <SelectValue placeholder={t('selectCategory')} />
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>
-                                            <SelectItem value="health">Salud & Fitness</SelectItem>
-                                            <SelectItem value="mindset">Mindset & Aprendizaje</SelectItem>
-                                            <SelectItem value="productivity">Productividad</SelectItem>
-                                            <SelectItem value="finance">Finanzas</SelectItem>
+                                            <SelectItem value="health">{tCommon('categories.health')}</SelectItem>
+                                            <SelectItem value="mindset">{tCommon('categories.mindset')}</SelectItem>
+                                            <SelectItem value="productivity">{tCommon('categories.productivity')}</SelectItem>
+                                            <SelectItem value="finance">{t('categories.finance')}</SelectItem>
                                         </SelectContent>
                                     </Select>
                                     <FormMessage />
@@ -149,21 +153,21 @@ export function CreateHabitModal({ trigger, onSuccess }: CreateHabitModalProps) 
                             name="frequency"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Frecuencia</FormLabel>
+                                    <FormLabel>{t('frequency')}</FormLabel>
                                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                                         <FormControl>
                                             <SelectTrigger>
-                                                <SelectValue placeholder="Frecuencia" />
+                                                <SelectValue placeholder={t('frequency')} />
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>
-                                            <SelectItem value="daily">Diario</SelectItem>
-                                            <SelectItem value="weekdays">Lunes a Viernes</SelectItem>
-                                            <SelectItem value="weekends">Fines de semana</SelectItem>
-                                            <SelectItem value="3x_week">3 veces por semana</SelectItem>
-                                            <SelectItem value="4x_week">4 veces por semana</SelectItem>
-                                            <SelectItem value="5x_week">5 veces por semana</SelectItem>
-                                            <SelectItem value="weekly">1 vez por semana</SelectItem>
+                                            <SelectItem value="daily">{tCommon('frequencies.daily')}</SelectItem>
+                                            <SelectItem value="weekdays">{t('frequencies.weekdays')}</SelectItem>
+                                            <SelectItem value="weekends">{t('frequencies.weekends')}</SelectItem>
+                                            <SelectItem value="3x_week">{t('frequencies.3xWeek')}</SelectItem>
+                                            <SelectItem value="4x_week">{t('frequencies.4xWeek')}</SelectItem>
+                                            <SelectItem value="5x_week">{t('frequencies.5xWeek')}</SelectItem>
+                                            <SelectItem value="weekly">{tCommon('frequencies.weekly')}</SelectItem>
                                         </SelectContent>
                                     </Select>
                                     <FormMessage />
@@ -176,10 +180,10 @@ export function CreateHabitModal({ trigger, onSuccess }: CreateHabitModalProps) 
                             name="description"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Motivación (Opcional)</FormLabel>
+                                    <FormLabel>{t('motivation')}</FormLabel>
                                     <FormControl>
                                         <Textarea
-                                            placeholder="¿Por qué quieres hacer esto?"
+                                            placeholder={t('motivationPlaceholder')}
                                             className="resize-none"
                                             {...field}
                                         />
@@ -190,7 +194,7 @@ export function CreateHabitModal({ trigger, onSuccess }: CreateHabitModalProps) 
                         />
 
                         <DialogFooter>
-                            <Button type="submit">Crear Hábito</Button>
+                            <Button type="submit">{t('createHabit')}</Button>
                         </DialogFooter>
                     </form>
                 </Form>

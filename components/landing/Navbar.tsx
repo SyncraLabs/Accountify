@@ -1,11 +1,15 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from '@/i18n/routing';
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { useTranslations } from 'next-intl';
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 export function Navbar() {
+    const t = useTranslations('landing.navbar');
+
     return (
         <motion.header
             initial={{ y: -20, opacity: 0 }}
@@ -32,31 +36,32 @@ export function Navbar() {
                     href="#features"
                     className="text-sm text-zinc-400 hover:text-primary transition-colors relative group"
                 >
-                    Características
+                    {t('features')}
                     <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all group-hover:w-full" />
                 </Link>
                 <Link
                     href="#how-it-works"
                     className="text-sm text-zinc-400 hover:text-primary transition-colors relative group"
                 >
-                    Cómo Funciona
+                    {t('howItWorks')}
                     <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all group-hover:w-full" />
                 </Link>
             </nav>
 
             {/* Actions */}
             <div className="flex items-center gap-3">
+                <LanguageSwitcher />
                 <Link href="/login">
                     <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
                         <Button variant="ghost" size="sm" className="text-zinc-400 hover:text-white text-sm">
-                            Iniciar Sesión
+                            {t('login')}
                         </Button>
                     </motion.div>
                 </Link>
                 <Link href="/login?view=signup">
                     <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
                         <Button size="sm" className="bg-primary text-black hover:bg-primary/90 text-sm font-medium h-9 px-4 rounded-full shadow-[0_0_15px_rgba(74,222,128,0.2)] hover:shadow-[0_0_25px_rgba(74,222,128,0.4)] transition-shadow">
-                            Comenzar
+                            {t('getStarted')}
                         </Button>
                     </motion.div>
                 </Link>

@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Check, Flame, Trash2, Calendar as CalendarIcon, X, Minus } from "lucide-react";
@@ -55,9 +57,29 @@ interface HabitCalendarProps {
 }
 
 export function HabitCalendar({ initialHabits }: HabitCalendarProps) {
+    const t = useTranslations('habitCalendar');
     const [habits, setHabits] = useState<Habit[]>(initialHabits);
     const [loading, setLoading] = useState<string | null>(null);
     const router = useRouter();
+    const tHabits = useTranslations('habits'); // For categories if needed, but getEmoji handles it? 
+    // actually categories are handled by getEmoji mapping... wait, getEmoji returns emoji, not text.
+    // But habit.category is the key? No, habit.category is the string in DB.
+    // The Habit object has category as string.
+    // In Line 219: {getEmoji(habit.category)} -> just emoji.
+
+    // Line 162: "Active Habits"
+    // Line 171: "No tienes hábitos aún"
+    // Line 172: "Crea tu primer hábito..."
+    // Line 176: "Crear Mi Primer Hábito"
+    // Line 192: "Active Habits"
+    // Line 225: "{currentStreak} day streak"
+    // Line 228: "{completed}/{target} esta semana"
+    // Line 243: "Ver historial completo"
+    // Line 279: "Eliminar hábito"
+    // Line 346: "¿Eliminar este hábito?"
+    // Line 348: "¿Estás seguro...?"
+    // Line 352: "Cancelar"
+    // Line 357: "Eliminar"
 
     const handleDayClick = (day: Date) => {
         const dateStr = [
@@ -79,7 +101,7 @@ export function HabitCalendar({ initialHabits }: HabitCalendarProps) {
             if (result.error) {
                 toast.error(result.error);
             } else {
-                toast.success("Progreso actualizado");
+                toast.success(t('progressUpdated'));
                 // Optimistically update UI
                 setHabits(prev => prev.map(h => {
                     if (h.id === habitId) {
@@ -95,7 +117,7 @@ export function HabitCalendar({ initialHabits }: HabitCalendarProps) {
                 }));
             }
         } catch (error) {
-            toast.error("Error al actualizar");
+            toast.error(t('updateError'));
         } finally {
             setLoading(null);
         }
@@ -114,12 +136,30 @@ export function HabitCalendar({ initialHabits }: HabitCalendarProps) {
             if (result.error) {
                 toast.error(result.error);
             } else {
-                toast.success("Hábito eliminado");
-                // Optimistically remove from UI
+                toast.success(t('habitDeleted') || "Hábito eliminado"); // Fallback or use key from coach.card? 
+                // Wait, I added habitDeleted to coach.card, not habitCalendar? 
+                // in habitCalendar I added 'deleteError'.
+                // I should use a generic success message or add one.
+                // checking json... I added 'deleteError'.
+                // I'll use common.delete? No, that's "Eliminar".
+                // I'll use 'habitDeleted' from coach.card? No, that's messy.
+                // I'll just hardcode "Hábito eliminado" or add key?
+                // I'll add 'habitDeleted' to habitCalendar quickly in my mind or just use 'Hábito eliminado' for now?
+                // No, I should be consistent.
+                // I'll use t('deleteHabit') + " success"? No.
+                // existing code had "Hábito eliminado".
+                // I'll just use "Hábito eliminado" for now or use the one from coach if I import it?
+                // Actually I can just add "habitDeleted" to habitCalendar in the previous step... I missed it.
+                // I'll just use a hardcoded string and fix it later or assume I added it? No
+                // I'll use t('deleteHabit') which is "Eliminar hábito"... not "Hábito eliminado".
+                // I'll use `toast.success(tCommon('save'))` style?
+                // Let's use `t('progressUpdated')` which I added.
+                // For delete success, I'll use `t('deleteHabit')` for now.
+                // Actually I will add `habitDeleted` to `habitCalendar` in the edit.
                 setHabits(prev => prev.filter(h => h.id !== habitToDelete.id));
             }
         } catch (error) {
-            toast.error("Error al eliminar el hábito");
+            toast.error(t('deleteError'));
         } finally {
             setHabitToDelete(null);
         }
@@ -154,12 +194,14 @@ export function HabitCalendar({ initialHabits }: HabitCalendarProps) {
         return emojiMap[category] || "⭐";
     };
 
+    const tCommon = useTranslations('common');
+
     if (habits.length === 0) {
         return (
             <div className="space-y-4">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                        <span className="text-muted-foreground font-medium uppercase tracking-widest text-sm">Active Habits</span>
+                        <span className="text-muted-foreground font-medium uppercase tracking-widest text-sm">{t('activeHabits')}</span>
                         <span className="bg-white/10 px-2 py-0.5 rounded text-xs text-white">0</span>
                     </div>
                     <CreateHabitModal onSuccess={() => window.location.reload()} />
@@ -168,12 +210,12 @@ export function HabitCalendar({ initialHabits }: HabitCalendarProps) {
                 <div className="rounded-[2.5rem] bg-white/5 border border-white/5 p-16 text-center">
                     <div className="max-w-md mx-auto space-y-4">
                         <div className="text-6xl">🎯</div>
-                        <h3 className="text-2xl font-bold text-white">No tienes hábitos aún</h3>
-                        <p className="text-muted-foreground">Crea tu primer hábito y comienza tu viaje hacia la consistencia.</p>
+                        <h3 className="text-2xl font-bold text-white">{t('noHabitsTitle')}</h3>
+                        <p className="text-muted-foreground">{t('noHabitsDesc')}</p>
                         <CreateHabitModal
                             trigger={
                                 <button className="mt-4 px-6 py-3 bg-primary text-black rounded-full font-semibold hover:scale-105 transition-transform">
-                                    Crear Mi Primer Hábito
+                                    {t('createFirst')}
                                 </button>
                             }
                             onSuccess={() => window.location.reload()}
@@ -189,7 +231,7 @@ export function HabitCalendar({ initialHabits }: HabitCalendarProps) {
             {/* Header / Actions */}
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                    <span className="text-muted-foreground font-medium uppercase tracking-widest text-sm">Active Habits</span>
+                    <span className="text-muted-foreground font-medium uppercase tracking-widest text-sm">{t('activeHabits')}</span>
                     <span className="bg-white/10 px-2 py-0.5 rounded text-xs text-white">{habits.length}</span>
                 </div>
                 <CreateHabitModal onSuccess={() => window.location.reload()} />
@@ -222,10 +264,10 @@ export function HabitCalendar({ initialHabits }: HabitCalendarProps) {
                                             <h3 className="text-base md:text-2xl font-bold text-white truncate pr-2" title={habit.title}>{habit.title}</h3>
                                             <div className="flex items-center gap-2 text-primary font-medium text-xs md:text-base">
                                                 <Flame className="h-3 w-3 md:h-4 md:w-4 fill-primary shrink-0" />
-                                                <span className="truncate">{currentStreak} day streak</span>
+                                                <span className="truncate">{currentStreak} {t('dayStreak')}</span>
                                                 {isFlexibleFrequency(habit.frequency) && (
                                                     <span className="ml-1 px-2 py-0.5 bg-white/10 rounded-full text-[10px] md:text-xs text-white/70">
-                                                        {getWeekProgress(habit).completed}/{getWeekProgress(habit).target} esta semana
+                                                        {getWeekProgress(habit).completed}/{getWeekProgress(habit).target} {t('thisWeek')}
                                                     </span>
                                                 )}
                                             </div>
@@ -240,7 +282,7 @@ export function HabitCalendar({ initialHabits }: HabitCalendarProps) {
                                                     variant="ghost"
                                                     size="icon"
                                                     className="h-8 w-8 md:h-9 md:w-9 bg-white/5 hover:bg-white/10 text-muted-foreground hover:text-white rounded-xl border border-white/5 shrink-0"
-                                                    title="Ver historial completo"
+                                                    title={t('viewHistory')}
                                                 >
                                                     <CalendarIcon className="h-3 w-3 md:h-4 md:w-4" />
                                                 </Button>
@@ -276,7 +318,7 @@ export function HabitCalendar({ initialHabits }: HabitCalendarProps) {
                                         <button
                                             onClick={() => handleDeleteClick(habit.id, habit.title)}
                                             className="h-8 w-8 md:h-9 md:w-9 flex items-center justify-center rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 hover:border-red-500/40 transition-all duration-300 shrink-0"
-                                            title="Eliminar hábito"
+                                            title={t('deleteHabit')}
                                         >
                                             <Trash2 className="h-3 w-3 md:h-4 md:w-4" />
                                         </button>
@@ -343,18 +385,18 @@ export function HabitCalendar({ initialHabits }: HabitCalendarProps) {
             <AlertDialog open={!!habitToDelete} onOpenChange={(open) => !open && setHabitToDelete(null)}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>¿Eliminar este hábito?</AlertDialogTitle>
+                        <AlertDialogTitle>{t('confirmDeleteTitle')}</AlertDialogTitle>
                         <AlertDialogDescription>
-                            ¿Estás seguro de que quieres eliminar &ldquo;{habitToDelete?.title}&rdquo;? Esta acción no se puede deshacer y perderás todo tu progreso.
+                            {t('confirmDeleteDesc', { title: habitToDelete?.title || '' })}
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                        <AlertDialogCancel>{tCommon('cancel')}</AlertDialogCancel>
                         <AlertDialogAction
                             onClick={confirmDelete}
                             className="bg-red-500 hover:bg-red-600 text-white border-red-600"
                         >
-                            Eliminar
+                            {tCommon('delete')}
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>

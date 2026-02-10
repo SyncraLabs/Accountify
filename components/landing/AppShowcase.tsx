@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import { Check, Flame, Trophy, Bell, Plus, Sparkles, TrendingUp, Calendar, Users } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 const showcaseSteps = [
     {
@@ -43,8 +44,40 @@ const mockHabits = [
 ];
 
 export function AppShowcase() {
+    const t = useTranslations('landing.showcase');
     const [activeStep, setActiveStep] = useState(0);
     const [completedHabits, setCompletedHabits] = useState<number[]>([1, 2]);
+
+    const showcaseSteps = [
+        {
+            id: 1,
+            title: t('steps.1.title'),
+            subtitle: t('steps.1.subtitle'),
+            icon: Plus,
+            color: "primary",
+        },
+        {
+            id: 2,
+            title: t('steps.2.title'),
+            subtitle: t('steps.2.subtitle'),
+            icon: Flame,
+            color: "orange",
+        },
+        {
+            id: 3,
+            title: t('steps.3.title'),
+            subtitle: t('steps.3.subtitle'),
+            icon: Bell,
+            color: "blue",
+        },
+        {
+            id: 4,
+            title: t('steps.4.title'),
+            subtitle: t('steps.4.subtitle'),
+            icon: Trophy,
+            color: "purple",
+        },
+    ];
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -82,10 +115,10 @@ export function AppShowcase() {
                     className="text-center mb-16"
                 >
                     <h2 className="text-3xl md:text-4xl font-semibold text-white tracking-tight mb-4">
-                        Así de <span className="text-primary">Fácil</span> es Usarlo
+                        {t('title')} <span className="text-primary">{t('titleHighlight')}</span> {t('titleEnd')}
                     </h2>
                     <p className="text-zinc-400 max-w-xl mx-auto">
-                        Una experiencia intuitiva diseñada para que te enfoques en lo que importa: tus hábitos.
+                        {t('subtitle')}
                     </p>
                 </motion.div>
 
@@ -174,20 +207,18 @@ export function AppShowcase() {
                                         >
                                             <motion.div
                                                 layout
-                                                className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${
-                                                    completedHabits.includes(habit.id)
-                                                        ? "bg-primary/10 border-primary/30"
-                                                        : "bg-zinc-900/50 border-zinc-800"
-                                                }`}
+                                                className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${completedHabits.includes(habit.id)
+                                                    ? "bg-primary/10 border-primary/30"
+                                                    : "bg-zinc-900/50 border-zinc-800"
+                                                    }`}
                                             >
                                                 <motion.div
                                                     animate={completedHabits.includes(habit.id) ? { scale: [1, 1.2, 1] } : {}}
                                                     transition={{ duration: 0.3 }}
-                                                    className={`w-6 h-6 rounded-full flex items-center justify-center ${
-                                                        completedHabits.includes(habit.id)
-                                                            ? "bg-primary text-black"
-                                                            : "border-2 border-zinc-600"
-                                                    }`}
+                                                    className={`w-6 h-6 rounded-full flex items-center justify-center ${completedHabits.includes(habit.id)
+                                                        ? "bg-primary text-black"
+                                                        : "border-2 border-zinc-600"
+                                                        }`}
                                                 >
                                                     <AnimatePresence>
                                                         {completedHabits.includes(habit.id) && (
@@ -202,9 +233,8 @@ export function AppShowcase() {
                                                     </AnimatePresence>
                                                 </motion.div>
                                                 <div className="flex-1">
-                                                    <p className={`text-sm font-medium ${
-                                                        completedHabits.includes(habit.id) ? "text-white" : "text-zinc-300"
-                                                    }`}>
+                                                    <p className={`text-sm font-medium ${completedHabits.includes(habit.id) ? "text-white" : "text-zinc-300"
+                                                        }`}>
                                                         {habit.icon} {habit.name}
                                                     </p>
                                                 </div>
@@ -255,11 +285,10 @@ export function AppShowcase() {
                                         opacity: isActive ? 1 : 0.6,
                                     }}
                                     transition={{ duration: 0.3 }}
-                                    className={`p-5 rounded-2xl border transition-all cursor-pointer ${
-                                        isActive
-                                            ? "bg-zinc-900/80 border-zinc-700"
-                                            : "bg-zinc-900/30 border-zinc-800/50"
-                                    }`}
+                                    className={`p-5 rounded-2xl border transition-all cursor-pointer ${isActive
+                                        ? "bg-zinc-900/80 border-zinc-700"
+                                        : "bg-zinc-900/30 border-zinc-800/50"
+                                        }`}
                                     onClick={() => setActiveStep(idx)}
                                 >
                                     <div className="flex items-start gap-4">

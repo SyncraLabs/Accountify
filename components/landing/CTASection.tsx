@@ -1,11 +1,15 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Zap } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export function CTASection() {
+    const t = useTranslations('landing.cta');
+    const tTrust = useTranslations('landing.trust');
+
     return (
         <section className="py-24 px-6 relative overflow-hidden">
             {/* Animated background */}
@@ -36,7 +40,7 @@ export function CTASection() {
                         className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-primary/30 bg-primary/10 text-sm text-primary mb-8"
                     >
                         <Zap className="h-4 w-4" />
-                        Empieza hoy, es gratis
+                        {t('badge')}
                     </motion.div>
 
                     {/* Heading */}
@@ -47,10 +51,10 @@ export function CTASection() {
                         transition={{ delay: 0.3 }}
                         className="text-4xl md:text-5xl lg:text-6xl font-semibold text-white tracking-tight mb-6"
                     >
-                        ¿Listo para{" "}
-                        <span className="text-primary">Transformar</span>
+                        {t('ready')}{" "}
+                        <span className="text-primary">{t('transform')}</span>
                         <br />
-                        tu Vida?
+                        {t('life')}
                     </motion.h2>
 
                     {/* Subtext */}
@@ -61,7 +65,7 @@ export function CTASection() {
                         transition={{ delay: 0.4 }}
                         className="text-lg text-zinc-400 max-w-xl mx-auto mb-10"
                     >
-                        Únete a miles de personas que ya están construyendo mejores hábitos con Accountify. Sin tarjeta de crédito requerida.
+                        {t('description')}
                     </motion.p>
 
                     {/* CTA Button */}
@@ -78,7 +82,7 @@ export function CTASection() {
                                 className="inline-block"
                             >
                                 <Button className="h-14 px-10 rounded-full bg-primary text-black font-semibold hover:bg-primary/90 transition-all text-lg shadow-[0_0_30px_rgba(74,222,128,0.3)] hover:shadow-[0_0_50px_rgba(74,222,128,0.5)]">
-                                    Comenzar Ahora <ArrowRight className="ml-2 h-5 w-5" />
+                                    {t('button')} <ArrowRight className="ml-2 h-5 w-5" />
                                 </Button>
                             </motion.div>
                         </Link>
@@ -94,15 +98,15 @@ export function CTASection() {
                     >
                         <div className="flex items-center gap-2">
                             <div className="w-2 h-2 rounded-full bg-primary" />
-                            <span>100% Gratis</span>
+                            <span>{tTrust('free')}</span>
                         </div>
                         <div className="flex items-center gap-2">
                             <div className="w-2 h-2 rounded-full bg-primary" />
-                            <span>Sin anuncios</span>
+                            <span>{tTrust('noAds')}</span>
                         </div>
                         <div className="flex items-center gap-2">
                             <div className="w-2 h-2 rounded-full bg-primary" />
-                            <span>Datos privados</span>
+                            <span>{tTrust('private')}</span>
                         </div>
                     </motion.div>
                 </motion.div>

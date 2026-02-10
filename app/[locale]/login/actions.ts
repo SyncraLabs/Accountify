@@ -81,3 +81,24 @@ export async function signup(formData: FormData) {
     revalidatePath('/', 'layout')
     redirect('/dashboard')
 }
+
+export async function resetPassword(formData: FormData) {
+    const supabase = await createClient()
+    const email = formData.get('email') as string
+
+    // Get origin with fallback
+    const originHeader = (await headers()).get('origin')
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
+    const origin = originHeader || siteUrl || 'https://accountify.syncralabs.es'
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${origin}/auth/update-password`,
+    })
+
+    if (error) {
+        console.error('Reset Password Error:', error)
+        return redirect(`/login/forgot-password?message=Error: ${encodeURIComponent(error.message)}`)
+    }
+
+    return redirect('/login/forgot-password?message=Si el email está registrado, recibirás un enlace para restablecer tu contraseña.')
+}

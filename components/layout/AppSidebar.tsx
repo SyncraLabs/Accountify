@@ -1,8 +1,8 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -16,8 +16,10 @@ import {
     CreditCard,
     UserCircle
 } from "lucide-react";
-import { signOut } from "@/app/auth/actions";
+import { signOut } from "@/app/[locale]/auth/actions";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { useTranslations } from "next-intl";
 
 interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
     user?: any;
@@ -26,19 +28,20 @@ interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export function AppSidebar({ className, user }: SidebarProps) {
     const pathname = usePathname();
+    const t = useTranslations('navigation');
 
     const routes = [
         {
-            section: "APLICACIÓN",
+            section: t('sections.app'),
             items: [
                 {
-                    label: "Dashboard",
+                    label: t('dashboard'),
                     icon: LayoutDashboard,
                     href: "/dashboard",
                     active: pathname === "/dashboard",
                 },
                 {
-                    label: "Calendario",
+                    label: t('calendar'),
                     icon: Calendar,
                     href: "/calendar",
                     active: pathname === "/calendar",
@@ -46,16 +49,16 @@ export function AppSidebar({ className, user }: SidebarProps) {
             ]
         },
         {
-            section: "COMUNIDAD",
+            section: t('sections.community'),
             items: [
                 {
-                    label: "Grupos",
+                    label: t('groups'),
                     icon: Users,
                     href: "/groups",
                     active: pathname === "/groups",
                 },
                 {
-                    label: "AI Coach",
+                    label: t('coach'),
                     icon: Bot,
                     href: "/coach",
                     active: pathname === "/coach",
@@ -63,10 +66,10 @@ export function AppSidebar({ className, user }: SidebarProps) {
             ]
         },
         {
-            section: "AJUSTES",
+            section: t('sections.settings'),
             items: [
                 {
-                    label: "Configuración",
+                    label: t('settings'),
                     icon: Settings,
                     href: "/settings",
                     active: pathname === "/settings",
@@ -91,7 +94,10 @@ export function AppSidebar({ className, user }: SidebarProps) {
                     </div>
                     Accountify
                 </div>
-                <NotificationBell />
+                <div className="flex items-center gap-1">
+                    <LanguageSwitcher />
+                    <NotificationBell />
+                </div>
             </div>
 
             {/* Navigation */}

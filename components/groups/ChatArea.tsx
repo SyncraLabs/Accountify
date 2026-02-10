@@ -7,7 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft, Loader2, MoreVertical, Paperclip, Send, Phone, Video, Info } from 'lucide-react'
-import { sendMessage, getGroupMessages } from "@/app/groups/actions"
+import { sendMessage, getGroupMessages } from "@/app/[locale]/groups/actions"
 import { createClient } from "@/lib/supabase/client"
 import { motion, AnimatePresence } from "framer-motion"
 import { HabitShareMessage } from "@/components/groups/HabitShareMessage"
@@ -19,6 +19,8 @@ import { MemberProfileDialog } from "./MemberProfileDialog"
 import { ChallengeProgressBar } from "./ChallengeProgressBar"
 import { Trophy } from "lucide-react"
 
+
+import { useTranslations } from "next-intl"
 
 export function ChatArea({
     groupId,
@@ -37,6 +39,7 @@ export function ChatArea({
     inviteCode: string,
     currentUserId: string
 }) {
+    const t = useTranslations('groups.chat')
     const [messages, setMessages] = useState<any[]>(initialMessages || [])
     const [profiles, setProfiles] = useState<Record<string, any>>({})
     const [members, setMembers] = useState<any[]>([])
@@ -466,7 +469,7 @@ export function ChatArea({
                                     </div>
                                     <div className={`flex flex-col ${isMe ? 'items-end' : 'items-start'} max-w-[80%]`}>
                                         <span className="text-[10px] text-zinc-500 mb-1 px-1">
-                                            {profiles[msg.user_id]?.username || profiles[msg.user_id]?.full_name || (isMe ? 'Tú' : 'Desconocido')}
+                                            {profiles[msg.user_id]?.username || profiles[msg.user_id]?.full_name || (isMe ? t('you') : t('unknown'))}
                                         </span>
                                         <div className={`rounded-2xl px-4 py-3 text-sm transition-all duration-200 ${isMe
                                             ? "bg-primary text-black rounded-tr-sm shadow-[0_2px_15px_rgba(191,245,73,0.15)]"
@@ -510,9 +513,9 @@ export function ChatArea({
                             <div className="w-16 h-16 rounded-full bg-zinc-900/50 border border-zinc-800 flex items-center justify-center mb-4">
                                 <span className="text-2xl">👋</span>
                             </div>
-                            <h3 className="text-zinc-300 font-medium mb-1">¡Comienza la conversación!</h3>
+                            <h3 className="text-zinc-300 font-medium mb-1">{t('startConversation')}</h3>
                             <p className="text-zinc-500 text-sm max-w-xs">
-                                Sé el primero en enviar un mensaje a este grupo.
+                                {t('beFirst')}
                             </p>
                         </motion.div>
                     )}
@@ -536,7 +539,7 @@ export function ChatArea({
                         <input type="file" ref={fileInputRef} className="hidden" onChange={handleFileUpload} accept="image/*,video/*" />
 
                         <Input
-                            placeholder="Escribe un mensaje..."
+                            placeholder={t('placeholder')}
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
                             onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}

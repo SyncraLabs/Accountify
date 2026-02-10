@@ -1,0 +1,713 @@
+{
+  "common": {
+    "loading": "Cargando...",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "categories": {
+      "health": "Salud & Fitness",
+      "mindset": "Mindset & Aprendizaje",
+      "productivity": "Productividad",
+      "creativity": "Creatividad",
+      "social": "Social"
+    },
+    "frequencies": {
+      "daily": "Diario",
+      "weekly": "Semanal",
+      "monthly": "Mensual"
+    },
+    "confirm": "Confirmar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "create": "Crear",
+    "close": "Cerrar",
+    "next": "Siguiente",
+    "previous": "Anterior",
+    "skip": "Saltar",
+    "send": "Enviar",
+    "back": "Volver",
+    "search": "Buscar",
+    "or": "O",
+    "and": "Y",
+    "yes": "Sí",
+    "no": "No"
+  },
+  "metadata": {
+    "title": "Accountify",
+    "description": "Tu Coach de IA y Red Social de Responsabilidad"
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "calendar": "Calendario",
+    "groups": "Grupos",
+    "coach": "AI Coach",
+    "settings": "Configuración",
+    "sections": {
+      "app": "APLICACIÓN",
+      "community": "COMUNIDAD",
+      "settings": "AJUSTES"
+    }
+  },
+  "landing": {
+    "navbar": {
+      "features": "Características",
+      "howItWorks": "Cómo Funciona",
+      "login": "Iniciar Sesión",
+      "getStarted": "Comenzar"
+    },
+    "hero": {
+      "badge": "Tu Accountability Partner",
+      "title": "Construye",
+      "titleHighlight": "Hábitos",
+      "titleEnd": "Que Sí Duran",
+      "subtitle": "Transforma tu vida un hábito a la vez. Seguimiento inteligente, rachas y recomendaciones personalizadas para mantenerte motivado.",
+      "cta": "Comenzar Gratis",
+      "howItWorks": "Cómo Funciona",
+      "earlyAccess": "Acceso",
+      "earlyAccessSub": "Anticipado",
+      "personalCoach": "IA",
+      "personalCoachSub": "Coach Personal",
+      "rating": "4.9",
+      "ratingSub": "Valoración"
+    },
+    "features": {
+      "title": "Todo lo que necesitas para",
+      "titleHighlight": "Ganar",
+      "subtitle": "Potentes funciones en una interfaz impresionante. La simplicidad se encuentra con el poder.",
+      "ultrafast": {
+        "title": "Ultrarrápido",
+        "description": "Construido para velocidad. Registra hábitos en segundos y vuelve a tus objetivos."
+      },
+      "analytics": {
+        "title": "Analíticas Profundas",
+        "description": "Visualiza tu progreso con gráficos y métricas que te mantienen motivado."
+      },
+      "accountability": {
+        "title": "Responsabilidad Grupal",
+        "description": "Únete a tribus de ganadores. Compite, comparte y crece en comunidad."
+      },
+      "privacy": {
+        "title": "Privado y Seguro",
+        "description": "Tus datos son tuyos. Encriptación de nivel empresarial para tu privacidad."
+      },
+      "mobile": {
+        "title": "Mobile First",
+        "description": "Diseñado para tu teléfono. Lleva tu compañero de responsabilidad a todas partes."
+      },
+      "reminders": {
+        "title": "Recordatorios Inteligentes",
+        "description": "Notificaciones inteligentes que te avisan exactamente cuando lo necesitas."
+      }
+    },
+    "cta": {
+      "title": "Empieza Tu Transformación",
+      "subtitle": "Únete a miles de personas que ya están construyendo mejores hábitos.",
+      "button": "Comenzar Gratis",
+      "badge": "Empieza hoy, es gratis",
+      "ready": "¿Listo para",
+      "transform": "Transformar",
+      "life": "tu Vida?",
+      "description": "Únete a miles de personas que ya están construyendo mejores hábitos con Accountify. Sin tarjeta de crédito requerida."
+    },
+    "showcase": {
+      "title": "Así de",
+      "titleHighlight": "Fácil",
+      "titleEnd": "es Usarlo",
+      "subtitle": "Una experiencia intuitiva diseñada para que te enfoques en lo que importa: tus hábitos.",
+      "phone": {
+        "date": "Hoy, Febrero 6",
+        "myHabits": "Mis Hábitos",
+        "streak": "Racha",
+        "today": "Hoy"
+      },
+      "steps": {
+        "1": {
+          "title": "Crea tus hábitos",
+          "subtitle": "Define lo que quieres lograr"
+        },
+        "2": {
+          "title": "Mantén tu racha",
+          "subtitle": "Construye consistencia día a día"
+        },
+        "3": {
+          "title": "Recibe recordatorios",
+          "subtitle": "Nunca olvides tus objetivos"
+        },
+        "4": {
+          "title": "Celebra el progreso",
+          "subtitle": "Logros que te mantienen motivado"
+        }
+      }
+    },
+    "trust": {
+      "free": "100% Gratis",
+      "noAds": "Sin anuncios",
+      "private": "Datos privados"
+    },
+    "footer": {
+      "tagline": "Construyendo mejores hábitos, un día a la vez.",
+      "rights": "Todos los derechos reservados.",
+      "product": {
+        "title": "Producto",
+        "features": "Características",
+        "pricing": "Precios",
+        "roadmap": "Roadmap"
+      },
+      "company": {
+        "title": "Compañía",
+        "about": "Acerca de",
+        "blog": "Blog",
+        "careers": "Carreras"
+      },
+      "legal": {
+        "title": "Legal",
+        "privacy": "Privacidad",
+        "terms": "Términos"
+      }
+    },
+    "onboarding": {
+      "steps": {
+        "welcome": {
+          "title": "Bienvenido a Accountify",
+          "subtitle": "Tu camino hacia mejores hábitos",
+          "description": "Estás a punto de transformar tu vida con hábitos inteligentes, un coach de IA y una comunidad que te apoya."
+        },
+        "dashboard": {
+          "title": "Tu Centro de Control",
+          "subtitle": "Todo en un vistazo",
+          "description": "Ve tu progreso diario, estadísticas y actividad semanal. Aquí es donde comienza cada día.",
+          "visual": {
+            "meditate": "Meditar",
+            "exercise": "Ejercicio",
+            "read": "Leer"
+          }
+        },
+        "coach": {
+          "title": "Tu Coach de IA",
+          "subtitle": "Rutinas personalizadas",
+          "description": "Describe tus metas y el AI Coach creará rutinas perfectas para ti. Es como tener un entrenador personal 24/7.",
+          "visual": {
+            "user": "Quiero ser más productivo",
+            "ai": "He creado una rutina matutina perfecta para ti...",
+            "routine": "Rutina Matutina"
+          }
+        },
+        "calendar": {
+          "title": "Rastrea Tu Progreso",
+          "subtitle": "No rompas la cadena",
+          "description": "Visualiza tu consistencia con el calendario de hábitos. Cada día completado construye tu racha.",
+          "visual": {
+            "date": "Febrero 2025",
+            "streak": "Mejor racha",
+            "days": "21 días"
+          }
+        },
+        "community": {
+          "title": "Únete a la Comunidad",
+          "subtitle": "Juntos somos más fuertes",
+          "description": "Conecta con grupos de responsabilidad. Comparte logros y motívense mutuamente."
+        }
+      },
+      "actions": {
+        "skip": "Saltar",
+        "next": "Siguiente",
+        "start": "Comenzar"
+      }
+    },
+    "dashboard": {
+      "welcome": "Bienvenido",
+      "subtitle": "Construye la mejor versión de ti, un hábito a la vez.",
+      "todaysHabits": "Hábitos de Hoy",
+      "viewCalendar": "Ver Calendario",
+      "noHabits": "No has creado hábitos aún.",
+      "createWithAI": "Crear con AI Coach",
+      "yourGroups": "Tus Grupos",
+      "noGroups": "No estás en ningún grupo aún.",
+      "searchGroups": "Buscar Grupos",
+      "viewAllGroups": "Ver todos los {count} grupos",
+      "weeklyActivity": "Actividad Semanal",
+      "last7Days": "Últimos 7 días",
+      "totalCompleted": "Completados Totales",
+      "stats": {
+        "dailyProgress": "Progreso Diario",
+        "habitsCompletedToday": "Hábitos completados hoy",
+        "syncLevel": "Nivel de Sincronía",
+        "consistencyScore": "Puntuación de consistencia",
+        "perfectDay": "¡Día perfecto! Sigue así.",
+        "keepPushing": "¡Sigue empujando!",
+        "activeGroups": "Grupos Activos",
+        "disciplineCircles": "Tus círculos de disciplina",
+        "stayAccountable": "Mantente responsable junto a otros."
+      },
+      "habits": {
+        "completed": "¡Hábito completado!",
+        "unchecked": "Hábito desmarcado",
+        "updateFailed": "Error al actualizar hábito",
+        "members": "{count} miembros",
+        "viewActivity": "Ver actividad del grupo",
+        "tooltipLabel": "hábitos"
+      }
+    },
+    "settings": {
+      "title": "Configuración",
+      "language": "Idioma",
+      "selectLanguage": "Selecciona tu idioma preferido"
+    }
+  },
+  "auth": {
+    "login": "Iniciar Sesión",
+    "signup": "Registrarse",
+    "logout": "Cerrar Sesión",
+    "welcomeBack": "Bienvenido de nuevo, futuro imparable.",
+    "startJourney": "Comienza tu viaje hacia la excelencia.",
+    "name": "Nombre",
+    "namePlaceholder": "Tu Nombre",
+    "email": "Email",
+    "emailPlaceholder": "tu@email.com",
+    "password": "Contraseña",
+    "passwordPlaceholder": "••••••••",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "minChars": "Mínimo 6 caracteres",
+    "enterNow": "Entrar Ahora",
+    "createAccount": "Crear Mi Cuenta",
+    "unexpectedError": "Ocurrió un error inesperado",
+    "continueWith": "O continúa con",
+    "forgotPasswordPage": {
+      "title": "Recuperar Contraseña",
+      "description": "Ingresa tu email y te enviaremos un enlace para restablecer tu contraseña.",
+      "submit": "Enviar Enlace",
+      "backToLogin": "Volver al inicio de sesión"
+    },
+    "updatePassword": {
+      "title": "Actualizar Contraseña",
+      "description": "Ingresa tu nueva contraseña.",
+      "newPassword": "Nueva Contraseña",
+      "confirmPassword": "Confirmar Contraseña",
+      "submit": "Actualizar Contraseña"
+    }
+  },
+  "dashboard": {
+    "welcome": "Bienvenido",
+    "subtitle": "Construye la mejor version de ti, un habito a la vez.",
+    "stats": {
+      "dailyProgress": "Progreso Diario",
+      "habitsCompletedToday": "Hábitos completados hoy",
+      "syncLevel": "Nivel de Sincronía",
+      "consistencyScore": "Puntuación de consistencia",
+      "perfectDay": "¡Día perfecto! Sigue así.",
+      "keepPushing": "¡Sigue empujando!",
+      "activeGroups": "Grupos Activos",
+      "disciplineCircles": "Tus círculos de disciplina",
+      "stayAccountable": "Mantente responsable junto a otros."
+    },
+    "todaysHabits": "Hábitos de Hoy",
+    "viewCalendar": "Ver Calendario",
+    "noHabitsYet": "No has creado hábitos aún.",
+    "createWithAI": "Crear con AI Coach",
+    "yourGroups": "Tus Grupos",
+    "noGroupsYet": "No estás en ningún grupo aún.",
+    "findGroups": "Buscar Grupos",
+    "viewAllGroups": "Ver todos los {count} grupos",
+    "weeklyActivity": "Actividad Semanal",
+    "last7Days": "Últimos 7 días",
+    "totalCompleted": "Completados Totales",
+    "habits": {
+      "completed": "¡Hábito completado!",
+      "unchecked": "Hábito desmarcado",
+      "updateFailed": "Error al actualizar hábito",
+      "members": "{count} miembros",
+      "viewActivity": "Ver actividad del grupo",
+      "tooltipLabel": "hábitos"
+    }
+  },
+  "habits": {
+    "newHabit": "Nuevo Hábito",
+    "createNewHabit": "Crear Nuevo Hábito",
+    "defineRoutine": "Define tu nueva rutina. La consistencia es la clave.",
+    "title": "Título",
+    "titlePlaceholder": "Ej. Leer 30 min, Gym...",
+    "category": "Categoría",
+    "selectCategory": "Selecciona una categoría",
+    "frequency": "Frecuencia",
+    "motivation": "Motivación (Opcional)",
+    "motivationPlaceholder": "¿Por qué quieres hacer esto?",
+    "createHabit": "Crear Hábito",
+    "habitCreatedSuccess": "¡Hábito creado exitosamente!",
+    "habitCreatedError": "Error al crear el hábito",
+    "categories": {
+      "health": "Salud & Fitness",
+      "mindset": "Mindset & Aprendizaje",
+      "productivity": "Productividad",
+      "finance": "Finanzas"
+    },
+    "frequencies": {
+      "daily": "Diario",
+      "weekdays": "Lunes a Viernes",
+      "weekends": "Fines de semana",
+      "3xWeek": "3 veces por semana",
+      "4xWeek": "4 veces por semana",
+      "5xWeek": "5 veces por semana",
+      "weekly": "1 vez por semana"
+    },
+    "validation": {
+      "titleMinChars": "El título debe tener al menos 2 caracteres.",
+      "selectCategory": "Selecciona una categoría.",
+      "selectFrequency": "Selecciona una frecuencia."
+    },
+    "sharing": {
+      "title": "Auto-Compartir Hábitos",
+      "description": "Configura qué hábitos se comparten automáticamente con tus grupos cuando los completas.",
+      "configure": "Configurar Compartir"
+    },
+    "demo": {
+      "meditate": "Meditar",
+      "exercise": "Ejercicio",
+      "read": "Leer"
+    }
+  },
+  "coach": {
+    "title": "AI Coach",
+    "subtitle": "Tu entrenador de alto rendimiento",
+    "whatToAchieve": "¿Qué quieres lograr?",
+    "tellMeGoals": "Cuéntame tus objetivos y diseñaré una Rutina de Alto Rendimiento personalizada para ti.",
+    "writeMessage": "Escribe tu mensaje...",
+    "communicationError": "Error al comunicarse con el coach",
+    "routineCreated": "Rutina \"{title}\" creada!",
+    "routineCreatedConfirm": "He creado la rutina \"{title}\" con {count} hábitos. Puedes verlos en tu calendario y dashboard.",
+    "routineCreatedError": "Error al crear la rutina",
+    "modifyRequest": "Escribe qué te gustaría cambiar de la rutina",
+    "modify": "Modificar",
+    "acceptRoutine": "Aceptar Rutina",
+    "creating": "Creando...",
+    "habitsIncluded": "{count} Hábitos incluidos",
+    "panel": {
+      "myHabits": "Mis Hábitos",
+      "currentHabits": "Mis Hábitos Actuales",
+      "manageHabits": "Administra tus hábitos existentes",
+      "editHabit": "Editar Hábito",
+      "noHabits": "No tienes hábitos creados aún.",
+      "chatWithCoach": "Chatea con el coach para crear tu primera rutina.",
+      "habitUpdated": "Hábito actualizado"
+    },
+    "card": {
+      "confirmDelete": "¿Estás seguro de eliminar este hábito?",
+      "habitDeleted": "Hábito eliminado",
+      "frequency": "Frecuencia",
+      "streak": "Racha",
+      "theScience": "La Ciencia"
+    },
+    "demo": {
+      "userMessage": "Quiero ser más productivo",
+      "aiResponse": "He creado una rutina matutina perfecta para ti...",
+      "routineTitle": "Rutina Matutina"
+    }
+  },
+  "habitCalendar": {
+    "activeHabits": "Hábitos Activos",
+    "noHabitsTitle": "No tienes hábitos aún",
+    "noHabitsDesc": "Crea tu primer hábito y comienza tu viaje hacia la consistencia.",
+    "createFirst": "Crear Mi Primer Hábito",
+    "dayStreak": "racha de días",
+    "thisWeek": "esta semana",
+    "viewHistory": "Ver historial completo",
+    "deleteHabit": "Eliminar hábito",
+    "confirmDeleteTitle": "¿Eliminar este hábito?",
+    "confirmDeleteDesc": "¿Estás seguro de que quieres eliminar \"{title}\"? Esta acción no se puede deshacer y perderás todo tu progreso.",
+    "progressUpdated": "Progreso actualizado",
+    "updateError": "Error al actualizar",
+    "deleteError": "Error al eliminar el hábito"
+  },
+  "onboarding": {
+    "selectLanguage": "Selecciona tu idioma",
+    "languageHint": "Puedes cambiar esto más tarde en Configuración",
+    "steps": {
+      "welcome": {
+        "title": "Bienvenido a Accountify",
+        "subtitle": "Tu camino hacia mejores hábitos",
+        "description": "Estás a punto de transformar tu vida con hábitos inteligentes, un coach de IA y una comunidad que te apoya."
+      },
+      "dashboard": {
+        "title": "Tu Centro de Control",
+        "subtitle": "Todo en un vistazo",
+        "description": "Ve tu progreso diario, estadísticas y actividad semanal. Aquí es donde comienza cada día."
+      },
+      "coach": {
+        "title": "Tu Coach de IA",
+        "subtitle": "Rutinas personalizadas",
+        "description": "Describe tus metas y el AI Coach creará rutinas perfectas para ti. Es como tener un entrenador personal 24/7."
+      },
+      "calendar": {
+        "title": "Rastrea Tu Progreso",
+        "subtitle": "No rompas la cadena",
+        "description": "Visualiza tu consistencia con el calendario de hábitos. Cada día completado construye tu racha."
+      },
+      "community": {
+        "title": "Únete a la Comunidad",
+        "subtitle": "Juntos somos más fuertes",
+        "description": "Conecta con grupos de responsabilidad. Comparte logros y motívense mutuamente."
+      }
+    },
+    "skip": "Saltar",
+    "next": "Siguiente",
+    "start": "Comenzar"
+  },
+  "settings": {
+    "title": "Configuración",
+    "pageTitle": "Tu Configuración",
+    "subtitle": "Administra tu perfil y preferencias para sacar el máximo provecho de tu AI Coach.",
+    "profile": {
+      "title": "Tu Perfil",
+      "description": "Administra tu perfil público y preferencias del AI Coach.",
+      "picture": "Foto de Perfil",
+      "pictureHint": "Haz clic en la imagen para subir una nueva.",
+      "recommendedSize": "Tamaño recomendado: 400x400px.",
+      "uploadSuccess": "Avatar subido exitosamente",
+      "uploadError": "Error al subir avatar"
+    },
+    "fields": {
+      "username": "Nombre de usuario",
+      "usernamePlaceholder": "username",
+      "displayName": "Nombre para mostrar",
+      "displayNamePlaceholder": "Juan Pérez",
+      "coachContext": "Contexto del Coach",
+      "coachContextPlaceholder": "Ej: Quiero ganar músculo pero tengo una lesión en la espalda baja...",
+      "coachContextHint": "Esta información es usada por la IA para verificar tus hábitos y darte consejos."
+    },
+    "language": {
+      "title": "Idioma",
+      "hint": "Selecciona el idioma de la aplicación",
+      "options": {
+        "en": "English",
+        "es": "Español"
+      }
+    },
+    "save": "Guardar Cambios",
+    "saving": "Guardando...",
+    "saveSuccess": "Configuración guardada exitosamente",
+    "saveError": "Error al guardar la configuración",
+    "usernameTaken": "El nombre de usuario ya está en uso"
+  },
+  "calendar": {
+    "bestStreak": "Mejor racha:",
+    "days": "días",
+    "pageTitle": "Tu Legado",
+    "pageSubtitle": "Visualiza tu progreso. Cada día cuenta. No rompas la cadena.",
+    "month": {
+      "february": "Febrero"
+    }
+  },
+  "notifications": {
+    "title": "Notificaciones",
+    "empty": "No tienes notificaciones",
+    "markAllRead": "Marcar todas como leídas"
+  },
+  "errors": {
+    "notAuthenticated": "No autenticado",
+    "generic": "Algo salió mal",
+    "networkError": "Error de conexión"
+  },
+  "groups": {
+    "welcome": {
+      "badge": "El corazón de Appcountability",
+      "titlePrefix": "Grupos de ",
+      "titleSuffix": "Disciplina",
+      "description": "Conecta con personas que comparten tus metas. Juntos es más fácil mantener la disciplina.",
+      "features": {
+        "chat": {
+          "title": "Chat en Tiempo Real",
+          "desc": "Comunícate con tu grupo al instante"
+        },
+        "challenges": {
+          "title": "Retos Grupales",
+          "desc": "Compite en desafíos con tu equipo"
+        },
+        "share": {
+          "title": "Comparte Hábitos",
+          "desc": "Celebra tus logros con el grupo"
+        },
+        "progress": {
+          "title": "Seguimiento de Progreso",
+          "desc": "Mira el avance de cada miembro"
+        }
+      },
+      "cta": {
+        "create": "Crea tu grupo",
+        "invite": "Invita amigos",
+        "grow": "Crece juntos"
+      },
+      "selectGroup": "Selecciona un grupo del panel izquierdo para comenzar"
+    },
+    "sidebar": {
+      "title": "Grupos de Disciplina",
+      "subtitle": "Conecta y crece con tu comunidad",
+      "noGroups": "Sin grupos todavía",
+      "createFirst": "Crea tu primer grupo o únete a uno existente para empezar a compartir tu progreso.",
+      "yourGroups": "Tus Grupos",
+      "features": {
+        "chat": "Chat",
+        "challenges": "Retos",
+        "progress": "Progreso"
+      },
+      "shareProgress": "Comparte tu progreso",
+      "inspireOthers": "Tus hábitos pueden inspirar a otros"
+    },
+    "chat": {
+      "you": "Tú",
+      "unknown": "Desconocido",
+      "startConversation": "¡Comienza la conversación!",
+      "beFirst": "Sé el primero en enviar un mensaje a este grupo.",
+      "placeholder": "Escribe un mensaje..."
+    },
+    "details": {
+      "title": "Detalles del Grupo",
+      "desc": "Información y ajustes del grupo",
+      "tabs": {
+        "ranking": "Ranking",
+        "challenges": "Retos",
+        "progress": "Progreso",
+        "info": "Info"
+      },
+      "sections": {
+        "ranking": "Clasificación del Grupo",
+        "challenges": "Retos del Grupo",
+        "progress": "Progreso Diario",
+        "info": "Nombre del Grupo",
+        "description": "Descripción",
+        "actions": "Acciones del Grupo",
+        "danger": "Zona de Peligro"
+      },
+      "actions": {
+        "invite": "Invitar Miembros",
+        "viewMembers": "Ver Miembros",
+        "settings": "Ajustes del Grupo",
+        "leave": "Salir del Grupo",
+        "delete": "Eliminar Grupo"
+      },
+      "dialogs": {
+        "leaveTitle": "¿Salir del grupo?",
+        "leaveDesc": "Vas a salir de \"{name}\". Podrás volver a unirte con el código de invitación.",
+        "deleteTitle": "¿Eliminar grupo permanentemente?",
+        "deleteDesc": "Esta acción no se puede deshacer. Se eliminarán todos los mensajes, retos y miembros del grupo \"{name}\".",
+        "cancel": "Cancelar",
+        "leaving": "Saliendo...",
+        "deleting": "Eliminando...",
+        "confirmDelete": "Eliminar Permanentemente"
+      },
+      "success": {
+        "left": "Has salido del grupo",
+        "deleted": "Grupo eliminado"
+      }
+    },
+    "leaderboard": {
+      "title": "Clasificación del Grupo",
+      "rank": "Rango",
+      "score": "Puntuación",
+      "ranks": {
+        "Novato": "Novato",
+        "Aprendiz": "Aprendiz",
+        "Guerrero": "Guerrero",
+        "Maestro": "Maestro",
+        "Leyenda": "Leyenda"
+      },
+      "empty": "No hay miembros en este grupo",
+      "moreMembers": "+{count} miembros más",
+      "pts": "pts"
+    },
+    "progress": {
+      "title": "Progreso del Grupo",
+      "empty": "Nadie ha compartido hábitos aún"
+    },
+    "invite": {
+      "button": "Invitar Miembros",
+      "title": "Invitar al Grupo",
+      "desc": "Comparte el código o escanea el QR para unirse",
+      "codeLabel": "Código de Invitación",
+      "linkLabel": "Enlace de Invitación",
+      "qrLabel": "Código QR",
+      "shareButton": "Compartir",
+      "copiedCode": "¡Código copiado!",
+      "copiedLink": "¡Enlace copiado!",
+      "shareTitle": "Únete a {name}",
+      "shareText": "Te invito a unirte al grupo \"{name}\""
+    },
+    "settings": {
+      "button": "Configuración",
+      "title": "Editar Grupo",
+      "desc": "Personaliza la imagen, nombre y descripción de tu grupo de disciplina.",
+      "imageLabel": "Imagen del Grupo",
+      "imageHint": "Recomendado: 500x500px",
+      "changeImage": "CAMBIAR",
+      "nameLabel": "Nombre",
+      "namePlaceholder": "Ej. Espartanos 300",
+      "descLabel": "Descripción",
+      "descPlaceholder": "¿Cuál es el propósito de este grupo?",
+      "cancel": "Cancelar",
+      "save": "Guardar Cambios",
+      "saving": "Guardando...",
+      "success": "¡Grupo actualizado!",
+      "imageUploaded": "¡Imagen subida!",
+      "errors": {
+        "selectImage": "Por favor selecciona una imagen",
+        "imageSize": "La imagen debe ser menor a 5MB",
+        "upload": "Error al subir imagen"
+      }
+    },
+    "challenges": {
+      "activeTitle": "Retos Activos",
+      "activeDesc": "Progreso y desafíos actuales del grupo",
+      "empty": "No hay retos activos en este momento.",
+      "types": {
+        "group": "Grupal",
+        "individual": "Individual"
+      },
+      "labels": {
+        "progress": "Progreso",
+        "participants": "participantes",
+        "daysLeft": "{count} días restantes",
+        "dayLeft": "1 día restante",
+        "today": "Termina hoy"
+      },
+      "bar": {
+        "empty": "Sin retos activos",
+        "view": "Ver retos"
+      }
+    },
+    "members": {
+      "title": "Miembros",
+      "roles": {
+        "admin": "Admin",
+        "member": "Miembro"
+      },
+      "joined": "Unido el {date}",
+      "stats": {
+        "streak": "Racha",
+        "completed": "Completados",
+        "won": "Retos Ganados",
+        "commitment": "Compromiso",
+        "nextLevel": "{percent}% al siguiente nivel",
+        "error": "No se pudieron cargar las estadísticas"
+      }
+    },
+    "create": {
+      "trigger": "Crear",
+      "title": "Crear Grupo de Disciplina",
+      "description": "Crea un espacio para que tu equipo se mantenga responsable.",
+      "nameLabel": "Nombre del Grupo",
+      "namePlaceholder": "ej. Madrugadores",
+      "descriptionLabel": "Descripción (Opcional)",
+      "descriptionPlaceholder": "¿De qué trata este grupo?",
+      "button": "Crear Grupo",
+      "creating": "Creando...",
+      "success": "¡Grupo creado!"
+    },
+    "join": {
+      "trigger": "Unirse",
+      "title": "Unirse a un Grupo",
+      "description": "Ingresa el código de invitación compartido por un administrador.",
+      "codeLabel": "Código de Invitación",
+      "codePlaceholder": "ej. XOYZ123",
+      "button": "Unirse al Grupo",
+      "joining": "Uniéndose...",
+      "success": "¡Te uniste al grupo!"
+    }
+  }
+}

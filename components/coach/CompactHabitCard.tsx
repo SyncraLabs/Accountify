@@ -23,13 +23,7 @@ interface CompactHabitCardProps {
     showActions?: boolean;
 }
 
-const categoryEmojis: Record<string, string> = {
-    "Salud & Fitness": "💪",
-    "Mindset & Aprendizaje": "🧠",
-    "Productividad": "⚡",
-    "Creatividad": "🎨",
-    "Social": "👥",
-};
+import { useTranslations } from "next-intl";
 
 export function CompactHabitCard({
     habit,
@@ -37,13 +31,56 @@ export function CompactHabitCard({
     onDelete,
     showActions = true
 }: CompactHabitCardProps) {
+    const t = useTranslations('coach.card');
+    const tCommon = useTranslations('common');
+    const tHabits = useTranslations('habits');
+
     const [isExpanded, setIsExpanded] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
 
-    const emoji = categoryEmojis[habit.category] || "✨";
+    // Helper to get category key from potential Spanish DB value
+    const getCategoryKey = (cat: string) => {
+        const map: Record<string, string> = {
+            "Salud & Fitness": "health",
+            "Mindset & Aprendizaje": "mindset",
+            "Productividad": "productivity",
+            "Creatividad": "creativity",
+            "Social": "social"
+        };
+        return map[cat] || cat.toLowerCase();
+    };
+
+    const getFrequencyKey = (freq: string) => {
+        const map: Record<string, string> = {
+            "Diario": "daily",
+            "Semanal": "weekly",
+            "Mensual": "monthly"
+        };
+        return map[freq] || freq.toLowerCase();
+    };
+
+    const categoryKey = getCategoryKey(habit.category);
+    // Enhanced emoji map based on keys
+    const categoryEmojis: Record<string, string> = {
+        "health": "💪",
+        "mindset": "🧠",
+        "productivity": "⚡",
+        "creativity": "🎨",
+        "social": "👥",
+        // Fallback for direct DB values just in case
+        "Salud & Fitness": "💪",
+        "Mindset & Aprendizaje": "🧠",
+        "Productividad": "⚡",
+        "Creatividad": "🎨",
+        "Social": "👥",
+    };
+
+    const emoji = categoryEmojis[categoryKey] || categoryEmojis[habit.category] || "✨";
+    const categoryLabel = tCommon(`categories.${categoryKey}`) || habit.category;
+    const frequencyLabel = tCommon(`frequencies.${getFrequencyKey(habit.frequency)}`) || habit.frequency;
 
     const handleDelete = async () => {
-        if (!confirm("¿Estás seguro de eliminar este hábito?")) return;
+        if (!confirm(t('confirmDelete'))) return;
 
         setIsDeleting(true);
         const result = await deleteHabit(habit.id);
@@ -51,7 +88,7 @@ export function CompactHabitCard({
         if (result.error) {
             toast.error(result.error);
         } else {
-            toast.success("Hábito eliminado");
+            toast.success(t('habitDeleted'));
             onDelete?.();
         }
         setIsDeleting(false);
@@ -70,7 +107,7 @@ export function CompactHabitCard({
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
                     <Badge variant="outline" className="text-xs hidden sm:inline-flex">
-                        {habit.category}
+                        {categoryLabel}
                     </Badge>
                     {habit.streak && habit.streak > 0 && (
                         <div className="flex items-center gap-1 text-orange-400 text-sm">
@@ -99,9 +136,9 @@ export function CompactHabitCard({
                         <div className="px-4 pb-4 pt-1 border-t border-white/10 space-y-3">
                             {/* Details */}
                             <div className="flex flex-wrap gap-2 text-sm text-zinc-400">
-                                <span>Frecuencia: <span className="text-zinc-300">{habit.frequency}</span></span>
+                                <span>{t('frequency')}: <span className="text-zinc-300">{frequencyLabel}</span></span>
                                 {habit.streak !== undefined && (
-                                    <span>Racha: <span className="text-zinc-300">{habit.streak} días</span></span>
+                                    <span>{t('streak')}: <span className="text-zinc-300">{habit.streak} {tCommon('days')}</span></span>
                                 )}
                             </div>
 
@@ -112,7 +149,7 @@ export function CompactHabitCard({
                             {habit.reasoning && (
                                 <div className="bg-primary/10 rounded-lg p-3">
                                     <p className="text-xs text-primary">
-                                        <strong>La Ciencia:</strong> {habit.reasoning}
+                                        <strong>{t('theScience')}:</strong> {habit.reasoning}
                                     </p>
                                 </div>
                             )}
@@ -131,7 +168,7 @@ export function CompactHabitCard({
                                             className="border-zinc-700 text-zinc-300 hover:text-white hover:bg-zinc-800"
                                         >
                                             <Pencil className="h-3.5 w-3.5 mr-1.5" />
-                                            Editar
+                                            {tCommon('edit')}
                                         </Button>
                                     )}
                                     <Button
@@ -145,7 +182,7 @@ export function CompactHabitCard({
                                         className="border-red-900/50 text-red-400 hover:text-red-300 hover:bg-red-950/50"
                                     >
                                         <Trash2 className="h-3.5 w-3.5 mr-1.5" />
-                                        {isDeleting ? "..." : "Eliminar"}
+                                        {isDeleting ? "..." : tCommon('delete')}
                                     </Button>
                                 </div>
                             )}

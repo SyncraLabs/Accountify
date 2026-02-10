@@ -1,9 +1,10 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { useTranslations } from "next-intl"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet"
 import { Trophy, Target, Calendar, TrendingUp } from "lucide-react"
-import { getGroupChallenges } from "@/app/groups/actions"
+import { getGroupChallenges } from "@/app/[locale]/groups/actions"
 import { Progress } from "@/components/ui/progress"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Badge } from "@/components/ui/badge"
@@ -17,6 +18,7 @@ interface ActiveChallengesDrawerProps {
 export function ActiveChallengesDrawer({ isOpen, onOpenChange, groupId }: ActiveChallengesDrawerProps) {
     const [challenges, setChallenges] = useState<any[]>([])
     const [loading, setLoading] = useState(false)
+    const t = useTranslations('groups.challenges')
 
     useEffect(() => {
         if (isOpen) {
@@ -37,10 +39,10 @@ export function ActiveChallengesDrawer({ isOpen, onOpenChange, groupId }: Active
                 <SheetHeader className="p-6 border-b border-white/10 text-left">
                     <SheetTitle className="flex items-center gap-2 text-xl">
                         <Trophy className="h-5 w-5 text-yellow-400" />
-                        Retos Activos
+                        {t('activeTitle')}
                     </SheetTitle>
                     <SheetDescription className="text-zinc-400">
-                        Progreso y desafíos actuales del grupo
+                        {t('activeDesc')}
                     </SheetDescription>
                 </SheetHeader>
 
@@ -55,7 +57,7 @@ export function ActiveChallengesDrawer({ isOpen, onOpenChange, groupId }: Active
                         ) : challenges.length === 0 ? (
                             <div className="text-center py-12 text-zinc-500">
                                 <Target className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                                <p>No hay retos activos en este momento.</p>
+                                <p>{t('empty')}</p>
                             </div>
                         ) : (
                             challenges.map((challenge) => (
@@ -70,7 +72,7 @@ export function ActiveChallengesDrawer({ isOpen, onOpenChange, groupId }: Active
                                             </h3>
                                             <div className="flex items-center gap-2 text-xs text-zinc-400">
                                                 <Badge variant="secondary" className="bg-zinc-800 text-zinc-300 border-none">
-                                                    {challenge.challenge_type === 'collective' ? 'Grupal' : 'Individual'}
+                                                    {challenge.challenge_type === 'collective' ? t('types.group') : t('types.individual')}
                                                 </Badge>
                                                 <span className="flex items-center gap-1">
                                                     <Calendar className="h-3 w-3" />
@@ -82,7 +84,7 @@ export function ActiveChallengesDrawer({ isOpen, onOpenChange, groupId }: Active
 
                                     <div className="space-y-3">
                                         <div className="flex justify-between text-sm">
-                                            <span className="text-zinc-400">Progreso</span>
+                                            <span className="text-zinc-400">{t('labels.progress')}</span>
                                             <span className="font-medium text-white">
                                                 {challenge.userProgress || 0} / {challenge.target_value} {challenge.unit}
                                             </span>
@@ -96,7 +98,7 @@ export function ActiveChallengesDrawer({ isOpen, onOpenChange, groupId }: Active
                                         <div className="flex items-center justify-between text-xs text-zinc-500 pt-1">
                                             <div className="flex items-center gap-1">
                                                 <TrendingUp className="h-3 w-3" />
-                                                <span>{challenge.participantCount} participantes</span>
+                                                <span>{challenge.participantCount} {t('labels.participants')}</span>
                                             </div>
                                         </div>
                                     </div>

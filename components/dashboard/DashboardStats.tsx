@@ -1,13 +1,15 @@
 import { CheckCircle2, Flame, Calendar, Users } from "lucide-react";
+import { useTranslations } from 'next-intl';
 
 interface DashboardStatsProps {
     completedToday: number;
     totalHabits: number;
     activeGroups: number;
-    totalCompleted: number; // Lifetime or similar metric if available, otherwise reuse completedToday logic or remove
+    totalCompleted: number;
 }
 
 export function DashboardStats({ completedToday, totalHabits, activeGroups }: DashboardStatsProps) {
+    const t = useTranslations('dashboard.stats');
     const completionPercentage = totalHabits > 0 ? Math.round((completedToday / totalHabits) * 100) : 0;
 
     return (
@@ -18,8 +20,8 @@ export function DashboardStats({ completedToday, totalHabits, activeGroups }: Da
                 </div>
                 <div className="relative z-10 flex flex-col justify-between h-full gap-4">
                     <div>
-                        <h3 className="text-sm font-medium text-zinc-400">Progreso Diario</h3>
-                        <p className="text-xs text-zinc-600 mt-1">Hábitos completados hoy</p>
+                        <h3 className="text-sm font-medium text-zinc-400">{t('dailyProgress')}</h3>
+                        <p className="text-xs text-zinc-600 mt-1">{t('habitsCompletedToday')}</p>
                     </div>
                     <div className="flex items-end gap-2">
                         <span className="text-3xl font-bold text-white">{completedToday}</span>
@@ -40,14 +42,14 @@ export function DashboardStats({ completedToday, totalHabits, activeGroups }: Da
                 </div>
                 <div className="relative z-10 flex flex-col justify-between h-full gap-4">
                     <div>
-                        <h3 className="text-sm font-medium text-zinc-400">Nivel de Sincronía</h3>
-                        <p className="text-xs text-zinc-600 mt-1">Puntuación de consistencia</p>
+                        <h3 className="text-sm font-medium text-zinc-400">{t('syncLevel')}</h3>
+                        <p className="text-xs text-zinc-600 mt-1">{t('consistencyScore')}</p>
                     </div>
                     <div className="flex items-center gap-2">
                         <span className="text-3xl font-bold text-white">{completionPercentage}%</span>
                     </div>
                     <p className="text-xs text-zinc-500">
-                        {completionPercentage === 100 ? "¡Día perfecto! Sigue así." : "¡Sigue empujando!"}
+                        {completionPercentage === 100 ? t('perfectDay') : t('keepPushing')}
                     </p>
                 </div>
             </div>
@@ -58,14 +60,14 @@ export function DashboardStats({ completedToday, totalHabits, activeGroups }: Da
                 </div>
                 <div className="relative z-10 flex flex-col justify-between h-full gap-4">
                     <div>
-                        <h3 className="text-sm font-medium text-zinc-400">Grupos Activos</h3>
-                        <p className="text-xs text-zinc-600 mt-1">Tus círculos de disciplina</p>
+                        <h3 className="text-sm font-medium text-zinc-400">{t('activeGroups')}</h3>
+                        <p className="text-xs text-zinc-600 mt-1">{t('disciplineCircles')}</p>
                     </div>
                     <div className="flex items-center gap-2">
                         <span className="text-3xl font-bold text-white">{activeGroups}</span>
                     </div>
                     <p className="text-xs text-zinc-500">
-                        Mantente responsable junto a otros.
+                        {t('stayAccountable')}
                     </p>
                 </div>
             </div>

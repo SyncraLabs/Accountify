@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Trophy, Loader2 } from "lucide-react"
-import { getGroupChallenges } from "@/app/groups/actions"
+import { getGroupChallenges } from "@/app/[locale]/groups/actions"
 import { ChallengeCard } from "./ChallengeCard"
 import { CreateChallengeDialog } from "./CreateChallengeDialog"
 import { ChallengeDetailDialog } from "./ChallengeDetailDialog"

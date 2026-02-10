@@ -2,7 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
-import { createMentionNotification, createGroupMessageNotification, createChallengeCreatedNotification, createChallengeCompletedNotification, createChallengeProgressNotification } from '@/app/notifications/actions'
+import { createMentionNotification, createGroupMessageNotification, createChallengeCreatedNotification, createChallengeCompletedNotification, createChallengeProgressNotification } from '@/app/[locale]/notifications/actions'
 
 export type CreateGroupState = {
     error?: string

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Progress } from "@/components/ui/progress"
-import { getGroupLeaderboard, type MemberStats } from "@/app/groups/actions"
+import { getGroupLeaderboard, type MemberStats } from "@/app/[locale]/groups/actions"
 import { Loader2, Trophy, Crown, Medal, Award } from "lucide-react"
 import { cn } from "@/lib/utils"
 

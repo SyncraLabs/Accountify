@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { createChallenge } from "@/app/groups/actions"
+import { createChallenge } from "@/app/[locale]/groups/actions"
 import { Loader2, Plus } from "lucide-react"
 import { toast } from "sonner"
 

@@ -17,51 +17,54 @@ import {
     TrendingUp,
     MessageCircle
 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
+import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 
 interface AppOnboardingProps {
     onComplete: () => void
 }
 
-const steps = [
-    {
-        icon: Sparkles,
-        title: "Bienvenido a Accountify",
-        subtitle: "Tu camino hacia mejores hábitos",
-        description: "Estás a punto de transformar tu vida con hábitos inteligentes, un coach de IA y una comunidad que te apoya.",
-        visual: "welcome"
-    },
-    {
-        icon: LayoutDashboard,
-        title: "Tu Centro de Control",
-        subtitle: "Todo en un vistazo",
-        description: "Ve tu progreso diario, estadísticas y actividad semanal. Aquí es donde comienza cada día.",
-        visual: "dashboard"
-    },
-    {
-        icon: Bot,
-        title: "Tu Coach de IA",
-        subtitle: "Rutinas personalizadas",
-        description: "Describe tus metas y el AI Coach creará rutinas perfectas para ti. Es como tener un entrenador personal 24/7.",
-        visual: "coach"
-    },
-    {
-        icon: Calendar,
-        title: "Rastrea Tu Progreso",
-        subtitle: "No rompas la cadena",
-        description: "Visualiza tu consistencia con el calendario de hábitos. Cada día completado construye tu racha.",
-        visual: "calendar"
-    },
-    {
-        icon: Users,
-        title: "Únete a la Comunidad",
-        subtitle: "Juntos somos más fuertes",
-        description: "Conecta con grupos de responsabilidad. Comparte logros y motívense mutuamente.",
-        visual: "community"
-    }
-]
-
 export function AppOnboarding({ onComplete }: AppOnboardingProps) {
+    const t = useTranslations('onboarding')
     const [currentStep, setCurrentStep] = useState(0)
+
+    const steps = [
+        {
+            icon: Sparkles,
+            title: t('steps.welcome.title'),
+            subtitle: t('steps.welcome.subtitle'),
+            description: t('steps.welcome.description'),
+            visual: "welcome"
+        },
+        {
+            icon: LayoutDashboard,
+            title: t('steps.dashboard.title'),
+            subtitle: t('steps.dashboard.subtitle'),
+            description: t('steps.dashboard.description'),
+            visual: "dashboard"
+        },
+        {
+            icon: Bot,
+            title: t('steps.coach.title'),
+            subtitle: t('steps.coach.subtitle'),
+            description: t('steps.coach.description'),
+            visual: "coach"
+        },
+        {
+            icon: Calendar,
+            title: t('steps.calendar.title'),
+            subtitle: t('steps.calendar.subtitle'),
+            description: t('steps.calendar.description'),
+            visual: "calendar"
+        },
+        {
+            icon: Users,
+            title: t('steps.community.title'),
+            subtitle: t('steps.community.subtitle'),
+            description: t('steps.community.description'),
+            visual: "community"
+        }
+    ]
 
     const handleNext = () => {
         if (currentStep < steps.length - 1) {
@@ -113,6 +116,11 @@ export function AppOnboarding({ onComplete }: AppOnboardingProps) {
                 />
             </div>
 
+            {/* Language Switcher */}
+            <div className="absolute top-6 left-6 z-10">
+                <LanguageSwitcher />
+            </div>
+
             {/* Skip button */}
             <Button
                 variant="ghost"
@@ -120,7 +128,7 @@ export function AppOnboarding({ onComplete }: AppOnboardingProps) {
                 onClick={handleSkip}
                 className="absolute top-6 right-6 text-zinc-500 hover:text-white z-10"
             >
-                Saltar
+                {t('actions.skip')}
                 <X className="ml-1 h-4 w-4" />
             </Button>
 
@@ -188,13 +196,12 @@ export function AppOnboarding({ onComplete }: AppOnboardingProps) {
                         <motion.button
                             key={index}
                             onClick={() => setCurrentStep(index)}
-                            className={`h-2 rounded-full transition-all duration-300 ${
-                                index === currentStep
-                                    ? 'w-8 bg-primary'
-                                    : index < currentStep
+                            className={`h-2 rounded-full transition-all duration-300 ${index === currentStep
+                                ? 'w-8 bg-primary'
+                                : index < currentStep
                                     ? 'w-2 bg-primary/50'
                                     : 'w-2 bg-zinc-700'
-                            }`}
+                                }`}
                             whileHover={{ scale: 1.2 }}
                             whileTap={{ scale: 0.9 }}
                         />
@@ -214,12 +221,12 @@ export function AppOnboarding({ onComplete }: AppOnboardingProps) {
                     >
                         {currentStep === steps.length - 1 ? (
                             <>
-                                Comenzar
+                                {t('actions.start')}
                                 <Check className="ml-2 h-5 w-5" />
                             </>
                         ) : (
                             <>
-                                Siguiente
+                                {t('actions.next')}
                                 <ChevronRight className="ml-2 h-5 w-5" />
                             </>
                         )}
@@ -275,6 +282,7 @@ function WelcomeVisual() {
 }
 
 function DashboardVisual() {
+    const t = useTranslations('onboarding.steps.dashboard.visual');
     return (
         <div className="w-72 space-y-2">
             {/* Stats row */}
@@ -298,7 +306,7 @@ function DashboardVisual() {
             </div>
 
             {/* Habit rows */}
-            {["Meditar", "Ejercicio", "Leer"].map((habit, i) => (
+            {[t('meditate'), t('exercise'), t('read')].map((habit, i) => (
                 <motion.div
                     key={habit}
                     initial={{ opacity: 0, x: -20 }}
@@ -310,9 +318,8 @@ function DashboardVisual() {
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
                         transition={{ delay: 0.6 + i * 0.1, type: "spring" }}
-                        className={`w-6 h-6 rounded-lg flex items-center justify-center ${
-                            i < 2 ? 'bg-primary/20' : 'bg-zinc-700'
-                        }`}
+                        className={`w-6 h-6 rounded-lg flex items-center justify-center ${i < 2 ? 'bg-primary/20' : 'bg-zinc-700'
+                            }`}
                     >
                         {i < 2 && <Check className="h-4 w-4 text-primary" />}
                     </motion.div>
@@ -330,6 +337,7 @@ function DashboardVisual() {
 }
 
 function CoachVisual() {
+    const t = useTranslations('onboarding.steps.coach.visual');
     return (
         <div className="w-72 space-y-3">
             {/* User message */}
@@ -340,7 +348,7 @@ function CoachVisual() {
                 className="flex justify-end"
             >
                 <div className="max-w-[80%] p-3 rounded-2xl rounded-br-sm bg-primary/20 border border-primary/30">
-                    <p className="text-sm text-white">Quiero ser más productivo</p>
+                    <p className="text-sm text-white">{t('user')}</p>
                 </div>
             </motion.div>
 
@@ -355,7 +363,7 @@ function CoachVisual() {
                     <Bot className="h-4 w-4 text-primary" />
                 </div>
                 <div className="max-w-[80%] p-3 rounded-2xl rounded-bl-sm bg-zinc-800 border border-zinc-700">
-                    <p className="text-sm text-zinc-300">He creado una rutina matutina perfecta para ti...</p>
+                    <p className="text-sm text-zinc-300">{t('ai')}</p>
                 </div>
             </motion.div>
 
@@ -368,7 +376,7 @@ function CoachVisual() {
             >
                 <div className="flex items-center gap-2 mb-2">
                     <Target className="h-4 w-4 text-primary" />
-                    <span className="text-xs font-medium text-primary">Rutina Matutina</span>
+                    <span className="text-xs font-medium text-primary">{t('routine')}</span>
                 </div>
                 <div className="flex gap-1">
                     {["🧘", "📚", "💪"].map((emoji, i) => (
@@ -389,6 +397,7 @@ function CoachVisual() {
 }
 
 function CalendarVisual() {
+    const t = useTranslations('onboarding.steps.calendar.visual');
     const days = [
         [1, 1, 1, 0, 1, 1, 1],
         [1, 0, 1, 1, 1, 0, 1],
@@ -401,7 +410,7 @@ function CalendarVisual() {
             {/* Calendar grid */}
             <div className="p-4 rounded-xl bg-zinc-800/50 border border-zinc-700/50">
                 <div className="flex items-center justify-between mb-3">
-                    <span className="text-xs font-medium text-white">Febrero 2025</span>
+                    <span className="text-xs font-medium text-white">{t('date')}</span>
                     <div className="flex items-center gap-1 text-orange-400">
                         <Flame className="h-4 w-4" />
                         <span className="text-sm font-bold">12</span>
@@ -421,11 +430,10 @@ function CalendarVisual() {
                                         type: "spring",
                                         stiffness: 200
                                     }}
-                                    className={`w-6 h-6 rounded-md ${
-                                        filled
-                                            ? 'bg-primary/60 shadow-[0_0_10px_rgba(191,245,73,0.3)]'
-                                            : 'bg-zinc-700/50'
-                                    }`}
+                                    className={`w-6 h-6 rounded-md ${filled
+                                        ? 'bg-primary/60 shadow-[0_0_10px_rgba(191,245,73,0.3)]'
+                                        : 'bg-zinc-700/50'
+                                        }`}
                                 />
                             ))}
                         </div>
@@ -440,8 +448,8 @@ function CalendarVisual() {
                 transition={{ delay: 0.8 }}
                 className="mt-3 flex items-center justify-center gap-2 text-sm"
             >
-                <span className="text-zinc-400">Mejor racha:</span>
-                <span className="text-primary font-bold">21 días</span>
+                <span className="text-zinc-400">{t('streak')}:</span>
+                <span className="text-primary font-bold">{t('days')}</span>
             </motion.div>
         </div>
     )

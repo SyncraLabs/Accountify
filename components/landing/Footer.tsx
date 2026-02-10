@@ -1,25 +1,9 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import Image from "next/image";
 import { motion } from "framer-motion";
-
-const footerLinks = {
-    product: [
-        { label: "Features", href: "/#features" },
-        { label: "Pricing", href: "#" },
-        { label: "Roadmap", href: "#" },
-    ],
-    company: [
-        { label: "About", href: "#" },
-        { label: "Blog", href: "#" },
-        { label: "Careers", href: "#" },
-    ],
-    legal: [
-        { label: "Privacy", href: "#" },
-        { label: "Terms", href: "#" },
-    ],
-};
+import { useTranslations } from "next-intl";
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -42,6 +26,25 @@ const itemVariants = {
 };
 
 export function Footer() {
+    const t = useTranslations('landing.footer');
+
+    const footerLinks = {
+        product: [
+            { label: t('product.features'), href: "/#features" },
+            { label: t('product.pricing'), href: "#" },
+            { label: t('product.roadmap'), href: "#" },
+        ],
+        company: [
+            { label: t('company.about'), href: "#" },
+            { label: t('company.blog'), href: "#" },
+            { label: t('company.careers'), href: "#" },
+        ],
+        legal: [
+            { label: t('legal.privacy'), href: "#" },
+            { label: t('legal.terms'), href: "#" },
+        ],
+    };
+
     return (
         <footer className="border-t border-zinc-800 bg-black relative overflow-hidden">
             {/* Subtle gradient overlay */}
@@ -65,12 +68,12 @@ export function Footer() {
                             <span className="text-sm font-semibold text-white">Accountify</span>
                         </motion.div>
                         <p className="text-xs text-zinc-500">
-                            Construyendo mejores hábitos, un día a la vez.
+                            {t('tagline')}
                         </p>
                     </motion.div>
 
                     <motion.div variants={itemVariants}>
-                        <h4 className="text-xs font-medium text-zinc-400 uppercase tracking-wider mb-4">Producto</h4>
+                        <h4 className="text-xs font-medium text-zinc-400 uppercase tracking-wider mb-4">{t('product.title')}</h4>
                         <ul className="space-y-2 text-sm text-zinc-500">
                             {footerLinks.product.map((link) => (
                                 <li key={link.label}>
@@ -86,7 +89,7 @@ export function Footer() {
                     </motion.div>
 
                     <motion.div variants={itemVariants}>
-                        <h4 className="text-xs font-medium text-zinc-400 uppercase tracking-wider mb-4">Compañía</h4>
+                        <h4 className="text-xs font-medium text-zinc-400 uppercase tracking-wider mb-4">{t('company.title')}</h4>
                         <ul className="space-y-2 text-sm text-zinc-500">
                             {footerLinks.company.map((link) => (
                                 <li key={link.label}>
@@ -102,7 +105,7 @@ export function Footer() {
                     </motion.div>
 
                     <motion.div variants={itemVariants}>
-                        <h4 className="text-xs font-medium text-zinc-400 uppercase tracking-wider mb-4">Legal</h4>
+                        <h4 className="text-xs font-medium text-zinc-400 uppercase tracking-wider mb-4">{t('legal.title')}</h4>
                         <ul className="space-y-2 text-sm text-zinc-500">
                             {footerLinks.legal.map((link) => (
                                 <li key={link.label}>
@@ -122,7 +125,7 @@ export function Footer() {
                     variants={itemVariants}
                     className="mt-16 pt-8 border-t border-zinc-800 text-center text-xs text-zinc-600"
                 >
-                    © {new Date().getFullYear()} Accountify. Todos los derechos reservados.
+                    © {new Date().getFullYear()} Accountify. {t('rights')}
                 </motion.div>
             </motion.div>
         </footer>

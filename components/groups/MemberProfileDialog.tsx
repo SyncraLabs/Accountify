@@ -1,12 +1,13 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useTranslations } from "next-intl"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { Trophy, Flame, Target, CalendarDays, Medal, Star, Loader2 } from "lucide-react"
-import { getMemberStats, type MemberStats } from "@/app/groups/actions"
+import { getMemberStats, type MemberStats } from "@/app/[locale]/groups/actions"
 import { cn } from "@/lib/utils"
 
 interface MemberProfileDialogProps {
@@ -41,6 +42,7 @@ const rankIcons: Record<MemberStats['rank'], string> = {
 export function MemberProfileDialog({ isOpen, onOpenChange, member }: MemberProfileDialogProps) {
     const [stats, setStats] = useState<MemberStats | null>(null)
     const [loading, setLoading] = useState(false)
+    const t = useTranslations('groups.members')
 
     useEffect(() => {
         if (isOpen && member?.id) {
@@ -78,7 +80,7 @@ export function MemberProfileDialog({ isOpen, onOpenChange, member }: MemberProf
                                 {member.full_name || member.username || "Usuario"}
                             </h2>
                             <Badge variant={member.role === 'admin' ? "default" : "secondary"} className="bg-zinc-800 text-zinc-300">
-                                {member.role === 'admin' ? 'Admin' : 'Miembro'}
+                                {member.role === 'admin' ? t('roles.admin') : t('roles.member')}
                             </Badge>
                         </div>
                         <p className="text-zinc-500">@{member.username || "usuario"}</p>
@@ -102,7 +104,7 @@ export function MemberProfileDialog({ isOpen, onOpenChange, member }: MemberProf
                                         </div>
                                     </div>
                                     <span className="text-xs text-zinc-500">
-                                        {stats.rankProgress}% al siguiente nivel
+                                        {t('stats.nextLevel', { percent: stats.rankProgress })}
                                     </span>
                                 </div>
                                 <Progress
@@ -119,7 +121,7 @@ export function MemberProfileDialog({ isOpen, onOpenChange, member }: MemberProf
                                     </div>
                                     <div>
                                         <span className="block text-lg font-bold text-white">{stats.streak}</span>
-                                        <span className="text-[10px] text-zinc-500">Racha</span>
+                                        <span className="text-[10px] text-zinc-500">{t('stats.streak')}</span>
                                     </div>
                                 </div>
 
@@ -129,7 +131,7 @@ export function MemberProfileDialog({ isOpen, onOpenChange, member }: MemberProf
                                     </div>
                                     <div>
                                         <span className="block text-lg font-bold text-white">{stats.habitsCompleted}</span>
-                                        <span className="text-[10px] text-zinc-500">Completados</span>
+                                        <span className="text-[10px] text-zinc-500">{t('stats.completed')}</span>
                                     </div>
                                 </div>
 
@@ -139,7 +141,7 @@ export function MemberProfileDialog({ isOpen, onOpenChange, member }: MemberProf
                                     </div>
                                     <div>
                                         <span className="block text-lg font-bold text-white">{stats.challengesWon}</span>
-                                        <span className="text-[10px] text-zinc-500">Retos Ganados</span>
+                                        <span className="text-[10px] text-zinc-500">{t('stats.won')}</span>
                                     </div>
                                 </div>
 
@@ -149,20 +151,20 @@ export function MemberProfileDialog({ isOpen, onOpenChange, member }: MemberProf
                                     </div>
                                     <div>
                                         <span className="block text-lg font-bold text-white">{stats.commitmentScore}%</span>
-                                        <span className="text-[10px] text-zinc-500">Compromiso</span>
+                                        <span className="text-[10px] text-zinc-500">{t('stats.commitment')}</span>
                                     </div>
                                 </div>
                             </div>
                         </>
                     ) : (
                         <div className="text-center py-4 text-zinc-500 text-sm">
-                            No se pudieron cargar las estadisticas
+                            {t('stats.error')}
                         </div>
                     )}
 
                     <div className="flex items-center gap-2 text-xs text-zinc-600 justify-center pt-2">
                         <CalendarDays className="h-3 w-3" />
-                        Unido el {new Date(member.joined_at || Date.now()).toLocaleDateString()}
+                        {t('joined', { date: new Date(member.joined_at || Date.now()).toLocaleDateString() })}
                     </div>
                 </div>
             </DialogContent>
