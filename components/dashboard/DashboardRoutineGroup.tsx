@@ -38,14 +38,39 @@ const categoryColors: Record<string, string> = {
     "Social": "bg-pink-500/10 text-pink-400 border-pink-500/20",
 };
 
+const listVariants = {
+    hidden: { opacity: 0 },
+    show: {
+        opacity: 1,
+        transition: {
+            staggerChildren: 0.05
+        }
+    }
+};
+
+const itemVariants = {
+    hidden: { opacity: 0, x: -10 },
+    show: { opacity: 1, x: 0 }
+};
+
+import { Confetti } from "@/components/ui/Confetti";
+
 function RoutineHabitRow({ habit }: { habit: HabitWithCompletion }) {
     const t = useTranslations('dashboard.habits');
     const [isCompleted, setIsCompleted] = useState(habit.completedToday);
     const [isLoading, setIsLoading] = useState(false);
+    const [explosion, setExplosion] = useState<{ x: number; y: number } | null>(null);
 
-    const handleToggle = async () => {
+    const handleToggle = async (e: React.MouseEvent) => {
         setIsLoading(true);
         const today = new Date().toISOString().split('T')[0];
+
+        // Trigger explosion if marking as complete
+        if (!isCompleted) {
+            const rect = (e.target as HTMLElement).getBoundingClientRect();
+            setExplosion({ x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 });
+            setTimeout(() => setExplosion(null), 1000); // Cleanup
+        }
 
         try {
             const newState = !isCompleted;
@@ -66,24 +91,26 @@ function RoutineHabitRow({ habit }: { habit: HabitWithCompletion }) {
     };
 
     return (
-        <div
+        <motion.div
+            variants={itemVariants}
             className={cn(
-                "flex items-center gap-3 py-2.5 px-3 rounded-lg transition-all duration-200",
+                "flex items-center gap-3 py-2.5 px-3 rounded-lg transition-all duration-200 hover-lift relative",
                 isCompleted ? "bg-zinc-800/30" : "hover:bg-zinc-800/50"
             )}
         >
+            {explosion && <Confetti x={explosion.x} y={explosion.y} count={30} />}
             <button
                 onClick={handleToggle}
                 disabled={isLoading}
                 className={cn(
-                    "h-5 w-5 rounded-full border flex items-center justify-center transition-all duration-200 flex-shrink-0",
+                    "h-5 w-5 rounded-full border flex items-center justify-center transition-all duration-200 flex-shrink-0 active:scale-95",
                     isCompleted
                         ? "bg-primary border-primary text-black"
                         : "border-zinc-600 hover:border-primary",
                     isLoading && "opacity-50"
                 )}
             >
-                {isCompleted && <CheckCircle2 className="h-3 w-3" />}
+                {isCompleted && <CheckCircle2 className="h-3 w-3 animate-success-bounce" />}
             </button>
             <span className={cn(
                 "text-sm transition-colors duration-200",
@@ -91,7 +118,7 @@ function RoutineHabitRow({ habit }: { habit: HabitWithCompletion }) {
             )}>
                 {habit.title}
             </span>
-        </div>
+        </motion.div>
     );
 }
 
@@ -106,12 +133,16 @@ export function DashboardRoutineGroup({ routine, habits }: DashboardRoutineGroup
     const categoryClass = categoryColors[routine.category] || "bg-zinc-500/10 text-zinc-400 border-zinc-500/20";
 
     return (
-        <div className={cn(
-            "rounded-xl border overflow-hidden transition-all duration-300",
-            isAllCompleted
-                ? "bg-[#0f0f10]/50 border-zinc-800/50"
-                : "bg-[#0f0f10] border-zinc-800"
-        )}>
+        <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className={cn(
+                "rounded-xl border overflow-hidden transition-all duration-300 hover:shadow-lg",
+                isAllCompleted
+                    ? "bg-[#0f0f10]/50 border-zinc-800/50"
+                    : "bg-[#0f0f10] border-zinc-800"
+            )}>
             {/* Header */}
             <button
                 onClick={() => setIsOpen(!isOpen)}
@@ -188,14 +219,19 @@ export function DashboardRoutineGroup({ routine, habits }: DashboardRoutineGroup
                         transition={{ duration: 0.2 }}
                         className="overflow-hidden"
                     >
-                        <div className="px-4 pb-4 pt-1 space-y-1 border-t border-zinc-800/50">
+                        <motion.div
+                            variants={listVariants}
+                            initial="hidden"
+                            animate="show"
+                            className="px-4 pb-4 pt-1 space-y-1 border-t border-zinc-800/50"
+                        >
                             {habits.map((habit) => (
                                 <RoutineHabitRow key={habit.id} habit={habit} />
                             ))}
-                        </div>
+                        </motion.div>
                     </motion.div>
                 )}
             </AnimatePresence>
-        </div>
+        </motion.div>
     );
 }

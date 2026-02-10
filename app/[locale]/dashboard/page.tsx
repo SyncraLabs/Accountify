@@ -128,12 +128,8 @@ export default async function Dashboard() {
                         </div>
 
                         {/* Stats Row */}
-                        <DashboardStats
-                            completedToday={completedToday}
-                            totalHabits={totalHabits}
-                            activeGroups={userGroups.length}
-                            totalCompleted={totalCompleted}
-                        />
+                        {/* Stats Row */}
+                        <DashboardStats habits={habitsWithCompletion} />
 
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                             {/* Main Column: Habits */}

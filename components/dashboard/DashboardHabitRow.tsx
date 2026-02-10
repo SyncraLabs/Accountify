@@ -6,6 +6,7 @@ import { useState } from "react";
 import { toggleHabitLog } from "@/app/actions";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
+import { Confetti } from "@/components/ui/Confetti";
 
 interface DashboardHabitRowProps {
     habit: {
@@ -20,6 +21,7 @@ export function DashboardHabitRow({ habit: initialHabit }: DashboardHabitRowProp
     const t = useTranslations('dashboard.habits');
     const [isCompleted, setIsCompleted] = useState(initialHabit.completedToday);
     const [isLoading, setIsLoading] = useState(false);
+    const [explosion, setExplosion] = useState(false);
 
     const handleToggle = async () => {
         setIsLoading(true);
@@ -29,6 +31,11 @@ export function DashboardHabitRow({ habit: initialHabit }: DashboardHabitRowProp
             // Optimistic update
             const newState = !isCompleted;
             setIsCompleted(newState);
+
+            if (newState) {
+                setExplosion(true);
+                setTimeout(() => setExplosion(false), 2000);
+            }
 
             const result = await toggleHabitLog(initialHabit.id, today);
 
@@ -50,13 +57,14 @@ export function DashboardHabitRow({ habit: initialHabit }: DashboardHabitRowProp
     return (
         <div
             className={cn(
-                "group flex items-center justify-between p-4 rounded-xl border transition-all duration-300",
+                "group relative flex items-center justify-between p-4 rounded-xl border transition-all duration-300 overflow-hidden",
                 isCompleted
                     ? "bg-[#0f0f10]/50 border-zinc-800/50"
                     : "bg-[#0f0f10] border-zinc-800 hover:border-zinc-700"
             )}
         >
-            <div className="flex items-center gap-4">
+            {explosion && <Confetti count={30} x={50} y={20} className="pointer-events-none absolute inset-0 z-50" />}
+            <div className="relative z-10 flex items-center gap-4">
                 <button
                     onClick={handleToggle}
                     disabled={isLoading}

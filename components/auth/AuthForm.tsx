@@ -58,13 +58,19 @@ export function AuthForm() {
     }
 
     return (
-        <div className="w-full max-w-md p-8 rounded-2xl border border-zinc-700 bg-zinc-900 backdrop-blur-xl shadow-2xl relative overflow-hidden">
+        <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+            className="w-full max-w-md p-8 rounded-2xl border border-zinc-700 bg-zinc-900 backdrop-blur-xl shadow-2xl relative overflow-hidden"
+        >
             {/* Background Gradients */}
-            <div className="absolute top-0 -left-10 w-40 h-40 bg-primary/20 rounded-full blur-[80px] pointer-events-none" />
-            <div className="absolute bottom-0 -right-10 w-40 h-40 bg-primary/10 rounded-full blur-[80px] pointer-events-none" />
+            <div className="absolute top-0 -left-10 w-40 h-40 bg-primary/20 rounded-full blur-[80px] pointer-events-none animate-blob" />
+            <div className="absolute bottom-0 -right-10 w-40 h-40 bg-primary/10 rounded-full blur-[80px] pointer-events-none animate-blob animation-delay-2000" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 bg-purple-500/10 rounded-full blur-[80px] pointer-events-none animate-blob animation-delay-4000" />
 
             {/* Header */}
-            <div className="flex flex-col items-center mb-8 relative z-10">
+            <div className="flex flex-col items-center mb-8 relative z-10 animate-fade-up" style={{ animationDelay: "0.1s" }}>
                 <div className="h-12 w-12 relative mb-4">
                     <Image
                         src="/logo.svg"
@@ -83,7 +89,7 @@ export function AuthForm() {
             </div>
 
             {/* Tabs */}
-            <div className="grid grid-cols-2 p-1 mb-8 bg-zinc-800 rounded-lg border border-zinc-700 relative z-10">
+            <div className="grid grid-cols-2 p-1 mb-8 bg-zinc-800 rounded-lg border border-zinc-700 relative z-10 animate-fade-up" style={{ animationDelay: "0.2s" }}>
                 <button
                     onClick={() => toggleMode("login")}
                     className={`text-sm font-medium py-2 rounded-md transition-all duration-300 ${mode === "login"
@@ -105,7 +111,7 @@ export function AuthForm() {
             </div>
 
             {/* Form */}
-            <form action={handleSubmit} className="relative z-10 space-y-5">
+            <form action={handleSubmit} className="relative z-10 space-y-5 animate-fade-up" style={{ animationDelay: "0.3s" }}>
                 <AnimatePresence mode="wait">
                     {mode === "signup" && (
                         <motion.div
@@ -173,7 +179,7 @@ export function AuthForm() {
                     <Button
                         type="submit"
                         disabled={isLoading}
-                        className="w-full h-11 bg-primary text-black hover:bg-primary/90 font-bold tracking-wide transition-all shadow-[0_0_20px_rgba(var(--primary-rgb),0.3)] hover:shadow-[0_0_30px_rgba(var(--primary-rgb),0.5)]"
+                        className="w-full h-11 bg-primary text-black hover:bg-primary/90 font-bold tracking-wide transition-all shadow-[0_0_20px_rgba(var(--primary-rgb),0.3)] hover:shadow-[0_0_30px_rgba(var(--primary-rgb),0.5)] active:scale-[0.98]"
                     >
                         {isLoading ? (
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -201,6 +207,6 @@ export function AuthForm() {
                    </Button>
                 </div>
             </div> */}
-        </div>
+        </motion.div>
     )
 }

@@ -27,6 +27,19 @@ To learn more about Next.js, take a look at the following resources:
 - [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
 - [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
+## 📚 Documentation
+
+We have a comprehensive documentation suite available in the `docs/` folder:
+
+-   [**Technical Guide**](docs/TECHNICAL.md): Stack, DB, and Setup.
+-   [**Features**](docs/FEATURES.md): Full product scope.
+-   [**Branding**](docs/BRANDING.md): Colors, fonts, and design system.
+-   [**Marketing**](docs/MARKETING.md): Copy and value props.
+
+[👉 **Go to Full Documentation**](docs/README.md)
+
+## 🤝 Contributing
+
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
 ## Deploy on Vercel
