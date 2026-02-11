@@ -5,13 +5,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Progress } from "@/components/ui/progress"
-import { Trophy, Clock, Users, ArrowRight, LogOut } from "lucide-react"
+import { Trophy, Clock, Users, LogOut, Loader2 } from "lucide-react"
 import { getChallengeLeaderboard, joinChallenge, leaveChallenge } from "@/app/[locale]/groups/actions"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { LogProgressDialog } from "./LogProgressDialog"
-import { format } from "date-fns"
-import { es } from "date-fns/locale"
 
 interface ChallengeDetailDialogProps {
     challenge: any
@@ -29,6 +27,7 @@ export function ChallengeDetailDialog({ challenge, open, onOpenChange, onUpdate 
         if (open && challenge) {
             loadLeaderboard()
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [open, challenge])
 
     const loadLeaderboard = async () => {
@@ -132,8 +131,17 @@ export function ChallengeDetailDialog({ challenge, open, onOpenChange, onUpdate 
                                 <Progress value={progressPercent} className="h-2 bg-zinc-800" />
                             </div>
                         ) : (
-                            <Button className="w-full bg-primary text-black hover:bg-primary/90" onClick={handleJoin} disabled={loading}>
-                                Unirse al Reto
+                            <Button
+                                className="w-full bg-primary text-black hover:bg-primary/90 transition-all duration-200"
+                                onClick={handleJoin}
+                                disabled={loading}
+                            >
+                                {loading ? (
+                                    <>
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        Uniéndose...
+                                    </>
+                                ) : "Unirse al Reto"}
                             </Button>
                         )}
 
@@ -142,8 +150,8 @@ export function ChallengeDetailDialog({ challenge, open, onOpenChange, onUpdate 
                             <h3 className="font-medium text-lg border-b border-zinc-800 pb-2">Ranking</h3>
                             <div className="space-y-2">
                                 {leaderboard.map((entry, index) => {
-                                    const isMe = entry.userId === challenge.user_id // Note: need current user id passed or deduced, but `isJoined` logic helps. 
-                                    // Actually we don't have current user ID easily available here without passing it. 
+                                    // Note: need current user id passed or deduced, but `isJoined` logic helps.
+                                    // Actually we don't have current user ID easily available here without passing it.
                                     // For visual flair we highlight top 3
                                     const rankColor = index === 0 ? "text-yellow-500" : index === 1 ? "text-gray-400" : index === 2 ? "text-amber-600" : "text-zinc-500"
 
@@ -173,9 +181,18 @@ export function ChallengeDetailDialog({ challenge, open, onOpenChange, onUpdate 
                         {/* Footer Actions */}
                         {challenge.isJoined && (
                             <div className="flex justify-center pt-2">
-                                <Button variant="ghost" className="text-zinc-500 hover:text-red-400 hover:bg-red-950/20 text-xs" onClick={handleLeave}>
-                                    <LogOut className="h-3 w-3 mr-2" />
-                                    Abandonar Reto
+                                <Button
+                                    variant="ghost"
+                                    className="text-zinc-500 hover:text-red-400 hover:bg-red-950/20 text-xs transition-all duration-200"
+                                    onClick={handleLeave}
+                                    disabled={loading}
+                                >
+                                    {loading ? (
+                                        <Loader2 className="h-3 w-3 mr-2 animate-spin" />
+                                    ) : (
+                                        <LogOut className="h-3 w-3 mr-2" />
+                                    )}
+                                    {loading ? "Abandonando..." : "Abandonar Reto"}
                                 </Button>
                             </div>
                         )}

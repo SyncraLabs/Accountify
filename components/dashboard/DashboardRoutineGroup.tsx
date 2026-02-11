@@ -82,7 +82,7 @@ function RoutineHabitRow({ habit }: { habit: HabitWithCompletion }) {
                 toast.error(result.error);
                 setIsCompleted(!newState);
             }
-        } catch (error) {
+        } catch (_error) {
             toast.error(t('updateFailed'));
             setIsCompleted(!isCompleted);
         } finally {

@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label"
 import { login, signup } from "@/app/[locale]/login/actions"
 import { toast } from "sonner"
 import { motion, AnimatePresence } from "framer-motion"
-import { Loader2, ArrowRight, Mail, Lock, User, AtSign, Github } from "lucide-react"
+import { Loader2, ArrowRight, Mail, Lock, User } from "lucide-react"
 import Image from "next/image"
 
 export function AuthForm() {

@@ -19,6 +19,7 @@ function JoinGroupContent() {
         if (code) {
             handleJoin()
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [code])
 
     const handleJoin = async () => {

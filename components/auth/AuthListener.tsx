@@ -11,7 +11,7 @@ export function AuthListener() {
     useEffect(() => {
         const {
             data: { subscription },
-        } = supabase.auth.onAuthStateChange((event, session) => {
+        } = supabase.auth.onAuthStateChange((event, _session) => {
             if (event === 'SIGNED_OUT') {
                 // User signed out, refresh to redirect to login if on protected page
                 router.refresh()

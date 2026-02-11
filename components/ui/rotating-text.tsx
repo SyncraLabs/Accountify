@@ -10,7 +10,7 @@ interface RotatingTextProps {
     staggerDuration?: number;
 }
 
-export function RotatingText({ texts, interval = 3000, className = "", staggerDuration = 0 }: RotatingTextProps) {
+export function RotatingText({ texts, interval = 3000, className = "", staggerDuration: _staggerDuration = 0 }: RotatingTextProps) {
     const [index, setIndex] = useState(0);
 
     useEffect(() => {

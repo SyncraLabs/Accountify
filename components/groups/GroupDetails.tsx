@@ -40,8 +40,8 @@ export function GroupDetails({
     inviteCode,
     currentUserId
 }: GroupDetailsProps) {
-    const [members, setMembers] = useState<any[]>([])
-    const [isLoadingMembers, setIsLoadingMembers] = useState(false)
+    const [, setMembers] = useState<any[]>([])
+    const [, setIsLoadingMembers] = useState(false)
     const [selectedMember, setSelectedMember] = useState<any>(null)
     const [isAdmin, setIsAdmin] = useState(false)
     const [showLeaveConfirm, setShowLeaveConfirm] = useState(false)
@@ -55,6 +55,7 @@ export function GroupDetails({
         if (isOpen) {
             fetchMembers()
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isOpen, groupId])
 
     const fetchMembers = async () => {

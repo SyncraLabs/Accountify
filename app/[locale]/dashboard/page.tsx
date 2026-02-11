@@ -82,7 +82,7 @@ export default async function Dashboard() {
 
         // Count consecutive days
         let streak = 0;
-        let currentDate = new Date(mostRecentDate);
+        const currentDate = new Date(mostRecentDate);
 
         for (const dateStr of sortedDates) {
             const logDate = new Date(dateStr);
@@ -118,9 +118,9 @@ export default async function Dashboard() {
     // Get standalone habits (no routine)
     const standaloneHabits = habitsWithCompletion.filter(h => !h.routine_id);
 
-    const completedToday = habitsWithCompletion.filter(h => h.completedToday).length;
-    const totalHabits = habitsWithCompletion.length;
-    const totalCompleted = habitsWithCompletion.reduce((acc, h) => acc + (h.habit_logs?.length || 0), 0);
+    const _completedToday = habitsWithCompletion.filter(h => h.completedToday).length;
+    const _totalHabits = habitsWithCompletion.length;
+    const _totalCompleted = habitsWithCompletion.reduce((acc, h) => acc + (h.habit_logs?.length || 0), 0);
 
     // Calculate weekly data
     const last7Days = [...Array(7)].map((_, i) => {

@@ -17,11 +17,11 @@ export async function updateSession(request: NextRequest, response: NextResponse
                     return request.cookies.getAll()
                 },
                 setAll(cookiesToSet) {
-                    cookiesToSet.forEach(({ name, value, options }) =>
+                    cookiesToSet.forEach(({ name, value }) =>
                         request.cookies.set(name, value)
                     )
 
-                    // We need to clone the response to set cookies if it's not mutable? 
+                    // We need to clone the response to set cookies if it's not mutable?
                     // createMiddleware returns a NextResponse, so we can likely set cookies on it.
                     // However, avoiding "response is read-only" errors.
                     // Ideally we copy cookies to the existing response.

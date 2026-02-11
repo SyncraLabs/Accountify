@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Plus, Check, Trophy, Sparkles, RefreshCw, Bot, User } from "lucide-react";
+import { Loader2, Check, Trophy, Sparkles, RefreshCw, Bot, User } from "lucide-react";
 import { sendCoachMessage, createRoutineWithHabits, ChatMessage } from "@/app/actions";
 import { toast } from "sonner";
 import { AnimatedAIChat } from "@/components/ui/animated-ai-chat";
@@ -55,7 +55,7 @@ export function CoachInterface({ currentHabits }: CoachInterfaceProps) {
     const [loading, setLoading] = useState(false);
     const [creating, setCreating] = useState(false);
     const [currentSuggestion, setCurrentSuggestion] = useState<RoutineSuggestion | null>(null);
-    const [habits, setHabits] = useState<Habit[]>(currentHabits);
+    const [habits] = useState<Habit[]>(currentHabits);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     const scrollToBottom = () => {
@@ -110,7 +110,7 @@ export function CoachInterface({ currentHabits }: CoachInterfaceProps) {
                 setCurrentSuggestion(result.suggestion);
             }
 
-        } catch (error) {
+        } catch (_error) {
             toast.error(t('communicationError'));
         } finally {
             setLoading(false);
@@ -144,7 +144,7 @@ export function CoachInterface({ currentHabits }: CoachInterfaceProps) {
                     router.push("/dashboard");
                 }, 1500);
             }
-        } catch (error) {
+        } catch (_error) {
             toast.error(t('routineCreatedError'));
         } finally {
             setCreating(false);

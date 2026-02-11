@@ -79,7 +79,7 @@ export function DashboardHabitRow({ habit: initialHabit }: DashboardHabitRowProp
             } else {
                 toast.success(newState ? t('completed') : t('unchecked'));
             }
-        } catch (error) {
+        } catch (_error) {
             toast.error(t('updateFailed'));
             setIsCompleted(!isCompleted);
         } finally {

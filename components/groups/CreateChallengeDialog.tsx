@@ -62,7 +62,7 @@ export function CreateChallengeDialog({ groupId, onChallengeCreated }: CreateCha
                 })
                 onChallengeCreated?.()
             }
-        } catch (error) {
+        } catch (_error) {
             toast.error("Error al crear el reto")
         } finally {
             setIsLoading(false)
@@ -154,8 +154,17 @@ export function CreateChallengeDialog({ groupId, onChallengeCreated }: CreateCha
                         <Button type="button" variant="ghost" onClick={() => setOpen(false)}>
                             Cancelar
                         </Button>
-                        <Button type="submit" disabled={isLoading || !formData.title || !formData.target_value}>
-                            {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Crear Reto"}
+                        <Button
+                            type="submit"
+                            disabled={isLoading || !formData.title || !formData.target_value}
+                            className="min-w-[120px] transition-all duration-200"
+                        >
+                            {isLoading ? (
+                                <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    Creando...
+                                </>
+                            ) : "Crear Reto"}
                         </Button>
                     </DialogFooter>
                 </form>

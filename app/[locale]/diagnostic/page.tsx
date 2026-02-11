@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 
 export default async function DiagnosticPage() {
     const supabase = await createClient();
@@ -106,12 +107,12 @@ export default async function DiagnosticPage() {
 
                 {/* Action Buttons */}
                 <div className="flex gap-4">
-                    <a href="/calendar" className="px-6 py-3 bg-primary text-black rounded-lg font-semibold hover:bg-primary/90">
+                    <Link href="/calendar" className="px-6 py-3 bg-primary text-black rounded-lg font-semibold hover:bg-primary/90">
                         Go to Calendar
-                    </a>
-                    <a href="/" className="px-6 py-3 bg-white/10 text-white rounded-lg font-semibold hover:bg-white/20">
+                    </Link>
+                    <Link href="/" className="px-6 py-3 bg-white/10 text-white rounded-lg font-semibold hover:bg-white/20">
                         Go to Home
-                    </a>
+                    </Link>
                 </div>
             </div>
         </div>

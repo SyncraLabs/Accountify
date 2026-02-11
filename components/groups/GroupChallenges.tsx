@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { getGroupChallenges, joinChallenge, leaveChallenge, logChallengeProgress } from "@/app/[locale]/groups/actions"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
-import { Trophy, Users, Calendar, ArrowRight, Loader2, Target, CheckCircle2 } from "lucide-react"
+import { Trophy, Users, Calendar, Loader2, Target } from "lucide-react"
 import { toast } from "sonner"
 import { CreateChallengeDialog } from "./CreateChallengeDialog"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
@@ -29,6 +29,7 @@ export function GroupChallenges({ groupId, isAdmin }: { groupId: string, isAdmin
 
     useEffect(() => {
         fetchChallenges()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [groupId])
 
     const handleJoin = async (challengeId: string) => {

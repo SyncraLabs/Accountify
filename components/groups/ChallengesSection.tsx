@@ -6,7 +6,6 @@ import { getGroupChallenges } from "@/app/[locale]/groups/actions"
 import { ChallengeCard } from "./ChallengeCard"
 import { CreateChallengeDialog } from "./CreateChallengeDialog"
 import { ChallengeDetailDialog } from "./ChallengeDetailDialog"
-import { Button } from "@/components/ui/button"
 
 interface ChallengesSectionProps {
     groupId: string
@@ -31,6 +30,7 @@ export function ChallengesSection({ groupId, isAdmin }: ChallengesSectionProps) 
 
     useEffect(() => {
         loadChallenges()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [groupId])
 
     const handleChallengeClick = (challenge: any) => {

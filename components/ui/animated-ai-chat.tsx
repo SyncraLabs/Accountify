@@ -4,14 +4,9 @@ import { useEffect, useRef, useCallback, useTransition } from "react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import {
-    ImageIcon,
-    FileUp,
-    Figma,
     MonitorIcon,
     CircleUserRound,
-    ArrowUpIcon,
     Paperclip,
-    PlusIcon,
     SendIcon,
     XIcon,
     LoaderIcon,
@@ -160,10 +155,10 @@ export function AnimatedAIChat({
     // Use external isThinking if provided, otherwise local state
     const isTyping = isThinking || localIsTyping;
 
-    const [isPending, startTransition] = useTransition();
+    const [, startTransition] = useTransition();
     const [activeSuggestion, setActiveSuggestion] = useState<number>(-1);
     const [showCommandPalette, setShowCommandPalette] = useState(false);
-    const [recentCommand, setRecentCommand] = useState<string | null>(null);
+    const [, setRecentCommand] = useState<string | null>(null);
     const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
     const { textareaRef, adjustHeight } = useAutoResizeTextarea({
         minHeight: 60,
@@ -215,6 +210,7 @@ export function AnimatedAIChat({
         } else {
             setShowCommandPalette(false);
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [value]);
 
     useEffect(() => {
@@ -327,11 +323,40 @@ export function AnimatedAIChat({
             </div>
             <div className="w-full max-w-2xl mx-auto relative">
                 <motion.div
-                    className="relative z-10 space-y-12"
+                    className="relative z-10 space-y-8 md:space-y-12"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, ease: "easeOut" }}
                 >
+                    {/* Mobile Banner */}
+                    <motion.div
+                        className="md:hidden relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary/20 via-lime-500/10 to-emerald-500/5 border border-primary/20 p-4"
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.1, duration: 0.4 }}
+                    >
+                        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary/5 animate-pulse" />
+                        <div className="relative flex items-center gap-3">
+                            <motion.div
+                                className="p-2.5 rounded-xl bg-primary/20 border border-primary/30"
+                                animate={{
+                                    boxShadow: [
+                                        "0 0 0 0 rgba(191, 245, 73, 0)",
+                                        "0 0 20px 4px rgba(191, 245, 73, 0.3)",
+                                        "0 0 0 0 rgba(191, 245, 73, 0)"
+                                    ]
+                                }}
+                                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                            >
+                                <Sparkles className="w-5 h-5 text-primary" />
+                            </motion.div>
+                            <div className="flex-1">
+                                <h2 className="text-sm font-semibold text-white">AI Coach</h2>
+                                <p className="text-xs text-white/50">Tu entrenador personal de hábitos</p>
+                            </div>
+                        </div>
+                    </motion.div>
+
                     <div className="text-center space-y-3">
                         <motion.div
                             initial={{ opacity: 0, y: 10 }}
@@ -339,7 +364,7 @@ export function AnimatedAIChat({
                             transition={{ delay: 0.2, duration: 0.5 }}
                             className="inline-block"
                         >
-                            <h1 className="text-3xl font-medium tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white/90 to-white/40 pb-1">
+                            <h1 className="text-2xl md:text-3xl font-medium tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white/90 to-white/40 pb-1">
                                 {title}
                             </h1>
                             <motion.div
@@ -350,7 +375,7 @@ export function AnimatedAIChat({
                             />
                         </motion.div>
                         <motion.p
-                            className="text-sm text-white/40"
+                            className="text-xs md:text-sm text-white/40 px-4"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ delay: 0.3 }}
@@ -643,50 +668,6 @@ function TypingDots() {
                 />
             ))}
         </div>
-    );
-}
-
-interface ActionButtonProps {
-    icon: React.ReactNode;
-    label: string;
-}
-
-function ActionButton({ icon, label }: ActionButtonProps) {
-    const [isHovered, setIsHovered] = useState(false);
-
-    return (
-        <motion.button
-            type="button"
-            whileHover={{ scale: 1.05, y: -2 }}
-            whileTap={{ scale: 0.97 }}
-            onHoverStart={() => setIsHovered(true)}
-            onHoverEnd={() => setIsHovered(false)}
-            className="flex items-center gap-2 px-4 py-2 bg-neutral-900 hover:bg-neutral-800 rounded-full border border-neutral-800 text-neutral-400 hover:text-white transition-all relative overflow-hidden group"
-        >
-            <div className="relative z-10 flex items-center gap-2">
-                {icon}
-                <span className="text-xs relative z-10">{label}</span>
-            </div>
-
-            <AnimatePresence>
-                {isHovered && (
-                    <motion.div
-                        className="absolute inset-0 bg-gradient-to-r from-primary/10 to-lime-500/10"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.2 }}
-                    />
-                )}
-            </AnimatePresence>
-
-            <motion.span
-                className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-primary to-lime-500"
-                initial={{ width: 0 }}
-                whileHover={{ width: "100%" }}
-                transition={{ duration: 0.3 }}
-            />
-        </motion.button>
     );
 }
 

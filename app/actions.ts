@@ -789,7 +789,7 @@ export async function createMultipleDailyTasks(tasks: CreateDailyTaskData[]) {
         .order('order_index', { ascending: false })
         .limit(1);
 
-    let nextOrder = existingTasks && existingTasks.length > 0
+    const nextOrder = existingTasks && existingTasks.length > 0
         ? (existingTasks[0].order_index || 0) + 1
         : 0;
 

@@ -6,13 +6,12 @@ import Link from "next/link"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, Loader2, MoreVertical, Paperclip, Send, Phone, Video, Info } from 'lucide-react'
+import { Loader2, Paperclip, Send } from 'lucide-react'
 import { sendMessage, getGroupMessages } from "@/app/[locale]/groups/actions"
 import { createClient } from "@/lib/supabase/client"
 import { motion, AnimatePresence } from "framer-motion"
 import { HabitShareMessage } from "@/components/groups/HabitShareMessage"
-import { GroupHabitsProgress } from "@/components/groups/GroupHabitsProgress"
-import { Play, Settings, Menu } from "lucide-react"
+import { Menu } from "lucide-react"
 import { GroupDetails } from "./GroupDetails"
 import { ActiveChallengesDrawer } from "./ActiveChallengesDrawer"
 import { MemberProfileDialog } from "./MemberProfileDialog"
@@ -75,6 +74,7 @@ export function ChatArea({
     useEffect(() => {
         const userIds = Array.from(new Set(messages.map(m => m.user_id)));
         fetchProfiles(userIds);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [messages.length]);
 
     // Fetch group members for @ mention suggestions
@@ -109,6 +109,7 @@ export function ChatArea({
     // Check if initial load was full page implies more messages might exist
     useEffect(() => {
         setHasMore((initialMessages?.length ?? 0) >= 50)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     // Realtime subscription
@@ -148,7 +149,8 @@ export function ChatArea({
         return () => {
             supabase.removeChannel(channel)
         }
-    }, [groupId, supabase, currentUserId])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [groupId, currentUserId])
 
     // Auto-scroll to bottom when new messages arrive if near bottom
     useEffect(() => {
@@ -372,6 +374,7 @@ export function ChatArea({
             }
             fetchInitial()
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [initialMessages, groupId])
 
     return (
@@ -477,6 +480,7 @@ export function ChatArea({
                                             }`}>
                                             {msg.type === 'image' && msg.media_url ? (
                                                 <div className="space-y-2">
+                                                    {/* eslint-disable-next-line @next/next/no-img-element */}
                                                     <img src={msg.media_url} alt="Shared" className="rounded-lg max-w-full max-h-60 object-cover border border-zinc-700/50 hover:scale-[1.02] transition-transform duration-200 cursor-pointer" />
                                                 </div>
                                             ) : msg.type === 'habit_share' ? (

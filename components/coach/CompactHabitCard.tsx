@@ -33,7 +33,7 @@ export function CompactHabitCard({
 }: CompactHabitCardProps) {
     const t = useTranslations('coach.card');
     const tCommon = useTranslations('common');
-    const tHabits = useTranslations('habits');
+    const _tHabits = useTranslations('habits');
 
     const [isExpanded, setIsExpanded] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);

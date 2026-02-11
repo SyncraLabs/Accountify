@@ -27,7 +27,8 @@ const speedMap = {
 export function GlowPulse({
     active = true,
     color = '#BFF549',
-    size = 100,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    size: _size = 100,
     intensity = 'medium',
     speed = 'medium',
     className,

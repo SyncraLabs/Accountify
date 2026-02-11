@@ -41,19 +41,21 @@ export function useSoundEffects(options: UseSoundEffectsOptions = {}) {
     useEffect(() => {
         if (!enabled || !isSupported) return;
 
+        const currentAudioRefs = audioRefs.current;
+
         Object.entries(sounds).forEach(([key, src]) => {
             const audio = new Audio(src);
             audio.volume = volume;
             audio.preload = 'auto';
-            audioRefs.current.set(key as SoundEffect, audio);
+            currentAudioRefs.set(key as SoundEffect, audio);
         });
 
         return () => {
-            audioRefs.current.forEach(audio => {
+            currentAudioRefs.forEach(audio => {
                 audio.pause();
                 audio.src = '';
             });
-            audioRefs.current.clear();
+            currentAudioRefs.clear();
         };
     }, [enabled, volume, isSupported]);
 

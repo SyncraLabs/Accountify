@@ -1,8 +1,7 @@
 'use client'
 
-import { Trophy, Clock, Users, ArrowRight } from "lucide-react"
+import { Trophy, Clock, Users } from "lucide-react"
 import { Progress } from "@/components/ui/progress"
-import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
 interface ChallengeCardProps {

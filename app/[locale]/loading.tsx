@@ -7,6 +7,7 @@ export default function Loading() {
 
                 {/* Animated Logo Container */}
                 <div className="relative h-16 w-16 animate-bounce">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src="/logo.svg" alt="Loading..." className="h-full w-full object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]" />
                 </div>
 
