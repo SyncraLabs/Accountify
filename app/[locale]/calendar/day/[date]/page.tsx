@@ -45,6 +45,14 @@ export default async function DayPage({ params }: PageProps) {
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
+    // Fetch daily tasks for this date
+    const { data: tasks } = await supabase
+        .from('daily_tasks')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('scheduled_date', date)
+        .order('order_index', { ascending: true });
+
     // Transform the data for the component
     const transformedHabits = (habits || []).map(habit => ({
         id: habit.id,
@@ -55,7 +63,15 @@ export default async function DayPage({ params }: PageProps) {
         logs: habit.habit_logs || []
     }));
 
-    // Rehydrate the serialized data if needed, but here simple passing works.
+    // Transform tasks
+    const transformedTasks = (tasks || []).map(task => ({
+        id: task.id,
+        title: task.title,
+        priority: task.priority || 'medium',
+        completed: task.completed || false,
+        completed_at: task.completed_at,
+        order_index: task.order_index || 0
+    }));
 
     return (
         <div className="flex min-h-screen bg-black">
@@ -66,7 +82,7 @@ export default async function DayPage({ params }: PageProps) {
 
             <main className="md:pl-64 flex-1 relative">
                 <div className="h-full px-6 py-10 lg:px-10 space-y-8 max-w-[1400px] mx-auto min-h-screen">
-                    <DayHabitView initialHabits={transformedHabits} dateStr={date} />
+                    <DayHabitView initialHabits={transformedHabits} initialTasks={transformedTasks} dateStr={date} />
                 </div>
             </main>
         </div>

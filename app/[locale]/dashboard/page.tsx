@@ -10,6 +10,7 @@ import { DashboardRoutineGroup } from "@/components/dashboard/DashboardRoutineGr
 import { DashboardGroupCard } from "@/components/dashboard/DashboardGroupCard";
 import { WeeklyActivityChart } from "@/components/dashboard/WeeklyActivityChart";
 import { DashboardClient } from "@/components/dashboard/DashboardClient";
+import { TodayPlannerCard } from "@/components/planner";
 import { getUserGroups } from "@/app/[locale]/groups/actions";
 import { hasCompletedAppOnboarding } from "@/app/[locale]/onboarding/actions";
 import { Button } from "@/components/ui/button";
@@ -49,11 +50,63 @@ export default async function Dashboard() {
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
-    // Check today's completion
+    // Check today's completion and calculate streaks
     const today = new Date().toISOString().split('T')[0];
+
+    // Fetch today's tasks
+    const { data: todayTasks } = await supabase
+        .from('daily_tasks')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('scheduled_date', today)
+        .order('order_index', { ascending: true });
+
+    // Helper function to calculate streak for a habit
+    const calculateStreak = (logs: { completed_date: string }[] | null) => {
+        if (!logs || logs.length === 0) return 0;
+
+        // Sort logs by date descending
+        const sortedDates = logs
+            .map(log => log.completed_date)
+            .sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
+
+        // Check if completed today or yesterday (streak is still active)
+        const yesterdayDate = new Date(today);
+        yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+        const yesterdayStr = yesterdayDate.toISOString().split('T')[0];
+
+        const mostRecentDate = sortedDates[0];
+        if (mostRecentDate !== today && mostRecentDate !== yesterdayStr) {
+            return 0; // Streak broken
+        }
+
+        // Count consecutive days
+        let streak = 0;
+        let currentDate = new Date(mostRecentDate);
+
+        for (const dateStr of sortedDates) {
+            const logDate = new Date(dateStr);
+            const diffDays = Math.round((currentDate.getTime() - logDate.getTime()) / (1000 * 60 * 60 * 24));
+
+            if (diffDays === 0) {
+                streak++;
+                currentDate.setDate(currentDate.getDate() - 1);
+            } else if (diffDays === 1) {
+                // Skip if we already counted this day
+                continue;
+            } else {
+                break; // Gap in streak
+            }
+        }
+
+        return streak;
+    };
+
     const habitsWithCompletion = (habits || []).map(habit => ({
         ...habit,
-        completedToday: habit.habit_logs?.some((log: any) => log.completed_date === today) || false
+        completedToday: habit.habit_logs?.some((log: any) => log.completed_date === today) || false,
+        streak: calculateStreak(habit.habit_logs),
+        logs: habit.habit_logs, // Alias for DashboardStats compatibility
     }));
 
     // Group habits by routine
@@ -92,6 +145,20 @@ export default async function Dashboard() {
             label: date.toLocaleDateString(locale, { weekday: 'short' }).slice(0, 1).toUpperCase()
         };
     });
+
+    // Transform tasks for TodayPlannerCard
+    const transformedTasks = (todayTasks || []).map(task => ({
+        id: task.id,
+        title: task.title,
+        priority: task.priority || 'medium',
+        completed: task.completed || false
+    }));
+
+    // Transform habits for TodayPlannerCard (simplified)
+    const habitsForPlanner = habitsWithCompletion.map(h => ({
+        id: h.id,
+        title: h.title
+    }));
 
     // Fetch user's groups
     const userGroups = await getUserGroups();
@@ -171,8 +238,15 @@ export default async function Dashboard() {
                                 </div>
                             </div>
 
-                            {/* Right Column: Groups & Progress Graph (Placeholder/Future) */}
+                            {/* Right Column: Today's Planner, Groups & Progress Graph */}
                             <div className="space-y-8">
+                                {/* Today's Planner */}
+                                <TodayPlannerCard
+                                    tasks={transformedTasks}
+                                    habits={habitsForPlanner}
+                                    dateStr={today}
+                                />
+
                                 {/* Groups Section */}
                                 <div className="space-y-4">
                                     <div className="flex items-center justify-between">

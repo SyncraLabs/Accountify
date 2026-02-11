@@ -590,3 +590,309 @@ Responde SIEMPRE en JSON con esta estructura:
         return { error: `Error interno de IA: ${error.message}` };
     }
 }
+
+// ============================================
+// DAILY TASKS ACTIONS
+// ============================================
+
+export type CreateDailyTaskData = {
+    title: string;
+    scheduled_date: string;
+    priority?: 'low' | 'medium' | 'high';
+}
+
+export async function getDailyTasks(date: string) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+        return { tasks: [], error: 'Not authenticated' };
+    }
+
+    const { data: tasks, error } = await supabase
+        .from('daily_tasks')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('scheduled_date', date)
+        .order('order_index', { ascending: true });
+
+    if (error) {
+        console.error('Error fetching daily tasks:', error);
+        return { tasks: [], error: error.message };
+    }
+
+    return { tasks: tasks || [], error: null };
+}
+
+export async function createDailyTask(data: CreateDailyTaskData) {
+    console.log('--- CREATE DAILY TASK ---');
+    console.log('Data:', JSON.stringify(data));
+
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    console.log('User ID:', user?.id);
+
+    if (!user) {
+        console.log('ERROR: Not authenticated');
+        return { error: 'Not authenticated' };
+    }
+
+    if (!data.title) {
+        console.log('ERROR: Title is required');
+        return { error: 'Title is required' };
+    }
+
+    // Get max order_index for this date
+    const { data: existingTasks } = await supabase
+        .from('daily_tasks')
+        .select('order_index')
+        .eq('user_id', user.id)
+        .eq('scheduled_date', data.scheduled_date)
+        .order('order_index', { ascending: false })
+        .limit(1);
+
+    const nextOrder = existingTasks && existingTasks.length > 0
+        ? (existingTasks[0].order_index || 0) + 1
+        : 0;
+
+    console.log('Next order index:', nextOrder);
+
+    const { data: task, error } = await supabase
+        .from('daily_tasks')
+        .insert({
+            user_id: user.id,
+            title: data.title,
+            scheduled_date: data.scheduled_date,
+            priority: data.priority || 'medium',
+            order_index: nextOrder
+        })
+        .select()
+        .single();
+
+    if (error) {
+        console.error('Error creating daily task:', error);
+        return { error: error.message };
+    }
+
+    console.log('Task created:', task?.id);
+    revalidatePath(`/calendar/day/${data.scheduled_date}`);
+    revalidatePath(`/calendar`);
+    return { task, success: true };
+}
+
+export async function toggleTaskComplete(taskId: string) {
+    console.log('--- TOGGLE TASK COMPLETE ---');
+    console.log('Task ID:', taskId);
+
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    console.log('User ID:', user?.id);
+
+    if (!user) {
+        console.log('ERROR: Not authenticated');
+        return { error: 'Not authenticated' };
+    }
+
+    // Get current task state
+    const { data: task, error: fetchError } = await supabase
+        .from('daily_tasks')
+        .select('completed, scheduled_date')
+        .eq('id', taskId)
+        .eq('user_id', user.id)
+        .single();
+
+    console.log('Current task state:', task, 'Error:', fetchError);
+
+    if (fetchError || !task) {
+        console.log('ERROR: Task not found');
+        return { error: 'Task not found' };
+    }
+
+    const newCompleted = !task.completed;
+    console.log('Setting completed to:', newCompleted);
+
+    const { error } = await supabase
+        .from('daily_tasks')
+        .update({
+            completed: newCompleted,
+            completed_at: newCompleted ? new Date().toISOString() : null
+        })
+        .eq('id', taskId)
+        .eq('user_id', user.id);
+
+    if (error) {
+        console.error('Error toggling task:', error);
+        return { error: error.message };
+    }
+
+    console.log('Task toggled successfully! New state:', newCompleted);
+    revalidatePath(`/calendar/day/${task.scheduled_date}`);
+    revalidatePath(`/calendar`);
+    return { success: true, completed: newCompleted };
+}
+
+export async function deleteDailyTask(taskId: string) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+        return { error: 'Not authenticated' };
+    }
+
+    // Get task date for revalidation
+    const { data: task } = await supabase
+        .from('daily_tasks')
+        .select('scheduled_date')
+        .eq('id', taskId)
+        .eq('user_id', user.id)
+        .single();
+
+    const { error } = await supabase
+        .from('daily_tasks')
+        .delete()
+        .eq('id', taskId)
+        .eq('user_id', user.id);
+
+    if (error) {
+        console.error('Error deleting task:', error);
+        return { error: error.message };
+    }
+
+    if (task) {
+        revalidatePath(`/calendar/day/${task.scheduled_date}`);
+    }
+    return { success: true };
+}
+
+export async function createMultipleDailyTasks(tasks: CreateDailyTaskData[]) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+        return { error: 'Not authenticated' };
+    }
+
+    if (!tasks.length) {
+        return { error: 'No tasks provided' };
+    }
+
+    const date = tasks[0].scheduled_date;
+
+    // Get max order_index
+    const { data: existingTasks } = await supabase
+        .from('daily_tasks')
+        .select('order_index')
+        .eq('user_id', user.id)
+        .eq('scheduled_date', date)
+        .order('order_index', { ascending: false })
+        .limit(1);
+
+    let nextOrder = existingTasks && existingTasks.length > 0
+        ? (existingTasks[0].order_index || 0) + 1
+        : 0;
+
+    const tasksToInsert = tasks.map((t, idx) => ({
+        user_id: user.id,
+        title: t.title,
+        scheduled_date: t.scheduled_date,
+        priority: t.priority || 'medium',
+        order_index: nextOrder + idx
+    }));
+
+    const { data: createdTasks, error } = await supabase
+        .from('daily_tasks')
+        .insert(tasksToInsert)
+        .select();
+
+    if (error) {
+        console.error('Error creating tasks:', error);
+        return { error: error.message };
+    }
+
+    revalidatePath(`/calendar/day/${date}`);
+    revalidatePath('/calendar');
+    revalidatePath('/dashboard');
+    return { success: true, tasks: createdTasks };
+}
+
+interface AIPlannerTask {
+    title: string;
+    priority: 'low' | 'medium' | 'high';
+}
+
+export async function planDayWithAI(userInput: string, date: string, existingHabits: any[]) {
+    try {
+        const apiKey = process.env.OPENAI_API_KEY;
+
+        if (!apiKey) {
+            return { error: 'Error de configuración: OpenAI API Key no configurada.' };
+        }
+
+        const OpenAI = (await import('openai')).default;
+        const openai = new OpenAI({ apiKey });
+
+        const systemPrompt = `Eres un asistente de productividad que ayuda a planificar el día.
+
+Hábitos existentes del usuario para hoy: ${existingHabits.map(h => h.title).join(', ') || 'Ninguno'}
+Fecha: ${date}
+
+Basándote en lo que el usuario describe que necesita hacer hoy, crea una lista de tareas específicas y accionables.
+NO dupliques los hábitos existentes.
+Prioriza las tareas según su importancia/urgencia.
+
+Responde SOLO en JSON válido:
+{
+  "tasks": [
+    {
+      "title": "Nombre de tarea (verbo + acción específica)",
+      "priority": "low" | "medium" | "high"
+    }
+  ],
+  "message": "Breve mensaje motivacional en español (1 oración)"
+}
+
+IMPORTANTE:
+- Máximo 7 tareas
+- Sé específico (ej: "Enviar email a María sobre proyecto X" en vez de "Emails")
+- Usa español
+- Las tareas deben ser completables en un día`;
+
+        const completion = await openai.chat.completions.create({
+            messages: [
+                { role: "system", content: systemPrompt },
+                { role: "user", content: userInput }
+            ],
+            model: "gpt-4o-mini",
+            response_format: { type: "json_object" },
+        });
+
+        const response = completion.choices[0].message.content;
+
+        if (!response) {
+            return { error: 'La IA no devolvió respuesta' };
+        }
+
+        let parsed: { tasks: AIPlannerTask[]; message: string };
+        try {
+            parsed = JSON.parse(response);
+        } catch (parseError) {
+            console.error('JSON Parse error:', parseError);
+            return { error: 'Error al procesar la respuesta de IA' };
+        }
+
+        if (!parsed.tasks || !Array.isArray(parsed.tasks)) {
+            return { error: 'La IA no devolvió tareas válidas' };
+        }
+
+        return {
+            tasks: parsed.tasks,
+            message: parsed.message
+        };
+
+    } catch (error: any) {
+        console.error('Error in planDayWithAI:', error);
+        return { error: `Error interno de IA: ${error.message}` };
+    }
+}

@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { AppSidebar } from "@/components/layout/AppSidebar";
 import { MobileNav } from "@/components/layout/MobileNav";
 import { HabitCalendar } from "@/components/habits/HabitCalendar";
+import { TodayPlannerCard } from "@/components/planner";
 import { Calendar } from "lucide-react";
 
 export default async function CalendarPage() {
@@ -15,6 +16,9 @@ export default async function CalendarPage() {
     if (!user) {
         redirect("/login");
     }
+
+    // Get today's date in YYYY-MM-DD format
+    const today = new Date().toISOString().split('T')[0];
 
     // Fetch habits with their logs (unchanged logic)
     const { data: habits } = await supabase
@@ -32,6 +36,14 @@ export default async function CalendarPage() {
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
+    // Fetch today's tasks
+    const { data: todayTasks } = await supabase
+        .from('daily_tasks')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('scheduled_date', today)
+        .order('order_index', { ascending: true });
+
     // Transform the data for the component
     const transformedHabits = (habits || []).map(habit => ({
         id: habit.id,
@@ -40,6 +52,14 @@ export default async function CalendarPage() {
         frequency: habit.frequency || 'daily',
         streak: habit.streak || 0,
         logs: habit.habit_logs || []
+    }));
+
+    // Transform tasks for TodayPlannerCard
+    const transformedTasks = (todayTasks || []).map(task => ({
+        id: task.id,
+        title: task.title,
+        priority: task.priority || 'medium',
+        completed: task.completed || false
     }));
 
     return (
@@ -63,6 +83,13 @@ export default async function CalendarPage() {
                             {t('pageSubtitle')}
                         </p>
                     </div>
+
+                    {/* Today's Planner - Prominent Card */}
+                    <TodayPlannerCard
+                        tasks={transformedTasks}
+                        habits={transformedHabits}
+                        dateStr={today}
+                    />
 
                     <HabitCalendar initialHabits={transformedHabits} />
                 </div>

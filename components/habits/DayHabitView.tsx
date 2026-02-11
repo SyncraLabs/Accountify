@@ -2,9 +2,9 @@
 
 import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
-import { Check, Calendar as CalendarIcon, ArrowLeft, X, Minus } from "lucide-react";
+import { Check, Calendar as CalendarIcon, ArrowLeft, X, Minus, ListTodo, Target } from "lucide-react";
 import { getHabitStatusForDay, isFlexibleFrequency, getWeekProgress, getFrequencyLabel } from "@/lib/habit-utils";
-import { toggleHabitLog } from "@/app/actions";
+import { toggleHabitLog, planDayWithAI, toggleTaskComplete } from "@/app/actions";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
@@ -15,6 +15,12 @@ import {
     SparkleBurst,
     GlowWrapper
 } from "@/components/ui/dopamine";
+import {
+    DailyTaskList,
+    CreateTaskDialog,
+    AIPlannerInput,
+    AITaskSuggestions
+} from "@/components/planner";
 
 interface Habit {
     id: string;
@@ -25,19 +31,38 @@ interface Habit {
     logs: { completed_date: string }[];
 }
 
+interface DailyTask {
+    id: string;
+    title: string;
+    priority: 'low' | 'medium' | 'high';
+    completed: boolean;
+    completed_at: string | null;
+    order_index: number;
+}
+
 interface DayHabitViewProps {
     initialHabits: Habit[];
+    initialTasks?: DailyTask[];
     dateStr: string; // YYYY-MM-DD
 }
 
-export function DayHabitView({ initialHabits, dateStr }: DayHabitViewProps) {
+export function DayHabitView({ initialHabits, initialTasks = [], dateStr }: DayHabitViewProps) {
     const [habits, setHabits] = useState<Habit[]>(initialHabits);
+    const [tasks, setTasks] = useState<DailyTask[]>(initialTasks);
     const [loading, setLoading] = useState<string | null>(null);
     const [showSparkles, setShowSparkles] = useState<string | null>(null);
     const [dayCompleted, setDayCompleted] = useState(false);
+    const [activeTab, setActiveTab] = useState<'habits' | 'tasks'>('habits');
+    const [aiSuggestions, setAiSuggestions] = useState<{ tasks: any[]; message: string } | null>(null);
+    const [isAiLoading, setIsAiLoading] = useState(false);
     const router = useRouter();
     const { celebrate } = useCelebration();
     const prevProgressRef = useRef(0);
+
+    // Sync tasks state when initialTasks prop changes (after router.refresh())
+    useEffect(() => {
+        setTasks(initialTasks);
+    }, [initialTasks]);
 
     const date = new Date(dateStr);
 
@@ -138,6 +163,78 @@ export function DayHabitView({ initialHabits, dateStr }: DayHabitViewProps) {
         return emojiMap[category] || "⭐";
     };
 
+    // Refresh tasks from server
+    const refreshTasks = () => {
+        router.refresh();
+    };
+
+    // Handle task toggle with optimistic update
+    const handleTaskToggle = async (taskId: string) => {
+        const task = tasks.find(t => t.id === taskId);
+        if (!task) return;
+
+        const wasCompleted = task.completed;
+
+        // Optimistic update
+        setTasks(prev => prev.map(t =>
+            t.id === taskId ? { ...t, completed: !t.completed } : t
+        ));
+
+        if (!wasCompleted) {
+            celebrate('habitComplete', { intensity: 'small' });
+            toast.success("¡Tarea completada!");
+        } else {
+            toast.info("Tarea desmarcada");
+        }
+
+        try {
+            const result = await toggleTaskComplete(taskId);
+            if (result.error) {
+                // Revert on error
+                setTasks(prev => prev.map(t =>
+                    t.id === taskId ? { ...t, completed: wasCompleted } : t
+                ));
+                toast.error(result.error);
+            }
+        } catch (error) {
+            // Revert on error
+            setTasks(prev => prev.map(t =>
+                t.id === taskId ? { ...t, completed: wasCompleted } : t
+            ));
+            toast.error("Error al actualizar la tarea");
+        }
+    };
+
+    // Handle AI planning
+    const handleAIPlan = async (input: string) => {
+        setIsAiLoading(true);
+        try {
+            const result = await planDayWithAI(input, dateStr, habits);
+
+            if (result.error) {
+                toast.error(result.error);
+            } else if (result.tasks) {
+                setAiSuggestions({
+                    tasks: result.tasks,
+                    message: result.message || ""
+                });
+            }
+        } catch (error) {
+            toast.error("Error al planificar con IA");
+        } finally {
+            setIsAiLoading(false);
+        }
+    };
+
+    const handleAcceptSuggestions = () => {
+        setAiSuggestions(null);
+        refreshTasks();
+    };
+
+    const handleDismissSuggestions = () => {
+        setAiSuggestions(null);
+    };
+
     return (
         <div className="space-y-8 animate-fade-up">
             {/* Header with Navigation and Date */}
@@ -235,8 +332,66 @@ export function DayHabitView({ initialHabits, dateStr }: DayHabitViewProps) {
                 </div>
             </div>
 
-            {/* Habits Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Tabs */}
+            <div className="flex gap-2 p-1 bg-white/5 rounded-xl w-fit">
+                <motion.button
+                    onClick={() => setActiveTab('habits')}
+                    className={cn(
+                        "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all",
+                        activeTab === 'habits'
+                            ? "bg-primary text-black"
+                            : "text-zinc-400 hover:text-white hover:bg-white/5"
+                    )}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                >
+                    <Target className="h-4 w-4" />
+                    Hábitos
+                    {requiredHabits.length > 0 && (
+                        <span className={cn(
+                            "px-1.5 py-0.5 rounded-full text-xs",
+                            activeTab === 'habits' ? "bg-black/20" : "bg-white/10"
+                        )}>
+                            {completedCount}/{totalRequired}
+                        </span>
+                    )}
+                </motion.button>
+                <motion.button
+                    onClick={() => setActiveTab('tasks')}
+                    className={cn(
+                        "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all",
+                        activeTab === 'tasks'
+                            ? "bg-primary text-black"
+                            : "text-zinc-400 hover:text-white hover:bg-white/5"
+                    )}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                >
+                    <ListTodo className="h-4 w-4" />
+                    Tareas del Día
+                    {tasks.length > 0 && (
+                        <span className={cn(
+                            "px-1.5 py-0.5 rounded-full text-xs",
+                            activeTab === 'tasks' ? "bg-black/20" : "bg-white/10"
+                        )}>
+                            {tasks.filter(t => t.completed).length}/{tasks.length}
+                        </span>
+                    )}
+                </motion.button>
+            </div>
+
+            {/* Tab Content */}
+            <AnimatePresence mode="wait">
+                {activeTab === 'habits' ? (
+                    <motion.div
+                        key="habits"
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 20 }}
+                        transition={{ duration: 0.2 }}
+                    >
+                        {/* Habits Grid */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <AnimatePresence mode="popLayout">
                     {habits.map((habit, idx) => {
                         const status = getHabitStatusForDay(habit, date);
@@ -421,28 +576,69 @@ export function DayHabitView({ initialHabits, dateStr }: DayHabitViewProps) {
                             </motion.div>
                         );
                     })}
-                </AnimatePresence>
-            </div>
+                            </AnimatePresence>
+                        </div>
 
-            {habits.length === 0 && (
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="rounded-[2.5rem] bg-white/5 border border-white/5 p-16 text-center"
-                >
-                    <div className="max-w-md mx-auto space-y-4">
-                        <motion.div
-                            animate={{ y: [0, -10, 0] }}
-                            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                            className="text-6xl"
-                        >
-                            📅
-                        </motion.div>
-                        <h3 className="text-2xl font-bold text-white">No hay hábitos para este día</h3>
-                        <p className="text-muted-foreground">Parece que no tenías hábitos activos en esta fecha.</p>
-                    </div>
-                </motion.div>
-            )}
+                        {habits.length === 0 && (
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                className="rounded-[2.5rem] bg-white/5 border border-white/5 p-16 text-center"
+                            >
+                                <div className="max-w-md mx-auto space-y-4">
+                                    <motion.div
+                                        animate={{ y: [0, -10, 0] }}
+                                        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                                        className="text-6xl"
+                                    >
+                                        📅
+                                    </motion.div>
+                                    <h3 className="text-2xl font-bold text-white">No hay hábitos para este día</h3>
+                                    <p className="text-muted-foreground">Parece que no tenías hábitos activos en esta fecha.</p>
+                                </div>
+                            </motion.div>
+                        )}
+                    </motion.div>
+                ) : (
+                    <motion.div
+                        key="tasks"
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -20 }}
+                        transition={{ duration: 0.2 }}
+                        className="space-y-6"
+                    >
+                        {/* Task Actions */}
+                        <div className="flex items-center justify-between">
+                            <h2 className="text-lg font-semibold text-white">Tareas del Día</h2>
+                            <CreateTaskDialog dateStr={dateStr} onSuccess={refreshTasks} />
+                        </div>
+
+                        {/* AI Planning Section */}
+                        <AnimatePresence mode="wait">
+                            {aiSuggestions ? (
+                                <AITaskSuggestions
+                                    key="suggestions"
+                                    tasks={aiSuggestions.tasks}
+                                    message={aiSuggestions.message}
+                                    dateStr={dateStr}
+                                    onAccept={handleAcceptSuggestions}
+                                    onDismiss={handleDismissSuggestions}
+                                />
+                            ) : (
+                                <AIPlannerInput
+                                    key="input"
+                                    onSubmit={handleAIPlan}
+                                    isLoading={isAiLoading}
+                                />
+                            )}
+                        </AnimatePresence>
+
+                        {/* Task List */}
+                        <DailyTaskList tasks={tasks} onUpdate={refreshTasks} onToggle={handleTaskToggle} />
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }
