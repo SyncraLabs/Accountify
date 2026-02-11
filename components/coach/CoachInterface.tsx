@@ -165,8 +165,8 @@ export function CoachInterface({ currentHabits }: CoachInterfaceProps) {
 
     return (
         <div className="h-full flex flex-col w-full overflow-x-hidden">
-            {/* Header with Habit Management */}
-            <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-800">
+            {/* Header with Habit Management - always hidden on mobile for cleaner UI */}
+            <div className="hidden md:flex items-center justify-between px-4 py-3 border-b border-zinc-800">
                 <div className="flex items-center gap-2">
                     <div className="p-2 rounded-lg bg-primary/10">
                         <Sparkles className="h-5 w-5 text-primary" />

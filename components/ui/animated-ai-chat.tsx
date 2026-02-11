@@ -318,8 +318,9 @@ export function AnimatedAIChat({
     };
 
     return (
-        <div className="flex flex-col w-full h-full items-center justify-center bg-transparent text-white p-6 pb-28 md:pb-6 relative overflow-hidden">
-            <div className="absolute inset-0 w-full h-full overflow-hidden">
+        <div className="flex flex-col w-full h-full items-center justify-start md:justify-center bg-transparent text-white p-4 pt-8 pb-36 md:p-6 md:pb-6 relative overflow-y-auto overflow-x-hidden">
+            {/* Background blobs - hidden on mobile for cleaner UI */}
+            <div className="absolute inset-0 w-full h-full overflow-hidden hidden md:block">
                 <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/10 rounded-full mix-blend-normal filter blur-[128px] animate-pulse" />
                 <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-lime-500/10 rounded-full mix-blend-normal filter blur-[128px] animate-pulse delay-700" />
                 <div className="absolute top-1/4 right-1/3 w-64 h-64 bg-emerald-500/10 rounded-full mix-blend-normal filter blur-[96px] animate-pulse delay-1000" />
@@ -521,12 +522,39 @@ export function AnimatedAIChat({
                         </div>
                     </motion.div>
 
+                    {/* Command shortcuts - show only 2 on mobile */}
                     <div className="flex flex-wrap items-center justify-center gap-2">
-                        {commandSuggestions.map((suggestion, index) => (
+                        {commandSuggestions.slice(0, 2).map((suggestion, index) => (
                             <motion.button
                                 key={suggestion.prefix}
                                 onClick={() => selectCommandSuggestion(index)}
-                                className="flex items-center gap-2 px-3 py-2 bg-white/[0.02] hover:bg-white/[0.05] rounded-lg text-sm text-white/60 hover:text-white/90 transition-all relative group"
+                                className="flex items-center gap-2 px-3 py-2 bg-white/[0.02] hover:bg-white/[0.05] rounded-lg text-sm text-white/60 hover:text-white/90 transition-all relative group md:hidden"
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: index * 0.1 }}
+                            >
+                                {suggestion.icon}
+                                <span>{suggestion.label}</span>
+                                <motion.div
+                                    className="absolute inset-0 border border-white/[0.05] rounded-lg"
+                                    initial={false}
+                                    animate={{
+                                        opacity: [0, 1],
+                                        scale: [0.98, 1],
+                                    }}
+                                    transition={{
+                                        duration: 0.3,
+                                        ease: "easeOut",
+                                    }}
+                                />
+                            </motion.button>
+                        ))}
+                        {/* Show all on desktop */}
+                        {commandSuggestions.map((suggestion, index) => (
+                            <motion.button
+                                key={`desktop-${suggestion.prefix}`}
+                                onClick={() => selectCommandSuggestion(index)}
+                                className="hidden md:flex items-center gap-2 px-3 py-2 bg-white/[0.02] hover:bg-white/[0.05] rounded-lg text-sm text-white/60 hover:text-white/90 transition-all relative group"
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: index * 0.1 }}

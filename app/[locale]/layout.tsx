@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Outfit } from "next/font/google"; // Disabling Geist for now, standard sans
 import { Toaster } from "@/components/ui/sonner";
 import { AuthListener } from "@/components/auth/AuthListener";
+import { CelebrationProvider } from "@/components/ui/dopamine";
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, setRequestLocale } from 'next-intl/server';
 import { notFound } from "next/navigation";
@@ -63,9 +64,11 @@ export default async function RootLayout({
     <html lang={locale} className="dark">
       <body className={`${outfit.className} antialiased min-h-[100dvh] bg-black text-foreground selection:bg-primary/30 selection:text-primary-foreground overflow-x-hidden`}>
         <NextIntlClientProvider messages={messages}>
-          <AuthListener />
-          {children}
-          <Toaster />
+          <CelebrationProvider>
+            <AuthListener />
+            {children}
+            <Toaster />
+          </CelebrationProvider>
         </NextIntlClientProvider>
       </body>
     </html>

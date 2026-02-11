@@ -1,12 +1,13 @@
 "use client";
 
-import { CheckCircle2, Circle } from "lucide-react";
+import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { toggleHabitLog } from "@/app/actions";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
-import { Confetti } from "@/components/ui/Confetti";
+import { motion, AnimatePresence } from "framer-motion";
+import { useCelebration, SparkleBurst } from "@/components/ui/dopamine";
 
 interface DashboardHabitRowProps {
     habit: {
@@ -38,7 +39,9 @@ export function DashboardHabitRow({ habit: initialHabit }: DashboardHabitRowProp
     const tCategories = useTranslations('common.categories');
     const [isCompleted, setIsCompleted] = useState(initialHabit.completedToday);
     const [isLoading, setIsLoading] = useState(false);
-    const [explosion, setExplosion] = useState(false);
+    const [showSparkles, setShowSparkles] = useState(false);
+    const { celebrate } = useCelebration();
+    const buttonRef = useRef<HTMLButtonElement>(null);
 
     const handleToggle = async () => {
         setIsLoading(true);
@@ -50,8 +53,21 @@ export function DashboardHabitRow({ habit: initialHabit }: DashboardHabitRowProp
             setIsCompleted(newState);
 
             if (newState) {
-                setExplosion(true);
-                setTimeout(() => setExplosion(false), 2000);
+                // Trigger sparkles on the button
+                setShowSparkles(true);
+                setTimeout(() => setShowSparkles(false), 800);
+
+                // Get button position for celebration origin
+                if (buttonRef.current) {
+                    const rect = buttonRef.current.getBoundingClientRect();
+                    celebrate('habitComplete', {
+                        origin: {
+                            x: rect.left / window.innerWidth + (rect.width / window.innerWidth / 2),
+                            y: rect.top / window.innerHeight,
+                        },
+                        intensity: 'small',
+                    });
+                }
             }
 
             const result = await toggleHabitLog(initialHabit.id, today);
@@ -72,36 +88,80 @@ export function DashboardHabitRow({ habit: initialHabit }: DashboardHabitRowProp
     };
 
     return (
-        <div
+        <motion.div
             className={cn(
-                "group relative flex items-center justify-between p-4 rounded-xl border transition-all duration-300 overflow-hidden",
+                "group relative flex items-center justify-between p-4 rounded-xl border overflow-hidden",
                 isCompleted
-                    ? "bg-[#0f0f10]/50 border-zinc-800/50"
+                    ? "bg-primary/5 border-primary/20"
                     : "bg-[#0f0f10] border-zinc-800 hover:border-zinc-700"
             )}
+            initial={false}
+            animate={{
+                scale: isCompleted ? [1, 1.02, 1] : 1,
+            }}
+            transition={{ duration: 0.3 }}
+            whileHover={{ scale: 1.01 }}
+            whileTap={{ scale: 0.98 }}
+            style={{ willChange: 'transform' }}
         >
-            {explosion && <Confetti count={30} x={50} y={20} className="pointer-events-none absolute inset-0 z-50" />}
+            {/* Background glow effect when completed */}
+            <AnimatePresence>
+                {isCompleted && (
+                    <motion.div
+                        className="absolute inset-0 bg-gradient-to-r from-primary/10 via-primary/5 to-transparent"
+                        initial={{ opacity: 0, x: -100 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.5 }}
+                    />
+                )}
+            </AnimatePresence>
+
             <div className="relative z-10 flex items-center gap-4">
-                <button
+                <motion.button
+                    ref={buttonRef}
                     onClick={handleToggle}
                     disabled={isLoading}
                     className={cn(
-                        "h-6 w-6 rounded-full border flex items-center justify-center transition-all duration-300",
+                        "relative h-7 w-7 rounded-full border-2 flex items-center justify-center transition-colors duration-200",
                         isCompleted
-                            ? "bg-primary border-primary text-black"
-                            : "border-zinc-600 hover:border-primary group-hover:border-primary",
+                            ? "bg-primary border-primary text-black shadow-[0_0_12px_rgba(191,245,73,0.4)]"
+                            : "border-zinc-600 hover:border-primary hover:shadow-[0_0_8px_rgba(191,245,73,0.2)]",
                         isLoading && "opacity-50 cursor-not-allowed"
                     )}
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    style={{ willChange: 'transform' }}
                 >
-                    {isCompleted && <CheckCircle2 className="h-4 w-4" />}
-                </button>
+                    <AnimatePresence mode="wait">
+                        {isCompleted && (
+                            <motion.div
+                                initial={{ scale: 0, rotate: -180 }}
+                                animate={{ scale: 1, rotate: 0 }}
+                                exit={{ scale: 0, rotate: 180 }}
+                                transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                            >
+                                <Check className="h-4 w-4 stroke-[3px]" />
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+
+                    {/* Sparkle burst effect */}
+                    <SparkleBurst trigger={showSparkles} count={6} />
+                </motion.button>
+
                 <div className="flex flex-col">
-                    <span className={cn(
-                        "text-sm font-medium transition-colors duration-300",
-                        isCompleted ? "text-zinc-500 line-through" : "text-zinc-200"
-                    )}>
+                    <motion.span
+                        className={cn(
+                            "text-sm font-medium transition-colors duration-200",
+                            isCompleted ? "text-zinc-400" : "text-zinc-200"
+                        )}
+                        animate={{
+                            textDecoration: isCompleted ? "line-through" : "none",
+                        }}
+                    >
                         {initialHabit.title}
-                    </span>
+                    </motion.span>
                     <span className="text-xs text-zinc-600 capitalize">
                         {categoryKeyMap[initialHabit.category]
                             ? tCategories(categoryKeyMap[initialHabit.category])
@@ -109,6 +169,20 @@ export function DashboardHabitRow({ habit: initialHabit }: DashboardHabitRowProp
                     </span>
                 </div>
             </div>
-        </div>
+
+            {/* Completion indicator */}
+            <AnimatePresence>
+                {isCompleted && (
+                    <motion.div
+                        className="absolute right-4 text-xs font-medium text-primary"
+                        initial={{ opacity: 0, x: 10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 10 }}
+                    >
+                        ✓
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </motion.div>
     );
 }
