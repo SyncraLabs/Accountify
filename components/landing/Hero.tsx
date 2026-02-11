@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Star, Sparkles } from "lucide-react";
 import { DashboardPreview } from "@/components/landing/DashboardPreview";
 import { useTranslations } from "next-intl";
+import { SupademoButton } from "@/components/landing/SupademoButton";
 
 // Floating particles component
 function FloatingParticles() {
@@ -175,6 +176,7 @@ export function Hero() {
                             </Button>
                         </motion.div>
                     </Link>
+                    <SupademoButton />
                 </motion.div>
 
                 {/* Social Proof / Stats */}

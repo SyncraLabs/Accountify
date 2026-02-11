@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import { Outfit } from "next/font/google"; // Disabling Geist for now, standard sans
 import { Toaster } from "@/components/ui/sonner";
 import { AuthListener } from "@/components/auth/AuthListener";
@@ -70,6 +71,7 @@ export default async function RootLayout({
             <Toaster />
           </CelebrationProvider>
         </NextIntlClientProvider>
+        <Script src="https://script.supademo.com/supademo.js" strategy="lazyOnload" />
       </body>
     </html>
   );
