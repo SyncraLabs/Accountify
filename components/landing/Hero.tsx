@@ -222,8 +222,10 @@ export function Hero() {
 
             </div>
 
-            {/* Dashboard Preview */}
-            <DashboardPreview />
+            {/* Dashboard Preview — hidden on mobile */}
+            <div className="hidden md:block w-full">
+                <DashboardPreview />
+            </div>
 
         </section>
     );
