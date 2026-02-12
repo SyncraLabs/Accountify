@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { Navbar } from "@/components/landing/Navbar";
 import { Hero } from "@/components/landing/Hero";
-import { AppShowcase } from "@/components/landing/AppShowcase";
+import { OnboardingCarousel } from "@/components/landing/OnboardingCarousel";
 import { Features } from "@/components/landing/Features";
 import { PricingSection } from "@/components/landing/PricingSection";
 import { CTASection } from "@/components/landing/CTASection";
@@ -21,7 +21,7 @@ export default async function LandingPage() {
       <Navbar />
       <main className="flex-1">
         <Hero />
-        <AppShowcase />
+        <OnboardingCarousel />
         <Features />
         <PricingSection />
         <CTASection />

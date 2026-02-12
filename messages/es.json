@@ -205,6 +205,53 @@
         }
       }
     },
+    "onboardingCarousel": {
+      "title": "Descubre Cómo",
+      "titleHighlight": "Funciona",
+      "subtitle": "Conoce cada paso de la experiencia Accountify.",
+      "steps": {
+        "welcome": {
+          "title": "Bienvenido a Accountify",
+          "subtitle": "Tu camino hacia mejores hábitos",
+          "description": "Estás a punto de transformar tu vida con hábitos inteligentes, un coach de IA y una comunidad que te apoya."
+        },
+        "dashboard": {
+          "title": "Tu Centro de Control",
+          "subtitle": "Todo en un vistazo",
+          "description": "Ve tu progreso diario, estadísticas y actividad semanal. Aquí es donde comienza cada día.",
+          "visual": {
+            "meditate": "Meditar",
+            "exercise": "Ejercicio",
+            "read": "Leer"
+          }
+        },
+        "coach": {
+          "title": "Tu Coach de IA",
+          "subtitle": "Rutinas personalizadas",
+          "description": "Describe tus metas y el AI Coach creará rutinas perfectas para ti. Es como tener un entrenador personal 24/7.",
+          "visual": {
+            "user": "Quiero ser más productivo",
+            "ai": "He creado una rutina matutina perfecta para ti...",
+            "routine": "Rutina Matutina"
+          }
+        },
+        "calendar": {
+          "title": "Rastrea Tu Progreso",
+          "subtitle": "No rompas la cadena",
+          "description": "Visualiza tu consistencia con el calendario de hábitos. Cada día completado construye tu racha.",
+          "visual": {
+            "date": "Febrero 2025",
+            "streak": "Mejor racha",
+            "days": "21 días"
+          }
+        },
+        "community": {
+          "title": "Únete a la Comunidad",
+          "subtitle": "Juntos somos más fuertes",
+          "description": "Conecta con grupos de responsabilidad. Comparte logros y motívense mutuamente."
+        }
+      }
+    },
     "trust": {
       "free": "100% Gratis",
       "noAds": "Sin anuncios",

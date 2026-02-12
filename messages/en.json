@@ -205,6 +205,53 @@
         }
       }
     },
+    "onboardingCarousel": {
+      "title": "Discover How It",
+      "titleHighlight": "Works",
+      "subtitle": "Get to know every step of the Accountify experience.",
+      "steps": {
+        "welcome": {
+          "title": "Welcome to Accountify",
+          "subtitle": "Your path to better habits",
+          "description": "You are about to transform your life with smart habits, an AI coach, and a supportive community."
+        },
+        "dashboard": {
+          "title": "Your Control Center",
+          "subtitle": "Everything at a glance",
+          "description": "See your daily progress, stats, and weekly activity. This is where every day begins.",
+          "visual": {
+            "meditate": "Meditate",
+            "exercise": "Exercise",
+            "read": "Read"
+          }
+        },
+        "coach": {
+          "title": "Your AI Coach",
+          "subtitle": "Personalized routines",
+          "description": "Describe your goals and the AI Coach will create perfect routines for you. It's like having a personal trainer 24/7.",
+          "visual": {
+            "user": "I want to be more productive",
+            "ai": "I've created a perfect morning routine for you...",
+            "routine": "Morning Routine"
+          }
+        },
+        "calendar": {
+          "title": "Track Your Progress",
+          "subtitle": "Don't break the chain",
+          "description": "Visualize your consistency with the habit calendar. Every completed day builds your streak.",
+          "visual": {
+            "date": "February 2025",
+            "streak": "Best streak",
+            "days": "21 days"
+          }
+        },
+        "community": {
+          "title": "Join the Community",
+          "subtitle": "Together we are stronger",
+          "description": "Connect with accountability groups. Share achievements and motivate each other."
+        }
+      }
+    },
     "trust": {
       "free": "100% Free",
       "noAds": "No ads",
@@ -563,7 +610,12 @@
       "dashboard": {
         "title": "Your Control Center",
         "subtitle": "Everything at a glance",
-        "description": "See your daily progress, stats, and weekly activity. This is where every day begins."
+        "description": "See your daily progress, stats, and weekly activity. This is where every day begins.",
+        "visual": {
+          "meditate": "Meditate",
+          "exercise": "Exercise",
+          "read": "Read"
+        }
       },
       "coach": {
         "title": "Your AI Coach",
