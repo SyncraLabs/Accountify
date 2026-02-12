@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
-import { CalendarIcon, Plus } from "lucide-react"
+import { Loader2, Plus } from "lucide-react"
 import { createHabit } from "@/app/actions"
 import { toast } from "sonner"
 import { useState } from "react"
@@ -194,7 +194,18 @@ export function CreateHabitModal({ trigger, onSuccess }: CreateHabitModalProps) 
                         />
 
                         <DialogFooter>
-                            <Button type="submit">{t('createHabit')}</Button>
+                            <Button
+                                type="submit"
+                                disabled={form.formState.isSubmitting}
+                                className="min-w-[140px] transition-all duration-200"
+                            >
+                                {form.formState.isSubmitting ? (
+                                    <>
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        {tCommon('loading')}
+                                    </>
+                                ) : t('createHabit')}
+                            </Button>
                         </DialogFooter>
                     </form>
                 </Form>

@@ -171,6 +171,7 @@ export function CelebrationProvider({ children }: { children: ReactNode }) {
                 <SuccessFlash
                     trigger={state.showFlash}
                     intensity={state.flashIntensity}
+                    origin={state.origin}
                 />
             )}
 
@@ -194,6 +195,7 @@ export function CelebrationProvider({ children }: { children: ReactNode }) {
                 <CelebrationBurst
                     trigger={state.showBurst}
                     size="md"
+                    origin={state.origin}
                 />
             )}
         </CelebrationContext.Provider>

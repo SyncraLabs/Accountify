@@ -8,14 +8,15 @@ interface SuccessFlashProps {
     color?: string;
     duration?: number;
     intensity?: 'subtle' | 'medium' | 'strong';
+    origin?: { x: number; y: number }; // 0-1 percentages of viewport
     className?: string;
     onComplete?: () => void;
 }
 
 const intensityMap = {
-    subtle: 0.05,
-    medium: 0.12,
-    strong: 0.2,
+    subtle: 0.08,
+    medium: 0.15,
+    strong: 0.25,
 };
 
 export function SuccessFlash({
@@ -23,6 +24,7 @@ export function SuccessFlash({
     color = '#BFF549',
     duration = 0.4,
     intensity = 'medium',
+    origin,
     className,
     onComplete,
 }: SuccessFlashProps) {
@@ -39,6 +41,11 @@ export function SuccessFlash({
         }
     }, [trigger, duration, onComplete]);
 
+    // Calculate gradient position - center on origin if provided
+    const gradientPosition = origin
+        ? `${origin.x * 100}% ${origin.y * 100}%`
+        : 'center';
+
     return (
         <AnimatePresence>
             {isVisible && (
@@ -47,9 +54,9 @@ export function SuccessFlash({
                     animate={{ opacity: intensityMap[intensity] }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: duration / 2, ease: "easeOut" }}
-                    className={`pointer-events-none fixed inset-0 z-[200] ${className || ''}`}
+                    className={`pointer-events-none fixed inset-0 z-[99] ${className || ''}`}
                     style={{
-                        background: `radial-gradient(circle at center, ${color} 0%, transparent 70%)`,
+                        background: `radial-gradient(circle at ${gradientPosition}, ${color} 0%, transparent 60%)`,
                         willChange: 'opacity',
                     }}
                 />

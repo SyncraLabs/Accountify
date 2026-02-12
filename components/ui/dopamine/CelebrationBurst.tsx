@@ -1,13 +1,14 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 
 interface CelebrationBurstProps {
     trigger: boolean;
     size?: 'sm' | 'md' | 'lg' | 'xl';
     color?: string;
     className?: string;
+    origin?: { x: number; y: number }; // 0-1 percentages of viewport
     onComplete?: () => void;
 }
 
@@ -23,6 +24,7 @@ export function CelebrationBurst({
     size = 'md',
     color = '#BFF549',
     className,
+    origin,
     onComplete,
 }: CelebrationBurstProps) {
     const [isVisible, setIsVisible] = useState(false);
@@ -39,13 +41,13 @@ export function CelebrationBurst({
         }
     }, [trigger, onComplete]);
 
-    const rings = Array.from({ length: config.rings }).map((_, i) => ({
+    const rings = useMemo(() => Array.from({ length: config.rings }).map((_, i) => ({
         delay: i * 0.08,
         scale: 0.3 + (i * 0.25),
         opacity: 1 - (i * 0.15),
-    }));
+    })), [config.rings]);
 
-    const particles = Array.from({ length: config.particles }).map((_, i) => {
+    const particles = useMemo(() => Array.from({ length: config.particles }).map((_, i) => {
         const angle = (i / config.particles) * 360;
         const radians = angle * (Math.PI / 180);
         const distance = config.maxRadius * (0.7 + Math.random() * 0.3);
@@ -55,12 +57,24 @@ export function CelebrationBurst({
             delay: Math.random() * 0.1,
             size: 4 + Math.random() * 4,
         };
-    });
+    }), [config.particles, config.maxRadius]);
+
+    // If origin is provided, position at origin; otherwise center
+    const positionStyle = origin ? {
+        position: 'fixed' as const,
+        left: `${origin.x * 100}%`,
+        top: `${origin.y * 100}%`,
+        transform: 'translate(-50%, -50%)',
+    } : {};
+
+    const containerClass = origin
+        ? `pointer-events-none fixed z-[100] ${className || ''}`
+        : `pointer-events-none absolute inset-0 flex items-center justify-center z-50 ${className || ''}`;
 
     return (
         <AnimatePresence>
             {isVisible && (
-                <div className={`pointer-events-none absolute inset-0 flex items-center justify-center z-50 ${className || ''}`}>
+                <div className={containerClass} style={positionStyle}>
                     {/* Expanding rings */}
                     {rings.map((ring, i) => (
                         <motion.div
@@ -75,6 +89,10 @@ export function CelebrationBurst({
                                 height: config.maxRadius * 2,
                                 border: `2px solid ${color}`,
                                 willChange: 'transform, opacity',
+                                left: '50%',
+                                top: '50%',
+                                marginLeft: -config.maxRadius,
+                                marginTop: -config.maxRadius,
                             }}
                         />
                     ))}

@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
-import { UsersRound } from 'lucide-react'
+import { UsersRound, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 
 export function JoinGroupDialog() {
@@ -58,9 +58,14 @@ export function JoinGroupDialog() {
                         <Button
                             type="submit"
                             disabled={loading}
-                            className="bg-primary text-black hover:bg-primary/90 transition-all duration-200 hover:shadow-[0_0_20px_rgba(191,245,73,0.3)]"
+                            className="bg-primary text-black hover:bg-primary/90 transition-all duration-200 hover:shadow-[0_0_20px_rgba(191,245,73,0.3)] min-w-[140px]"
                         >
-                            {loading ? t('joining') : t('button')}
+                            {loading ? (
+                                <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    {t('joining')}
+                                </>
+                            ) : t('button')}
                         </Button>
                     </DialogFooter>
                 </form>

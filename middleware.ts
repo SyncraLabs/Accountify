@@ -14,6 +14,6 @@ export const config = {
     matcher: [
         '/',
         '/(es|en)/:path*',
-        '/((?!_next/static|_next/image|favicon.ico|api|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)'
+        '/((?!_next/static|_next/image|favicon.ico|api/stripe|api|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)'
     ],
 }

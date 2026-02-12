@@ -2,6 +2,8 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { getUserSubscription, getUserHabitCount, incrementAICoachUsage } from '@/lib/subscription-server'
+import { canCreateHabit, canUseAICoach } from '@/lib/subscription'
 
 export type CreateHabitData = {
     title: string
@@ -21,6 +23,13 @@ export async function createHabit(data: CreateHabitData) {
 
     if (!data.title) {
         return { error: 'Title is required' }
+    }
+
+    // Check subscription limits
+    const sub = await getUserSubscription(user.id)
+    const habitCount = await getUserHabitCount(user.id)
+    if (!canCreateHabit(sub.tier, habitCount)) {
+        return { error: 'LIMIT_REACHED', limitType: 'habits' }
     }
 
     console.log('Creating habit:', { ...data, userId: user.id })
@@ -487,6 +496,15 @@ export async function sendCoachMessage(
         let userContext = '';
 
         if (user) {
+            // Check AI Coach subscription limits
+            const sub = await getUserSubscription(user.id);
+            if (!canUseAICoach(sub.tier, sub.aiCoachUsesThisMonth)) {
+                return { error: 'LIMIT_REACHED', limitType: 'aiCoach' };
+            }
+
+            // Increment usage counter
+            await incrementAICoachUsage(user.id);
+
             const { data: profile } = await supabase
                 .from('profiles')
                 .select('context')

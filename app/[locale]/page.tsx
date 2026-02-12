@@ -4,6 +4,7 @@ import { Navbar } from "@/components/landing/Navbar";
 import { Hero } from "@/components/landing/Hero";
 import { AppShowcase } from "@/components/landing/AppShowcase";
 import { Features } from "@/components/landing/Features";
+import { PricingSection } from "@/components/landing/PricingSection";
 import { CTASection } from "@/components/landing/CTASection";
 import { Footer } from "@/components/landing/Footer";
 
@@ -22,6 +23,7 @@ export default async function LandingPage() {
         <Hero />
         <AppShowcase />
         <Features />
+        <PricingSection />
         <CTASection />
       </main>
       <Footer />

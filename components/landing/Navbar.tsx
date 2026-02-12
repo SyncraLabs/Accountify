@@ -40,6 +40,13 @@ export function Navbar() {
                     <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all group-hover:w-full" />
                 </Link>
                 <Link
+                    href="#pricing"
+                    className="text-sm text-zinc-400 hover:text-primary transition-colors relative group"
+                >
+                    {t('pricing')}
+                    <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all group-hover:w-full" />
+                </Link>
+                <Link
                     href="#how-it-works"
                     className="text-sm text-zinc-400 hover:text-primary transition-colors relative group"
                 >

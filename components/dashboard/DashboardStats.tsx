@@ -3,11 +3,12 @@
 import { useMemo } from "react";
 import { Flame, Calendar, CheckCircle, Target } from "lucide-react";
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 import { SpotlightCard } from "@/components/ui/SpotlightCard";
 import { AnimatedCounter, StreakFire } from "@/components/ui/dopamine";
 
 interface DashboardStatsProps {
-    habits: any[]; // We can refine this type if we have a shared type definition
+    habits: any[];
 }
 
 const cardVariants = {
@@ -26,26 +27,35 @@ const cardVariants = {
 };
 
 export function DashboardStats({ habits }: DashboardStatsProps) {
+    const t = useTranslations('dashboard.stats');
+
     const stats = useMemo(() => {
-        // Current Streak (highest active streak)
+        // Current Streak (highest active streak among all habits)
         const currentStreak = Math.max(0, ...habits.map(h => h.streak || 0));
 
-        // Completion Rate (last 7 days)
+        // Calculate completion rate for last 7 days
+        const today = new Date();
+        const last7Days = [...Array(7)].map((_, i) => {
+            const d = new Date(today);
+            d.setDate(d.getDate() - i);
+            return d.toISOString().split('T')[0];
+        });
+
         let totalDue = 0;
         let totalCompleted = 0;
-
-        // Total Completed Habits (all time)
         let allTimeCompleted = 0;
 
         habits.forEach(habit => {
-            allTimeCompleted += (habit.logs?.length || 0);
+            const logs = habit.logs || habit.habit_logs || [];
+            allTimeCompleted += logs.length;
 
-            // Simple approximation for last 7 days for demo purposes
-            // In a real app, you'd filter logs by date
-            const recentLogs = habit.logs?.length || 0;
-            // Assuming daily frequency for simplicity in this summary
+            // Count completions in last 7 days
+            const logDates = new Set(logs.map((l: any) => l.completed_date));
+            const completedInWeek = last7Days.filter(date => logDates.has(date)).length;
+
+            // Each habit is due 7 times in the week (assuming daily)
             totalDue += 7;
-            totalCompleted += Math.min(recentLogs, 7);
+            totalCompleted += completedInWeek;
         });
 
         const completionRate = totalDue > 0 ? Math.round((totalCompleted / totalDue) * 100) : 0;
@@ -64,34 +74,34 @@ export function DashboardStats({ habits }: DashboardStatsProps) {
 
     const statCards = [
         {
-            label: "Racha Actual",
+            label: t('currentStreak'),
             value: stats.currentStreak,
-            suffix: "días",
+            suffix: t('days'),
             icon: Flame,
             iconColor: "text-orange-500",
             isStreak: true,
             glowColor: stats.currentStreak >= 7 ? "rgba(249, 115, 22, 0.3)" : undefined,
         },
         {
-            label: "Tasa Éxito",
+            label: t('successRate'),
             value: stats.completionRate,
-            suffix: "% semanal",
+            suffix: t('weekly'),
             icon: Target,
             iconColor: "text-primary",
             isPercentage: true,
             glowColor: stats.completionRate >= 80 ? "rgba(191, 245, 73, 0.3)" : undefined,
         },
         {
-            label: "Completados",
+            label: t('completed'),
             value: stats.allTimeCompleted,
-            suffix: "total",
+            suffix: t('total'),
             icon: CheckCircle,
             iconColor: "text-blue-500",
         },
         {
-            label: "Activos",
+            label: t('active'),
             value: stats.activeHabits,
-            suffix: "hábitos",
+            suffix: t('habits'),
             icon: Calendar,
             iconColor: "text-purple-500",
         },
@@ -150,7 +160,7 @@ export function DashboardStats({ habits }: DashboardStatsProps) {
                                 </motion.span>
                             )}
                             <span className="text-xs text-zinc-500">
-                                {stat.isStreak ? 'días' : stat.isPercentage ? 'semanal' : stat.suffix}
+                                {stat.suffix}
                             </span>
                         </div>
 
@@ -177,7 +187,7 @@ export function DashboardStats({ habits }: DashboardStatsProps) {
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.5 }}
                             >
-                                {stat.value >= 30 ? "En llamas!" : stat.value >= 14 ? "Increíble!" : "Sigue así!"}
+                                {stat.value >= 30 ? t('onFire') : stat.value >= 14 ? t('amazing') : t('keepItUp')}
                             </motion.div>
                         )}
                     </SpotlightCard>
