@@ -3,15 +3,17 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import { Check, Flame, Trophy, Activity, MoreHorizontal, Sparkles } from "lucide-react";
-
-const habits = [
-    { id: 1, name: "Leer 30 minutos", completed: true },
-    { id: 2, name: "Hacer ejercicio", completed: false },
-    { id: 3, name: "Meditar", completed: false },
-];
+import { useTranslations } from "next-intl";
 
 export function DashboardPreview() {
+    const t = useTranslations('landing.preview');
     const [completedHabits, setCompletedHabits] = useState<number[]>([1]);
+
+    const habits = [
+        { id: 1, name: t('habits.read'), completed: true },
+        { id: 2, name: t('habits.exercise'), completed: false },
+        { id: 3, name: t('habits.meditate'), completed: false },
+    ];
     const [streak, setStreak] = useState(12);
     const [percentage, setPercentage] = useState(85);
     const [showCelebration, setShowCelebration] = useState(false);
@@ -77,8 +79,8 @@ export function DashboardPreview() {
                                 <div className="p-4 rounded-full bg-primary/20">
                                     <Sparkles className="w-8 h-8 text-primary" />
                                 </div>
-                                <p className="text-xl font-semibold text-white">¡Día Completado!</p>
-                                <p className="text-sm text-zinc-400">Racha: 13 días</p>
+                                <p className="text-xl font-semibold text-white">{t('dayComplete')}</p>
+                                <p className="text-sm text-zinc-400">{t('streakDays', { count: 13 })}</p>
                             </motion.div>
                         </motion.div>
                     )}
@@ -124,7 +126,7 @@ export function DashboardPreview() {
                                 whileHover={{ scale: 1.05 }}
                                 className="h-8 w-24 bg-primary/20 rounded-full border border-primary/20 flex items-center justify-center"
                             >
-                                <span className="text-xs text-primary font-medium">+ Hábito</span>
+                                <span className="text-xs text-primary font-medium">{t('newHabit')}</span>
                             </motion.div>
                         </div>
 
@@ -148,7 +150,7 @@ export function DashboardPreview() {
                                 >
                                     {percentage}%
                                 </motion.div>
-                                <div className="text-xs text-zinc-500">Completado esta semana</div>
+                                <div className="text-xs text-zinc-500">{t('completedThisWeek')}</div>
                             </motion.div>
 
                             {/* Stat 2 - Animated streak */}
@@ -171,9 +173,9 @@ export function DashboardPreview() {
                                     animate={{ scale: 1 }}
                                     className="text-2xl font-bold text-white"
                                 >
-                                    {streak} Días
+                                    {streak} {t('days')}
                                 </motion.div>
-                                <div className="text-xs text-zinc-500">Racha actual</div>
+                                <div className="text-xs text-zinc-500">{t('currentStreak')}</div>
                             </motion.div>
 
                             {/* Stat 3 */}
@@ -183,8 +185,8 @@ export function DashboardPreview() {
                                         <Trophy className="h-5 w-5" />
                                     </div>
                                 </div>
-                                <div className="text-2xl font-bold text-white">Top 5%</div>
-                                <div className="text-xs text-zinc-500">Entre usuarios activos</div>
+                                <div className="text-2xl font-bold text-white">{t('topPercent')}</div>
+                                <div className="text-xs text-zinc-500">{t('amongActive')}</div>
                             </div>
 
                             {/* Habit List with animations */}

@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import * as React from "react"
+import { useTranslations } from "next-intl";
 
 interface UseAutoResizeTextareaProps {
     minHeight: number;
@@ -148,6 +149,7 @@ export function AnimatedAIChat({
     sendLabel = "Send",
     thinkingLabel = "Thinking"
 }: AnimatedAIChatProps) {
+    const t = useTranslations('landing.aiChat');
     const [value, setValue] = useState("");
     const [attachments, setAttachments] = useState<string[]>([]);
     const [localIsTyping, setLocalIsTyping] = useState(false);
@@ -170,27 +172,27 @@ export function AnimatedAIChat({
     const commandSuggestions: CommandSuggestion[] = [
         {
             icon: <Sparkles className="w-4 h-4" />,
-            label: "Crear Rutina",
-            description: "Genera una rutina personalizada",
-            prefix: "/rutina"
+            label: t('commands.createRoutine'),
+            description: t('commands.createRoutineDesc'),
+            prefix: t('prefixes.routine')
         },
         {
             icon: <CircleUserRound className="w-4 h-4" />,
-            label: "Mejorar Hábitos",
-            description: "Optimiza tus hábitos actuales",
-            prefix: "/mejorar"
+            label: t('commands.improveHabits'),
+            description: t('commands.improveHabitsDesc'),
+            prefix: t('prefixes.improve')
         },
         {
             icon: <MonitorIcon className="w-4 h-4" />,
-            label: "Consejos",
-            description: "Obtén consejos de productividad",
-            prefix: "/consejos"
+            label: t('commands.tips'),
+            description: t('commands.tipsDesc'),
+            prefix: t('prefixes.tips')
         },
         {
             icon: <SendIcon className="w-4 h-4" />,
-            label: "Motivación",
-            description: "Recibe un mensaje motivacional",
-            prefix: "/motivacion"
+            label: t('commands.motivation'),
+            description: t('commands.motivationDesc'),
+            prefix: t('prefixes.motivation')
         },
     ];
 
@@ -352,7 +354,7 @@ export function AnimatedAIChat({
                             </motion.div>
                             <div className="flex-1">
                                 <h2 className="text-sm font-semibold text-white">AI Coach</h2>
-                                <p className="text-xs text-white/50">Tu entrenador personal de hábitos</p>
+                                <p className="text-xs text-white/50">{t('coachSubtitle')}</p>
                             </div>
                         </div>
                     </motion.div>

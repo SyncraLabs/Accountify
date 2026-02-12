@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ChevronDown, ChevronUp, Pencil, Trash2, Check, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export interface SuggestedHabit {
     title: string;
@@ -22,24 +23,33 @@ interface SuggestedHabitCardProps {
     onDelete: (index: number) => void;
 }
 
-const categoryEmojis: Record<string, string> = {
-    "Salud & Fitness": "💪",
-    "Mindset & Aprendizaje": "🧠",
-    "Productividad": "⚡",
-    "Creatividad": "🎨",
-    "Social": "👥",
-};
-
 export function SuggestedHabitCard({
     habit,
     index,
     onEdit,
     onDelete,
 }: SuggestedHabitCardProps) {
+    const t = useTranslations('coach.card');
+    const tc = useTranslations('common');
     const [isExpanded, setIsExpanded] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [editTitle, setEditTitle] = useState(habit.title);
     const [editFrequency, setEditFrequency] = useState(habit.frequency);
+
+    // Map category keys to emojis
+    const categoryEmojis: Record<string, string> = {
+        "health": "💪",
+        "mindset": "🧠",
+        "productivity": "⚡",
+        "creativity": "🎨",
+        "social": "👥",
+        // Also support translated category names for backwards compatibility
+        [tc('categories.health')]: "💪",
+        [tc('categories.mindset')]: "🧠",
+        [tc('categories.productivity')]: "⚡",
+        [tc('categories.creativity')]: "🎨",
+        [tc('categories.social')]: "👥",
+    };
 
     const emoji = categoryEmojis[habit.category] || "✨";
 
@@ -106,7 +116,7 @@ export function SuggestedHabitCard({
                             {/* Details */}
                             <div className="flex flex-wrap gap-2 text-sm text-zinc-400">
                                 <span>
-                                    Frecuencia:{" "}
+                                    {t('frequency')}:{" "}
                                     {isEditing ? (
                                         <Input
                                             value={editFrequency}
@@ -126,7 +136,7 @@ export function SuggestedHabitCard({
                             {habit.reasoning && (
                                 <div className="bg-primary/10 rounded-lg p-3">
                                     <p className="text-xs text-primary">
-                                        <strong>La Ciencia:</strong> {habit.reasoning}
+                                        <strong>{t('theScience')}:</strong> {habit.reasoning}
                                     </p>
                                 </div>
                             )}
@@ -142,7 +152,7 @@ export function SuggestedHabitCard({
                                             className="border-green-700/50 text-green-400 hover:text-green-300 hover:bg-green-950/50"
                                         >
                                             <Check className="h-3.5 w-3.5 mr-1.5" />
-                                            Guardar
+                                            {t('save')}
                                         </Button>
                                         <Button
                                             variant="outline"
@@ -151,7 +161,7 @@ export function SuggestedHabitCard({
                                             className="border-zinc-700 text-zinc-300 hover:text-white hover:bg-zinc-800"
                                         >
                                             <X className="h-3.5 w-3.5 mr-1.5" />
-                                            Cancelar
+                                            {t('cancel')}
                                         </Button>
                                     </>
                                 ) : (
@@ -166,7 +176,7 @@ export function SuggestedHabitCard({
                                             className="border-zinc-700 text-zinc-300 hover:text-white hover:bg-zinc-800"
                                         >
                                             <Pencil className="h-3.5 w-3.5 mr-1.5" />
-                                            Editar
+                                            {t('edit')}
                                         </Button>
                                         <Button
                                             variant="outline"
@@ -178,7 +188,7 @@ export function SuggestedHabitCard({
                                             className="border-red-900/50 text-red-400 hover:text-red-300 hover:bg-red-950/50"
                                         >
                                             <Trash2 className="h-3.5 w-3.5 mr-1.5" />
-                                            Eliminar
+                                            {t('delete')}
                                         </Button>
                                     </>
                                 )}

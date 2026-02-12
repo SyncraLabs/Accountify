@@ -18,6 +18,7 @@ import {
 import { toast } from 'sonner';
 import { Camera, Loader2, User, Share2 } from 'lucide-react';
 import { HabitSharingSettings } from '@/components/habits/HabitSharingSettings';
+import { useTranslations } from 'next-intl';
 
 interface Profile {
     username: string | null;
@@ -27,6 +28,8 @@ interface Profile {
 }
 
 export function SettingsForm({ initialProfile }: { initialProfile: Profile | null }) {
+    const t = useTranslations('settings');
+    const th = useTranslations('habits');
     const [context, setContext] = useState(initialProfile?.context || '');
     const [username, setUsername] = useState(initialProfile?.username || '');
     const [fullName, setFullName] = useState(initialProfile?.full_name || '');
@@ -64,10 +67,10 @@ export function SettingsForm({ initialProfile }: { initialProfile: Profile | nul
                 .getPublicUrl(filePath);
 
             setAvatarUrl(publicUrl);
-            toast.success('Avatar uploaded successfully');
+            toast.success(t('profile.uploadSuccess'));
         } catch (error: any) {
             console.error('Error uploading avatar:', error);
-            toast.error('Error uploading avatar!');
+            toast.error(t('profile.uploadError'));
         } finally {
             setUploading(false);
         }
@@ -94,15 +97,15 @@ export function SettingsForm({ initialProfile }: { initialProfile: Profile | nul
 
             if (error) {
                 if (error.code === '23505') { // Unique violation
-                    throw new Error('Username is already taken');
+                    throw new Error(t('usernameTaken'));
                 }
                 throw error;
             }
 
-            toast.success('Settings saved successfully');
+            toast.success(t('saveSuccess'));
         } catch (error: any) {
             console.error('Error saving settings:', error);
-            toast.error(error.message || 'Failed to save settings');
+            toast.error(error.message || t('saveError'));
         } finally {
             setLoading(false);
         }
@@ -111,9 +114,9 @@ export function SettingsForm({ initialProfile }: { initialProfile: Profile | nul
     return (
         <Card className="w-full max-w-2xl bg-black/40 border-primary/10 backdrop-blur-md">
             <CardHeader>
-                <CardTitle className="text-2xl text-white">Your Profile</CardTitle>
+                <CardTitle className="text-2xl text-white">{t('profile.title')}</CardTitle>
                 <CardDescription className="text-muted-foreground">
-                    Manage your public profile and AI coach preferences.
+                    {t('profile.description')}
                 </CardDescription>
             </CardHeader>
             <CardContent className="space-y-8">
@@ -146,30 +149,30 @@ export function SettingsForm({ initialProfile }: { initialProfile: Profile | nul
                         />
                     </div>
                     <div className="space-y-1">
-                        <h3 className="font-medium text-white">Profile Picture</h3>
+                        <h3 className="font-medium text-white">{t('profile.picture')}</h3>
                         <p className="text-xs text-muted-foreground">
-                            Click on the image to upload a new one. <br />
-                            Recommended size: 400x400px.
+                            {t('profile.pictureHint')} <br />
+                            {t('profile.recommendedSize')}
                         </p>
                     </div>
                 </div>
 
                 <div className="grid gap-4 sm:grid-cols-2">
                     <div className="space-y-2">
-                        <Label htmlFor="username" className="text-white">Username</Label>
+                        <Label htmlFor="username" className="text-white">{t('fields.username')}</Label>
                         <Input
                             id="username"
-                            placeholder="username"
+                            placeholder={t('fields.usernamePlaceholder')}
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
                             className="bg-secondary/20 border-primary/20 text-white placeholder:text-muted-foreground/50"
                         />
                     </div>
                     <div className="space-y-2">
-                        <Label htmlFor="fullname" className="text-white">Display Name</Label>
+                        <Label htmlFor="fullname" className="text-white">{t('fields.displayName')}</Label>
                         <Input
                             id="fullname"
-                            placeholder="John Doe"
+                            placeholder={t('fields.displayNamePlaceholder')}
                             value={fullName}
                             onChange={(e) => setFullName(e.target.value)}
                             className="bg-secondary/20 border-primary/20 text-white placeholder:text-muted-foreground/50"
@@ -178,16 +181,16 @@ export function SettingsForm({ initialProfile }: { initialProfile: Profile | nul
                 </div>
 
                 <div className="space-y-2">
-                    <Label htmlFor="context" className="text-white">Coach Context</Label>
+                    <Label htmlFor="context" className="text-white">{t('fields.coachContext')}</Label>
                     <Textarea
                         id="context"
-                        placeholder="E.g., I want to build muscle but I have a lower back injury..."
+                        placeholder={t('fields.coachContextPlaceholder')}
                         className="min-h-[150px] bg-secondary/20 border-primary/20 text-white placeholder:text-muted-foreground/50 resize-y"
                         value={context}
                         onChange={(e) => setContext(e.target.value)}
                     />
                     <p className="text-xs text-muted-foreground">
-                        This information is used by the AI to verify your habits and provide advice.
+                        {t('fields.coachContextHint')}
                     </p>
                 </div>
 
@@ -196,10 +199,10 @@ export function SettingsForm({ initialProfile }: { initialProfile: Profile | nul
                     <div className="space-y-1">
                         <Label className="text-white flex items-center gap-2">
                             <Share2 className="h-4 w-4 text-primary" />
-                            Auto-Compartir Hábitos
+                            {th('sharing.title')}
                         </Label>
                         <p className="text-xs text-muted-foreground">
-                            Configura qué hábitos se comparten automáticamente con tus grupos cuando los completas.
+                            {th('sharing.description')}
                         </p>
                     </div>
                     <HabitSharingSettings
@@ -212,9 +215,14 @@ export function SettingsForm({ initialProfile }: { initialProfile: Profile | nul
                 <Button
                     onClick={handleSave}
                     disabled={loading || uploading}
-                    className="bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-300 shadow-lg shadow-primary/20"
+                    className="bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-300 shadow-lg shadow-primary/20 min-w-[140px]"
                 >
-                    {loading ? 'Saving...' : 'Save Changes'}
+                    {loading ? (
+                        <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            {t('saving')}
+                        </>
+                    ) : t('save')}
                 </Button>
             </CardFooter>
         </Card>

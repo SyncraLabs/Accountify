@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { SuggestedHabitCard, SuggestedHabit } from "./SuggestedHabitCard";
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 
 export interface RoutineSuggestion {
     title: string;
@@ -27,6 +28,8 @@ export function RoutineSuggestionCard({
     onModifyRequest,
     isCreating = false,
 }: RoutineSuggestionCardProps) {
+    const t = useTranslations('coach.routine');
+    const tCommon = useTranslations('coach');
     const [habits, setHabits] = useState<SuggestedHabit[]>(routine.habits);
 
     const handleEditHabit = (index: number, updates: Partial<SuggestedHabit>) => {
@@ -69,13 +72,13 @@ export function RoutineSuggestionCard({
             <div className="p-4 space-y-2">
                 <div className="flex items-center justify-between mb-2">
                     <span className="text-xs font-medium text-white/50 uppercase tracking-wider">
-                        {habits.length} Hábitos
+                        {t('habitsCount', { count: habits.length })}
                     </span>
                 </div>
 
                 {habits.length === 0 ? (
                     <div className="text-center py-6 text-white/40 text-sm">
-                        No hay hábitos. Pide al coach que genere nuevos.
+                        {t('noHabits')}
                     </div>
                 ) : (
                     <div className="space-y-2">
@@ -101,7 +104,7 @@ export function RoutineSuggestionCard({
                     disabled={isCreating}
                 >
                     <MessageSquare className="w-4 h-4 mr-2" />
-                    Modificar con AI
+                    {t('modifyWithAI')}
                 </Button>
                 <Button
                     className="flex-1"
@@ -111,12 +114,12 @@ export function RoutineSuggestionCard({
                     {isCreating ? (
                         <>
                             <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                            Creando...
+                            {tCommon('creating')}
                         </>
                     ) : (
                         <>
                             <Plus className="w-4 h-4 mr-2" />
-                            Aceptar Protocolo
+                            {t('acceptProtocol')}
                         </>
                     )}
                 </Button>

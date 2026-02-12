@@ -5,48 +5,17 @@ import { useState, useEffect } from "react";
 import { Check, Flame, Trophy, Bell, Plus, Sparkles, TrendingUp, Calendar, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-const showcaseSteps = [
-    {
-        id: 1,
-        title: "Crea tus hábitos",
-        subtitle: "Define lo que quieres lograr",
-        icon: Plus,
-        color: "primary",
-    },
-    {
-        id: 2,
-        title: "Mantén tu racha",
-        subtitle: "Construye consistencia día a día",
-        icon: Flame,
-        color: "orange",
-    },
-    {
-        id: 3,
-        title: "Recibe recordatorios",
-        subtitle: "Nunca olvides tus objetivos",
-        icon: Bell,
-        color: "blue",
-    },
-    {
-        id: 4,
-        title: "Celebra el progreso",
-        subtitle: "Logros que te mantienen motivado",
-        icon: Trophy,
-        color: "purple",
-    },
-];
-
-const mockHabits = [
-    { id: 1, name: "Meditar 10 min", completed: true, streak: 12, icon: "🧘" },
-    { id: 2, name: "Leer 30 páginas", completed: true, streak: 8, icon: "📚" },
-    { id: 3, name: "Hacer ejercicio", completed: false, streak: 15, icon: "💪" },
-    { id: 4, name: "Escribir diario", completed: false, streak: 5, icon: "✍️" },
-];
-
 export function AppShowcase() {
     const t = useTranslations('landing.showcase');
     const [activeStep, setActiveStep] = useState(0);
     const [completedHabits, setCompletedHabits] = useState<number[]>([1, 2]);
+
+    const mockHabits = [
+        { id: 1, name: t('habits.meditate'), completed: true, streak: 12, icon: "🧘" },
+        { id: 2, name: t('habits.read'), completed: true, streak: 8, icon: "📚" },
+        { id: 3, name: t('habits.exercise'), completed: false, streak: 15, icon: "💪" },
+        { id: 4, name: t('habits.journal'), completed: false, streak: 5, icon: "✍️" },
+    ];
 
     const showcaseSteps = [
         {
@@ -155,8 +124,8 @@ export function AppShowcase() {
                                 <div className="px-5 py-4">
                                     <div className="flex items-center justify-between">
                                         <div>
-                                            <p className="text-xs text-zinc-500">Hoy, Febrero 6</p>
-                                            <h3 className="text-lg font-semibold text-white">Mis Hábitos</h3>
+                                            <p className="text-xs text-zinc-500">{t('phone.date')}</p>
+                                            <h3 className="text-lg font-semibold text-white">{t('phone.myHabits')}</h3>
                                         </div>
                                         <motion.div
                                             animate={{ scale: [1, 1.1, 1] }}
@@ -172,7 +141,7 @@ export function AppShowcase() {
                                         <div className="flex-1 bg-zinc-900/80 rounded-xl p-3 border border-zinc-800">
                                             <div className="flex items-center gap-2">
                                                 <Flame className="w-4 h-4 text-orange-400" />
-                                                <span className="text-xs text-zinc-400">Racha</span>
+                                                <span className="text-xs text-zinc-400">{t('phone.streak')}</span>
                                             </div>
                                             <motion.p
                                                 key={completedHabits.length}
@@ -186,7 +155,7 @@ export function AppShowcase() {
                                         <div className="flex-1 bg-zinc-900/80 rounded-xl p-3 border border-zinc-800">
                                             <div className="flex items-center gap-2">
                                                 <TrendingUp className="w-4 h-4 text-primary" />
-                                                <span className="text-xs text-zinc-400">Hoy</span>
+                                                <span className="text-xs text-zinc-400">{t('phone.today')}</span>
                                             </div>
                                             <p className="text-xl font-bold text-white mt-1">
                                                 {completedHabits.length}/4

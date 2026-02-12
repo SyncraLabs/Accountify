@@ -353,7 +353,7 @@ export function CoachInterface({ currentHabits }: CoachInterfaceProps) {
                                     className="flex-1 bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
                                 />
                                 <Button type="submit" disabled={loading} className="px-6">
-                                    {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Enviar"}
+                                    {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : t('send')}
                                 </Button>
                             </form>
                         </div>

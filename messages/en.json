@@ -50,6 +50,7 @@
   "landing": {
     "navbar": {
       "features": "Features",
+      "pricing": "Pricing",
       "howItWorks": "How It Works",
       "login": "Login",
       "getStarted": "Get Started"
@@ -98,6 +99,65 @@
         "description": "Intelligent notifications that alert you exactly when you need it."
       }
     },
+    "pricing": {
+      "title": "Choose the Plan that",
+      "titleHighlight": "Empowers You",
+      "subtitle": "Start free and scale when you're ready. No commitments.",
+      "monthly": "Monthly",
+      "annual": "Annual",
+      "period": "month",
+      "savePercent": "Save 33%",
+      "free": {
+        "name": "Free",
+        "description": "Perfect to start your habit journey.",
+        "cta": "Get Started Free",
+        "features": {
+          "habits": "10 habits",
+          "group": "1 group with all features",
+          "chat": "Real-time chat",
+          "aiCoach": "3 AI Coach uses / month",
+          "streaks": "Streaks and gamification",
+          "dashboard": "Personalized dashboard",
+          "analytics": "Advanced analytics",
+          "streakFreeze": "Streak freeze",
+          "beta": "Beta access"
+        }
+      },
+      "pro": {
+        "name": "Pro",
+        "description": "For those serious about their goals.",
+        "cta": "Choose Pro",
+        "features": {
+          "habits": "Unlimited habits",
+          "groups": "Unlimited groups",
+          "aiCoach": "10 AI Coach uses / month",
+          "analytics": "Advanced analytics with heatmaps",
+          "streakFreeze": "2 streak freezes / month",
+          "squadSize": "Squads up to 25 members",
+          "export": "Data export",
+          "beta": "Beta access to new features",
+          "badges": "Badge showcase"
+        }
+      },
+      "leader": {
+        "name": "Squad Leader",
+        "description": "For leaders who inspire their community.",
+        "cta": "Choose Leader",
+        "features": {
+          "everything": "Everything in Pro included",
+          "aiCoach": "Unlimited AI Coach",
+          "adminDashboard": "Admin dashboard",
+          "challenges": "Custom challenges",
+          "aiInsights": "AI insights for your squad",
+          "unlimitedSquad": "Unlimited squad size",
+          "streakFreeze": "Unlimited streak freezes",
+          "prioritySupport": "Priority support",
+          "earlyAccess": "Early access to features"
+        }
+      },
+      "comingSoon": "Open Communities — Coming Soon for Pro and Leader users",
+      "comingSoonBadge": "Coming Soon"
+    },
     "cta": {
       "title": "Start Your Transformation",
       "subtitle": "Join thousands of people who are already building better habits.",
@@ -118,6 +178,12 @@
         "myHabits": "My Habits",
         "streak": "Streak",
         "today": "Today"
+      },
+      "habits": {
+        "meditate": "Meditate 10 min",
+        "read": "Read 30 pages",
+        "exercise": "Exercise",
+        "journal": "Write journal"
       },
       "steps": {
         "1": {
@@ -143,6 +209,41 @@
       "noAds": "No ads",
       "private": "Private data"
     },
+    "preview": {
+      "habits": {
+        "read": "Read 30 minutes",
+        "exercise": "Exercise",
+        "meditate": "Meditate"
+      },
+      "dayComplete": "Day Complete!",
+      "streakDays": "Streak: {count} days",
+      "newHabit": "+ Habit",
+      "completedThisWeek": "Completed this week",
+      "days": "Days",
+      "currentStreak": "Current streak",
+      "topPercent": "Top 5%",
+      "amongActive": "Among active users"
+    },
+    "aiChat": {
+      "coachSubtitle": "Your personal habit coach",
+      "commands": {
+        "createRoutine": "Create Routine",
+        "createRoutineDesc": "Generate a personalized routine",
+        "improveHabits": "Improve Habits",
+        "improveHabitsDesc": "Optimize your current habits",
+        "tips": "Tips",
+        "tipsDesc": "Get productivity tips",
+        "motivation": "Motivation",
+        "motivationDesc": "Receive a motivational message"
+      },
+      "prefixes": {
+        "routine": "/routine",
+        "improve": "/improve",
+        "tips": "/tips",
+        "motivation": "/motivation"
+      }
+    },
+    "watchDemo": "Watch Demo",
     "footer": {
       "tagline": "Building better habits, one day at a time.",
       "rights": "All rights reserved.",
@@ -416,7 +517,17 @@
       "habitDeleted": "Habit deleted",
       "frequency": "Frequency",
       "streak": "Streak",
-      "theScience": "The Science"
+      "theScience": "The Science",
+      "save": "Save",
+      "cancel": "Cancel",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "routine": {
+      "habitsCount": "{count} Habits",
+      "noHabits": "No habits. Ask the coach to generate new ones.",
+      "modifyWithAI": "Modify with AI",
+      "acceptProtocol": "Accept Protocol"
     },
     "demo": {
       "userMessage": "I want to be more productive",
@@ -471,7 +582,12 @@
     },
     "skip": "Skip",
     "next": "Next",
-    "start": "Start"
+    "start": "Start",
+    "actions": {
+      "skip": "Skip",
+      "next": "Next",
+      "start": "Start"
+    }
   },
   "settings": {
     "title": "Settings",
