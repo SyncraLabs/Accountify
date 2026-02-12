@@ -2,11 +2,13 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { AppSidebar } from "@/components/layout/AppSidebar";
 import { MobileNav } from "@/components/layout/MobileNav";
-import { CreditCard, Crown, Sparkles, Zap, ArrowRight, Globe, Trophy, Calendar } from "lucide-react";
+import { CreditCard, Crown, Sparkles, Zap, Globe, Trophy, Calendar } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 export default async function PlansPage() {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
+    const t = await getTranslations("plans");
 
     if (!user) {
         redirect("/login");
@@ -26,11 +28,11 @@ export default async function PlansPage() {
                     <div className="flex flex-col gap-2">
                         <div className="flex items-center gap-2 text-primary">
                             <CreditCard className="h-4 w-4" />
-                            <span className="text-xs font-medium uppercase tracking-wider">Suscripción</span>
+                            <span className="text-xs font-medium uppercase tracking-wider">{t("badge")}</span>
                         </div>
-                        <h1 className="text-2xl font-semibold text-white">Planes</h1>
+                        <h1 className="text-2xl font-semibold text-white">{t("title")}</h1>
                         <p className="text-sm text-zinc-500 max-w-md">
-                            Administra tu plan y accede a funciones premium.
+                            {t("subtitle")}
                         </p>
                     </div>
 
@@ -42,8 +44,8 @@ export default async function PlansPage() {
                                     <Sparkles className="h-5 w-5 text-primary" />
                                 </div>
                                 <div>
-                                    <h2 className="text-base font-semibold text-white">Plan Actual</h2>
-                                    <p className="text-xs text-zinc-500">Tu plan de suscripción</p>
+                                    <h2 className="text-base font-semibold text-white">{t("currentPlan.title")}</h2>
+                                    <p className="text-xs text-zinc-500">{t("currentPlan.subtitle")}</p>
                                 </div>
                             </div>
                         </div>
@@ -53,11 +55,11 @@ export default async function PlansPage() {
                                 <Zap className="h-5 w-5 text-emerald-400" />
                             </div>
                             <div className="flex-1">
-                                <span className="text-sm font-semibold text-white">Gratis</span>
-                                <p className="text-xs text-zinc-500">10 hábitos · 1 grupo · 3 AI Coach / mes</p>
+                                <span className="text-sm font-semibold text-white">{t("free.name")}</span>
+                                <p className="text-xs text-zinc-500">{t("free.features")}</p>
                             </div>
                             <span className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/15 border border-emerald-500/20 rounded-full">
-                                Activo
+                                {t("active")}
                             </span>
                         </div>
                     </div>
@@ -75,13 +77,13 @@ export default async function PlansPage() {
                                     </div>
                                     <div>
                                         <div className="flex items-center gap-2">
-                                            <h2 className="text-base font-semibold text-white">Planes Premium</h2>
+                                            <h2 className="text-base font-semibold text-white">{t("premium.title")}</h2>
                                             <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-yellow-400 bg-yellow-500/15 border border-yellow-500/20 rounded-full">
-                                                Próximamente
+                                                {t("premium.comingSoon")}
                                             </span>
                                         </div>
                                         <p className="text-xs text-zinc-500 mt-0.5">
-                                            Estamos preparando planes increíbles para ti.
+                                            {t("premium.subtitle")}
                                         </p>
                                     </div>
                                 </div>
@@ -93,21 +95,21 @@ export default async function PlansPage() {
                                 <div className="p-4 rounded-xl bg-zinc-900/60 border border-zinc-800/60 hover:border-primary/20 transition-colors">
                                     <div className="flex items-center gap-2 mb-3">
                                         <Zap className="h-4 w-4 text-primary" />
-                                        <span className="text-sm font-semibold text-white">Pro</span>
-                                        <span className="text-xs text-zinc-500">€4.99/mes</span>
+                                        <span className="text-sm font-semibold text-white">{t("premium.pro.name")}</span>
+                                        <span className="text-xs text-zinc-500">{t("premium.pro.price")}</span>
                                     </div>
                                     <ul className="space-y-1.5 text-xs text-zinc-400">
                                         <li className="flex items-center gap-1.5">
-                                            <span className="text-primary">✓</span> Hábitos ilimitados
+                                            <span className="text-primary">✓</span> {t("premium.pro.features.habits")}
                                         </li>
                                         <li className="flex items-center gap-1.5">
-                                            <span className="text-primary">✓</span> Grupos ilimitados
+                                            <span className="text-primary">✓</span> {t("premium.pro.features.groups")}
                                         </li>
                                         <li className="flex items-center gap-1.5">
-                                            <span className="text-primary">✓</span> 10 AI Coach / mes
+                                            <span className="text-primary">✓</span> {t("premium.pro.features.aiCoach")}
                                         </li>
                                         <li className="flex items-center gap-1.5">
-                                            <span className="text-primary">✓</span> Analíticas avanzadas
+                                            <span className="text-primary">✓</span> {t("premium.pro.features.analytics")}
                                         </li>
                                     </ul>
                                 </div>
@@ -116,21 +118,21 @@ export default async function PlansPage() {
                                 <div className="p-4 rounded-xl bg-zinc-900/60 border border-zinc-800/60 hover:border-yellow-500/20 transition-colors">
                                     <div className="flex items-center gap-2 mb-3">
                                         <Crown className="h-4 w-4 text-yellow-400" />
-                                        <span className="text-sm font-semibold text-white">Squad Leader</span>
-                                        <span className="text-xs text-zinc-500">€9.99/mes</span>
+                                        <span className="text-sm font-semibold text-white">{t("premium.squadLeader.name")}</span>
+                                        <span className="text-xs text-zinc-500">{t("premium.squadLeader.price")}</span>
                                     </div>
                                     <ul className="space-y-1.5 text-xs text-zinc-400">
                                         <li className="flex items-center gap-1.5">
-                                            <span className="text-yellow-400">✓</span> Todo lo de Pro
+                                            <span className="text-yellow-400">✓</span> {t("premium.squadLeader.features.everything")}
                                         </li>
                                         <li className="flex items-center gap-1.5">
-                                            <span className="text-yellow-400">✓</span> AI Coach ilimitado
+                                            <span className="text-yellow-400">✓</span> {t("premium.squadLeader.features.aiCoach")}
                                         </li>
                                         <li className="flex items-center gap-1.5">
-                                            <span className="text-yellow-400">✓</span> Dashboard admin
+                                            <span className="text-yellow-400">✓</span> {t("premium.squadLeader.features.dashboard")}
                                         </li>
                                         <li className="flex items-center gap-1.5">
-                                            <span className="text-yellow-400">✓</span> Soporte prioritario
+                                            <span className="text-yellow-400">✓</span> {t("premium.squadLeader.features.support")}
                                         </li>
                                     </ul>
                                 </div>
@@ -139,10 +141,10 @@ export default async function PlansPage() {
                             {/* CTA */}
                             <div className="p-4 rounded-xl bg-primary/5 border border-primary/10 text-center">
                                 <p className="text-xs text-zinc-400 mb-1">
-                                    Te notificaremos cuando los planes premium estén disponibles.
+                                    {t("notify.message")}
                                 </p>
                                 <p className="text-[10px] text-zinc-600">
-                                    Los early adopters tendrán descuentos exclusivos. 🎉
+                                    {t("notify.earlyAdopters")} 🎉
                                 </p>
                             </div>
                         </div>
@@ -159,13 +161,13 @@ export default async function PlansPage() {
                                 </div>
                                 <div>
                                     <div className="flex items-center gap-2">
-                                        <h2 className="text-base font-semibold text-white">Comunidades Abiertas</h2>
+                                        <h2 className="text-base font-semibold text-white">{t("openCommunities.title")}</h2>
                                         <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-blue-400 bg-blue-500/15 border border-blue-500/20 rounded-full">
-                                            Próximamente
+                                            {t("openCommunities.comingSoon")}
                                         </span>
                                     </div>
                                     <p className="text-xs text-zinc-500 mt-0.5">
-                                        Conecta con personas de todo el mundo que comparten tus metas.
+                                        {t("openCommunities.subtitle")}
                                     </p>
                                 </div>
                             </div>
@@ -173,15 +175,15 @@ export default async function PlansPage() {
                             <div className="grid grid-cols-3 gap-3">
                                 <div className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-zinc-900/60 border border-zinc-800/60">
                                     <Globe className="h-4 w-4 text-zinc-500" />
-                                    <span className="text-[10px] text-zinc-400 text-center">Directorio público</span>
+                                    <span className="text-[10px] text-zinc-400 text-center">{t("openCommunities.features.directory")}</span>
                                 </div>
                                 <div className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-zinc-900/60 border border-zinc-800/60">
                                     <Trophy className="h-4 w-4 text-zinc-500" />
-                                    <span className="text-[10px] text-zinc-400 text-center">Desafíos globales</span>
+                                    <span className="text-[10px] text-zinc-400 text-center">{t("openCommunities.features.challenges")}</span>
                                 </div>
                                 <div className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-zinc-900/60 border border-zinc-800/60">
                                     <Calendar className="h-4 w-4 text-zinc-500" />
-                                    <span className="text-[10px] text-zinc-400 text-center">Eventos</span>
+                                    <span className="text-[10px] text-zinc-400 text-center">{t("openCommunities.features.events")}</span>
                                 </div>
                             </div>
                         </div>

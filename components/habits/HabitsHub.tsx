@@ -8,6 +8,7 @@ import { getHabitStatusForDay, isFlexibleFrequency, getWeekProgress, getFrequenc
 import { toggleHabitLog, planDayWithAI, toggleTaskComplete } from "@/app/actions";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useTranslations, useLocale } from "next-intl";
 import {
     useCelebration,
     StreakFire,
@@ -61,6 +62,9 @@ export function HabitsHub({ initialHabits, initialTasks, dateStr }: HabitsHubPro
     const [isAiLoading, setIsAiLoading] = useState(false);
     const router = useRouter();
     const { celebrate } = useCelebration();
+    const t = useTranslations("calendarPage");
+    const tPlanner = useTranslations("planner");
+    const locale = useLocale();
 
     // Sync state when props change
     useEffect(() => {
@@ -73,8 +77,8 @@ export function HabitsHub({ initialHabits, initialTasks, dateStr }: HabitsHubPro
 
     const date = new Date(dateStr);
 
-    // Format date for display
-    const formattedDate = date.toLocaleDateString("es-ES", {
+    // Format date for display based on locale
+    const formattedDate = date.toLocaleDateString(locale === "es" ? "es-ES" : "en-US", {
         weekday: "long",
         day: "numeric",
         month: "long",
@@ -95,9 +99,9 @@ export function HabitsHub({ initialHabits, initialTasks, dateStr }: HabitsHubPro
         if (progressPercentage === 100 && totalRequired > 0 && !dayCompleted) {
             setDayCompleted(true);
             celebrate('dayComplete', { intensity: 'large' });
-            toast.success("🎉 ¡Día completado! ¡Excelente trabajo!");
+            toast.success(`🎉 ${t("toast.dayCompleted")}`);
         }
-    }, [progressPercentage, totalRequired, celebrate, dayCompleted]);
+    }, [progressPercentage, totalRequired, celebrate, dayCompleted, t]);
 
     const handleToggle = async (habitId: string) => {
         setLoading(habitId);
@@ -124,9 +128,9 @@ export function HabitsHub({ initialHabits, initialTasks, dateStr }: HabitsHubPro
                 setShowSparkles(habitId);
                 setTimeout(() => setShowSparkles(null), 800);
                 celebrate('habitComplete', { intensity: 'small' });
-                toast.success("¡Hábito completado! 🎉");
+                toast.success(`${t("toast.habitCompleted")} 🎉`);
             } else {
-                toast.info("Estado actualizado");
+                toast.info(t("toast.statusUpdated"));
             }
 
             const result = await toggleHabitLog(habitId, dateStr);
@@ -148,7 +152,7 @@ export function HabitsHub({ initialHabits, initialTasks, dateStr }: HabitsHubPro
                 }));
             }
         } catch {
-            toast.error("Error al actualizar");
+            toast.error(t("toast.updateError"));
         } finally {
             setLoading(null);
         }
@@ -182,9 +186,9 @@ export function HabitsHub({ initialHabits, initialTasks, dateStr }: HabitsHubPro
 
         if (!wasCompleted) {
             celebrate('habitComplete', { intensity: 'small' });
-            toast.success("¡Tarea completada!");
+            toast.success(t("toast.taskCompleted"));
         } else {
-            toast.info("Tarea desmarcada");
+            toast.info(t("toast.taskUnchecked"));
         }
 
         try {
@@ -199,7 +203,7 @@ export function HabitsHub({ initialHabits, initialTasks, dateStr }: HabitsHubPro
             setTasks(prev => prev.map(t =>
                 t.id === taskId ? { ...t, completed: wasCompleted } : t
             ));
-            toast.error("Error al actualizar la tarea");
+            toast.error(t("toast.taskUpdateError"));
         }
     };
 
@@ -217,7 +221,7 @@ export function HabitsHub({ initialHabits, initialTasks, dateStr }: HabitsHubPro
                 });
             }
         } catch {
-            toast.error("Error al planificar con IA");
+            toast.error(t("toast.aiPlanError"));
         } finally {
             setIsAiLoading(false);
         }
@@ -240,7 +244,7 @@ export function HabitsHub({ initialHabits, initialTasks, dateStr }: HabitsHubPro
                     <div className="space-y-4">
                         <div className="flex items-center gap-2 text-primary">
                             <Target className="h-4 w-4" />
-                            <span className="text-xs font-medium uppercase tracking-wider">Mis Hábitos</span>
+                            <span className="text-xs font-medium uppercase tracking-wider">{t("myHabits")}</span>
                         </div>
 
                         {/* View Toggle */}
@@ -263,7 +267,7 @@ export function HabitsHub({ initialHabits, initialTasks, dateStr }: HabitsHubPro
                                 transition={{ duration: 0.5 }}
                             >
                                 <div className="space-y-1">
-                                    <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Progreso Diario</p>
+                                    <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">{t("dailyProgress")}</p>
                                     <motion.p
                                         className="text-2xl font-bold"
                                         animate={{
@@ -349,7 +353,7 @@ export function HabitsHub({ initialHabits, initialTasks, dateStr }: HabitsHubPro
                                 whileTap={{ scale: 0.98 }}
                             >
                                 <Target className="h-4 w-4" />
-                                Hábitos
+                                {tPlanner("habits")}
                                 {requiredHabits.length > 0 && (
                                     <span className={cn(
                                         "px-1.5 py-0.5 rounded-full text-xs",
@@ -371,7 +375,7 @@ export function HabitsHub({ initialHabits, initialTasks, dateStr }: HabitsHubPro
                                 whileTap={{ scale: 0.98 }}
                             >
                                 <ListTodo className="h-4 w-4" />
-                                Tareas del Día
+                                {tPlanner("tasks")}
                                 {tasks.length > 0 && (
                                     <span className={cn(
                                         "px-1.5 py-0.5 rounded-full text-xs",
@@ -481,10 +485,10 @@ export function HabitsHub({ initialHabits, initialTasks, dateStr }: HabitsHubPro
                                                                     } : {}}
                                                                     transition={{ duration: 0.4 }}
                                                                 >
-                                                                    {isCompleted && "Completado"}
-                                                                    {isFailed && "No cumplido"}
-                                                                    {isNotRequired && "No requerido"}
-                                                                    {!isCompleted && !isFailed && !isNotRequired && "Pendiente"}
+                                                                    {isCompleted && t("status.completed")}
+                                                                    {isFailed && t("status.failed")}
+                                                                    {isNotRequired && t("status.notRequired")}
+                                                                    {!isCompleted && !isFailed && !isNotRequired && t("status.pending")}
                                                                 </motion.div>
                                                                 <span className="text-[10px] text-white/40">{getFrequencyLabel(habit.frequency)}</span>
                                                             </div>
@@ -500,7 +504,7 @@ export function HabitsHub({ initialHabits, initialTasks, dateStr }: HabitsHubPro
                                                                         size="sm"
                                                                     />
                                                                     <span className={cn("transition-colors duration-300", isCompleted ? "text-primary font-medium" : "")}>
-                                                                        racha actual
+                                                                        {t("currentStreak")}
                                                                     </span>
                                                                     {weekProgress && (
                                                                         <span className="ml-1 px-2 py-0.5 bg-white/10 rounded-full text-[10px] text-white/70">
@@ -541,7 +545,7 @@ export function HabitsHub({ initialHabits, initialTasks, dateStr }: HabitsHubPro
                                                                             >
                                                                                 <Check className="h-5 w-5 stroke-[3px]" />
                                                                             </motion.div>
-                                                                            <span>¡Hecho!</span>
+                                                                            <span>{t("buttons.done")}</span>
                                                                         </motion.div>
                                                                     )}
                                                                     {isFailed && (
@@ -552,7 +556,7 @@ export function HabitsHub({ initialHabits, initialTasks, dateStr }: HabitsHubPro
                                                                             animate={{ opacity: 1 }}
                                                                         >
                                                                             <X className="h-5 w-5 stroke-[2px]" />
-                                                                            <span>No cumplido</span>
+                                                                            <span>{t("buttons.notCompleted")}</span>
                                                                         </motion.div>
                                                                     )}
                                                                     {isNotRequired && (
@@ -563,7 +567,7 @@ export function HabitsHub({ initialHabits, initialTasks, dateStr }: HabitsHubPro
                                                                             animate={{ opacity: 1 }}
                                                                         >
                                                                             <Minus className="h-5 w-5 stroke-[2px]" />
-                                                                            <span>No aplica hoy</span>
+                                                                            <span>{t("buttons.notApplicable")}</span>
                                                                         </motion.div>
                                                                     )}
                                                                     {!isCompleted && !isFailed && !isNotRequired && (
@@ -572,7 +576,7 @@ export function HabitsHub({ initialHabits, initialTasks, dateStr }: HabitsHubPro
                                                                             initial={{ opacity: 0 }}
                                                                             animate={{ opacity: 1 }}
                                                                         >
-                                                                            Marcar como hecho
+                                                                            {t("buttons.markAsDone")}
                                                                         </motion.span>
                                                                     )}
                                                                 </AnimatePresence>
@@ -600,8 +604,8 @@ export function HabitsHub({ initialHabits, initialTasks, dateStr }: HabitsHubPro
                                                 >
                                                     🎯
                                                 </motion.div>
-                                                <h3 className="text-2xl font-bold text-white">No tienes hábitos aún</h3>
-                                                <p className="text-muted-foreground">Crea tu primer hábito para comenzar a construir mejores rutinas.</p>
+                                                <h3 className="text-2xl font-bold text-white">{t("noHabitsYet.title")}</h3>
+                                                <p className="text-muted-foreground">{t("noHabitsYet.subtitle")}</p>
                                                 <CreateHabitModal
                                                     trigger={
                                                         <motion.button
@@ -609,7 +613,7 @@ export function HabitsHub({ initialHabits, initialTasks, dateStr }: HabitsHubPro
                                                             whileTap={{ scale: 0.95 }}
                                                             className="mt-4 px-6 py-3 bg-primary text-black rounded-full font-semibold"
                                                         >
-                                                            Crear mi primer hábito
+                                                            {t("noHabitsYet.cta")}
                                                         </motion.button>
                                                     }
                                                     onSuccess={() => router.refresh()}
@@ -629,7 +633,7 @@ export function HabitsHub({ initialHabits, initialTasks, dateStr }: HabitsHubPro
                                 >
                                     {/* Task Actions */}
                                     <div className="flex items-center justify-between">
-                                        <h2 className="text-lg font-semibold text-white">Tareas del Día</h2>
+                                        <h2 className="text-lg font-semibold text-white">{tPlanner("tasks")}</h2>
                                         <CreateTaskDialog dateStr={dateStr} onSuccess={refreshTasks} />
                                     </div>
 

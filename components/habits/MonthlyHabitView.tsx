@@ -6,6 +6,7 @@ import { ChevronLeft, ChevronRight, Check, X, Minus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getHabitStatusForDay } from "@/lib/habit-utils";
 import { useRouter } from "next/navigation";
+import { useTranslations, useLocale } from "next-intl";
 import { Button } from "@/components/ui/button";
 
 interface Habit {
@@ -27,6 +28,8 @@ export function MonthlyHabitView({ initialHabits }: MonthlyHabitViewProps) {
         initialHabits.length > 0 ? initialHabits[0].id : null
     );
     const router = useRouter();
+    const t = useTranslations("calendarPage");
+    const locale = useLocale();
 
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
@@ -87,12 +90,14 @@ export function MonthlyHabitView({ initialHabits }: MonthlyHabitViewProps) {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const monthName = currentDate.toLocaleDateString("es-ES", {
+    const monthName = currentDate.toLocaleDateString(locale === "es" ? "es-ES" : "en-US", {
         month: "long",
         year: "numeric"
     });
 
-    const weekDays = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+    const weekDays = locale === "es"
+        ? ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']
+        : ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
     // Calculate monthly stats for selected habit
     const getMonthlyStats = () => {
@@ -256,19 +261,19 @@ export function MonthlyHabitView({ initialHabits }: MonthlyHabitViewProps) {
                     <div className="flex flex-wrap gap-4 text-xs text-zinc-400">
                         <div className="flex items-center gap-2">
                             <div className="h-3 w-3 rounded bg-primary/30 border border-primary/50" />
-                            <span>Completado</span>
+                            <span>{t("status.completed")}</span>
                         </div>
                         <div className="flex items-center gap-2">
                             <div className="h-3 w-3 rounded bg-red-500/20 border border-red-500/30" />
-                            <span>No cumplido</span>
+                            <span>{t("status.failed")}</span>
                         </div>
                         <div className="flex items-center gap-2">
                             <div className="h-3 w-3 rounded bg-white/10 border border-white/20" />
-                            <span>Pendiente</span>
+                            <span>{t("status.pending")}</span>
                         </div>
                         <div className="flex items-center gap-2">
                             <div className="h-3 w-3 rounded border border-white/10" />
-                            <span>No requerido</span>
+                            <span>{t("status.notRequired")}</span>
                         </div>
                     </div>
                 </div>

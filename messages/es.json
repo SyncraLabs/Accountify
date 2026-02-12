@@ -601,17 +601,32 @@
       "dashboard": {
         "title": "Tu Centro de Control",
         "subtitle": "Todo en un vistazo",
-        "description": "Ve tu progreso diario, estadísticas y actividad semanal. Aquí es donde comienza cada día."
+        "description": "Ve tu progreso diario, estadísticas y actividad semanal. Aquí es donde comienza cada día.",
+        "visual": {
+          "meditate": "Meditar",
+          "exercise": "Ejercicio",
+          "read": "Leer"
+        }
       },
       "coach": {
         "title": "Tu Coach de IA",
         "subtitle": "Rutinas personalizadas",
-        "description": "Describe tus metas y el AI Coach creará rutinas perfectas para ti. Es como tener un entrenador personal 24/7."
+        "description": "Describe tus metas y el AI Coach creará rutinas perfectas para ti. Es como tener un entrenador personal 24/7.",
+        "visual": {
+          "user": "Quiero ser más productivo",
+          "ai": "He creado una rutina matutina perfecta para ti...",
+          "routine": "Rutina Matutina"
+        }
       },
       "calendar": {
         "title": "Rastrea Tu Progreso",
         "subtitle": "No rompas la cadena",
-        "description": "Visualiza tu consistencia con el calendario de hábitos. Cada día completado construye tu racha."
+        "description": "Visualiza tu consistencia con el calendario de hábitos. Cada día completado construye tu racha.",
+        "visual": {
+          "date": "Febrero 2025",
+          "streak": "Mejor racha",
+          "days": "21 días"
+        }
       },
       "community": {
         "title": "Únete a la Comunidad",
@@ -676,7 +691,11 @@
   "notifications": {
     "title": "Notificaciones",
     "empty": "No tienes notificaciones",
-    "markAllRead": "Marcar todas como leídas"
+    "markAllRead": "Marcar todo",
+    "configure": "Configurar notificaciones",
+    "time": {
+      "now": "ahora"
+    }
   },
   "errors": {
     "notAuthenticated": "No autenticado",
@@ -886,6 +905,100 @@
       "button": "Unirse al Grupo",
       "joining": "Uniéndose...",
       "success": "¡Te uniste al grupo!"
+    }
+  },
+  "plans": {
+    "badge": "Suscripción",
+    "title": "Planes",
+    "subtitle": "Administra tu plan y accede a funciones premium.",
+    "currentPlan": {
+      "title": "Plan Actual",
+      "subtitle": "Tu plan de suscripción"
+    },
+    "free": {
+      "name": "Gratis",
+      "features": "10 hábitos · 1 grupo · 3 AI Coach / mes"
+    },
+    "active": "Activo",
+    "premium": {
+      "title": "Planes Premium",
+      "comingSoon": "Próximamente",
+      "subtitle": "Estamos preparando planes increíbles para ti.",
+      "pro": {
+        "name": "Pro",
+        "price": "€4.99/mes",
+        "features": {
+          "habits": "Hábitos ilimitados",
+          "groups": "Grupos ilimitados",
+          "aiCoach": "10 AI Coach / mes",
+          "analytics": "Analíticas avanzadas"
+        }
+      },
+      "squadLeader": {
+        "name": "Squad Leader",
+        "price": "€9.99/mes",
+        "features": {
+          "everything": "Todo lo de Pro",
+          "aiCoach": "AI Coach ilimitado",
+          "dashboard": "Dashboard admin",
+          "support": "Soporte prioritario"
+        }
+      }
+    },
+    "notify": {
+      "message": "Te notificaremos cuando los planes premium estén disponibles.",
+      "earlyAdopters": "Los early adopters tendrán descuentos exclusivos."
+    },
+    "openCommunities": {
+      "title": "Comunidades Abiertas",
+      "comingSoon": "Próximamente",
+      "subtitle": "Conecta con personas de todo el mundo que comparten tus metas.",
+      "features": {
+        "directory": "Directorio público",
+        "challenges": "Desafíos globales",
+        "events": "Eventos"
+      }
+    }
+  },
+  "calendarPage": {
+    "myHabits": "MIS HÁBITOS",
+    "dailyProgress": "PROGRESO DIARIO",
+    "today": "Hoy",
+    "week": "Semana",
+    "month": "Mes",
+    "backToCalendar": "Volver al Calendario",
+    "dailyView": "Vista Diaria",
+    "status": {
+      "completed": "Completado",
+      "failed": "No cumplido",
+      "notRequired": "No requerido",
+      "pending": "Pendiente"
+    },
+    "currentStreak": "racha actual",
+    "buttons": {
+      "done": "¡Hecho!",
+      "notCompleted": "No cumplido",
+      "notApplicable": "No aplica hoy",
+      "markAsDone": "Marcar como hecho"
+    },
+    "empty": {
+      "title": "No hay hábitos para este día",
+      "subtitle": "Parece que no tenías hábitos activos en esta fecha."
+    },
+    "noHabitsYet": {
+      "title": "No tienes hábitos aún",
+      "subtitle": "Crea tu primer hábito para comenzar a construir mejores rutinas.",
+      "cta": "Crear mi primer hábito"
+    },
+    "toast": {
+      "dayCompleted": "¡Día completado! ¡Excelente trabajo!",
+      "habitCompleted": "¡Hábito completado!",
+      "statusUpdated": "Estado actualizado",
+      "updateError": "Error al actualizar",
+      "taskCompleted": "¡Tarea completada!",
+      "taskUnchecked": "Tarea desmarcada",
+      "taskUpdateError": "Error al actualizar la tarea",
+      "aiPlanError": "Error al planificar con IA"
     }
   },
   "planner": {

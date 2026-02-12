@@ -9,7 +9,7 @@ import Link from "next/link";
 import { createDailyTask, planDayWithAI, createMultipleDailyTasks, toggleTaskComplete } from "@/app/actions";
 import { toast } from "sonner";
 import { useCelebration, SparkleBurst } from "@/components/ui/dopamine";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 
 interface DailyTask {
     id: string;
@@ -31,6 +31,7 @@ interface TodayPlannerCardProps {
 
 export function TodayPlannerCard({ tasks: initialTasks, habits, dateStr }: TodayPlannerCardProps) {
     const t = useTranslations('planner');
+    const locale = useLocale();
     const [tasks, setTasks] = useState(initialTasks);
     const [isExpanded, setIsExpanded] = useState(true);
     const [quickInput, setQuickInput] = useState("");
@@ -148,7 +149,7 @@ export function TodayPlannerCard({ tasks: initialTasks, habits, dateStr }: Today
         }
     };
 
-    const formattedDate = new Date(dateStr).toLocaleDateString("es-ES", {
+    const formattedDate = new Date(dateStr).toLocaleDateString(locale === "es" ? "es-ES" : "en-US", {
         weekday: "long",
         day: "numeric",
         month: "long"

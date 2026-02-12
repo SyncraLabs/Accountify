@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { CalendarDays, CalendarRange, Calendar } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 export type HabitsView = 'daily' | 'weekly' | 'monthly';
 
@@ -11,13 +12,15 @@ interface HabitsViewToggleProps {
     onViewChange: (view: HabitsView) => void;
 }
 
-const views = [
-    { id: 'daily' as const, label: 'Hoy', icon: CalendarDays },
-    { id: 'weekly' as const, label: 'Semana', icon: CalendarRange },
-    { id: 'monthly' as const, label: 'Mes', icon: Calendar },
-];
-
 export function HabitsViewToggle({ currentView, onViewChange }: HabitsViewToggleProps) {
+    const t = useTranslations("calendarPage");
+
+    const views = [
+        { id: 'daily' as const, label: t('today'), icon: CalendarDays },
+        { id: 'weekly' as const, label: t('week'), icon: CalendarRange },
+        { id: 'monthly' as const, label: t('month'), icon: Calendar },
+    ];
+
     return (
         <div className="flex gap-1 p-1 bg-white/5 rounded-xl border border-white/5">
             {views.map((view) => {

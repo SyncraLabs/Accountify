@@ -620,12 +620,22 @@
       "coach": {
         "title": "Your AI Coach",
         "subtitle": "Personalized routines",
-        "description": "Describe your goals and the AI Coach will create perfect routines for you. It's like having a personal trainer 24/7."
+        "description": "Describe your goals and the AI Coach will create perfect routines for you. It's like having a personal trainer 24/7.",
+        "visual": {
+          "user": "I want to be more productive",
+          "ai": "I've created a perfect morning routine for you...",
+          "routine": "Morning Routine"
+        }
       },
       "calendar": {
         "title": "Track Your Progress",
         "subtitle": "Don't break the chain",
-        "description": "Visualize your consistency with the habit calendar. Every completed day builds your streak."
+        "description": "Visualize your consistency with the habit calendar. Every completed day builds your streak.",
+        "visual": {
+          "date": "February 2025",
+          "streak": "Best streak",
+          "days": "21 days"
+        }
       },
       "community": {
         "title": "Join the Community",
@@ -690,7 +700,11 @@
   "notifications": {
     "title": "Notifications",
     "empty": "You have no notifications",
-    "markAllRead": "Mark all as read"
+    "markAllRead": "Mark all",
+    "configure": "Configure notifications",
+    "time": {
+      "now": "now"
+    }
   },
   "errors": {
     "notAuthenticated": "Not authenticated",
@@ -934,6 +948,100 @@
       "button": "Join Group",
       "joining": "Joining...",
       "success": "You joined the group!"
+    }
+  },
+  "plans": {
+    "badge": "Subscription",
+    "title": "Plans",
+    "subtitle": "Manage your plan and access premium features.",
+    "currentPlan": {
+      "title": "Current Plan",
+      "subtitle": "Your subscription plan"
+    },
+    "free": {
+      "name": "Free",
+      "features": "10 habits · 1 group · 3 AI Coach / month"
+    },
+    "active": "Active",
+    "premium": {
+      "title": "Premium Plans",
+      "comingSoon": "Coming Soon",
+      "subtitle": "We are preparing amazing plans for you.",
+      "pro": {
+        "name": "Pro",
+        "price": "€4.99/month",
+        "features": {
+          "habits": "Unlimited habits",
+          "groups": "Unlimited groups",
+          "aiCoach": "10 AI Coach / month",
+          "analytics": "Advanced analytics"
+        }
+      },
+      "squadLeader": {
+        "name": "Squad Leader",
+        "price": "€9.99/month",
+        "features": {
+          "everything": "Everything in Pro",
+          "aiCoach": "Unlimited AI Coach",
+          "dashboard": "Admin dashboard",
+          "support": "Priority support"
+        }
+      }
+    },
+    "notify": {
+      "message": "We'll notify you when premium plans are available.",
+      "earlyAdopters": "Early adopters will get exclusive discounts."
+    },
+    "openCommunities": {
+      "title": "Open Communities",
+      "comingSoon": "Coming Soon",
+      "subtitle": "Connect with people from around the world who share your goals.",
+      "features": {
+        "directory": "Public directory",
+        "challenges": "Global challenges",
+        "events": "Events"
+      }
+    }
+  },
+  "calendarPage": {
+    "myHabits": "MY HABITS",
+    "dailyProgress": "DAILY PROGRESS",
+    "today": "Today",
+    "week": "Week",
+    "month": "Month",
+    "backToCalendar": "Back to Calendar",
+    "dailyView": "Daily View",
+    "status": {
+      "completed": "Completed",
+      "failed": "Not completed",
+      "notRequired": "Not required",
+      "pending": "Pending"
+    },
+    "currentStreak": "current streak",
+    "buttons": {
+      "done": "Done!",
+      "notCompleted": "Not completed",
+      "notApplicable": "Not applicable today",
+      "markAsDone": "Mark as done"
+    },
+    "empty": {
+      "title": "No habits for this day",
+      "subtitle": "It looks like you didn't have any active habits on this date."
+    },
+    "noHabitsYet": {
+      "title": "You don't have any habits yet",
+      "subtitle": "Create your first habit to start building better routines.",
+      "cta": "Create my first habit"
+    },
+    "toast": {
+      "dayCompleted": "Day completed! Great job!",
+      "habitCompleted": "Habit completed!",
+      "statusUpdated": "Status updated",
+      "updateError": "Error updating",
+      "taskCompleted": "Task completed!",
+      "taskUnchecked": "Task unchecked",
+      "taskUpdateError": "Error updating task",
+      "aiPlanError": "Error planning with AI"
     }
   },
   "planner": {

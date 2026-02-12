@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Check, Trash2, Calendar as CalendarIcon, X, Minus } from "lucide-react";
@@ -91,6 +91,7 @@ const dayVariants = {
 
 export function HabitCalendar({ initialHabits }: HabitCalendarProps) {
     const t = useTranslations('habitCalendar');
+    const locale = useLocale();
     const [habits, setHabits] = useState<Habit[]>(initialHabits);
     const [loading, setLoading] = useState<string | null>(null);
     const [sparkleKey, setSparkleKey] = useState<string | null>(null);
@@ -426,8 +427,8 @@ export function HabitCalendar({ initialHabits }: HabitCalendarProps) {
                                                         className={`text-[10px] md:text-xs font-bold uppercase tracking-wider hover:text-white transition-colors cursor-pointer ${isToday ? "text-primary" : "text-muted-foreground"}`}
                                                         whileHover={{ scale: 1.1 }}
                                                     >
-                                                        <span className="md:hidden">{date.toLocaleDateString("es-ES", { weekday: "narrow" }).charAt(0)}</span>
-                                                        <span className="hidden md:inline">{date.toLocaleDateString("es-ES", { weekday: "short" })}</span>
+                                                        <span className="md:hidden">{date.toLocaleDateString(locale === "es" ? "es-ES" : "en-US", { weekday: "narrow" }).charAt(0)}</span>
+                                                        <span className="hidden md:inline">{date.toLocaleDateString(locale === "es" ? "es-ES" : "en-US", { weekday: "short" })}</span>
                                                     </motion.button>
 
                                                     <motion.button

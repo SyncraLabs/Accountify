@@ -8,6 +8,7 @@ import { toggleHabitLog, planDayWithAI, toggleTaskComplete } from "@/app/actions
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { useTranslations, useLocale } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import {
     useCelebration,
@@ -58,6 +59,9 @@ export function DayHabitView({ initialHabits, initialTasks = [], dateStr }: DayH
     const router = useRouter();
     const { celebrate } = useCelebration();
     const prevProgressRef = useRef(0);
+    const t = useTranslations("calendarPage");
+    const tPlanner = useTranslations("planner");
+    const locale = useLocale();
 
     // Sync tasks state when initialTasks prop changes (after router.refresh())
     useEffect(() => {
@@ -66,8 +70,8 @@ export function DayHabitView({ initialHabits, initialTasks = [], dateStr }: DayH
 
     const date = new Date(dateStr);
 
-    // Format date for display (e.g., "Martes, 4 de Febrero")
-    const formattedDate = date.toLocaleDateString("es-ES", {
+    // Format date for display based on locale
+    const formattedDate = date.toLocaleDateString(locale === "es" ? "es-ES" : "en-US", {
         weekday: "long",
         day: "numeric",
         month: "long",
@@ -88,7 +92,7 @@ export function DayHabitView({ initialHabits, initialTasks = [], dateStr }: DayH
         if (progressPercentage === 100 && prevProgressRef.current < 100 && totalRequired > 0 && !dayCompleted) {
             setDayCompleted(true);
             celebrate('dayComplete', { intensity: 'large' });
-            toast.success("🎉 ¡Día completado! ¡Excelente trabajo!");
+            toast.success(`🎉 ${t("toast.dayCompleted")}`);
         }
         prevProgressRef.current = progressPercentage;
     }, [progressPercentage, totalRequired, celebrate, dayCompleted]);
@@ -121,9 +125,9 @@ export function DayHabitView({ initialHabits, initialTasks = [], dateStr }: DayH
 
                 // Trigger habit complete celebration
                 celebrate('habitComplete', { intensity: 'small' });
-                toast.success("¡Hábito completado! 🎉");
+                toast.success(`${t("toast.habitCompleted")} 🎉`);
             } else {
-                toast.info("Estado actualizado");
+                toast.info(t("toast.statusUpdated"));
             }
 
             const result = await toggleHabitLog(habitId, dateStr);
@@ -145,7 +149,7 @@ export function DayHabitView({ initialHabits, initialTasks = [], dateStr }: DayH
                 }));
             }
         } catch (error) {
-            toast.error("Error al actualizar");
+            toast.error(t("toast.updateError"));
         } finally {
             setLoading(null);
         }
@@ -182,9 +186,9 @@ export function DayHabitView({ initialHabits, initialTasks = [], dateStr }: DayH
 
         if (!wasCompleted) {
             celebrate('habitComplete', { intensity: 'small' });
-            toast.success("¡Tarea completada!");
+            toast.success(t("toast.taskCompleted"));
         } else {
-            toast.info("Tarea desmarcada");
+            toast.info(t("toast.taskUnchecked"));
         }
 
         try {
@@ -201,7 +205,7 @@ export function DayHabitView({ initialHabits, initialTasks = [], dateStr }: DayH
             setTasks(prev => prev.map(t =>
                 t.id === taskId ? { ...t, completed: wasCompleted } : t
             ));
-            toast.error("Error al actualizar la tarea");
+            toast.error(t("toast.taskUpdateError"));
         }
     };
 
@@ -220,7 +224,7 @@ export function DayHabitView({ initialHabits, initialTasks = [], dateStr }: DayH
                 });
             }
         } catch (error) {
-            toast.error("Error al planificar con IA");
+            toast.error(t("toast.aiPlanError"));
         } finally {
             setIsAiLoading(false);
         }
@@ -249,7 +253,7 @@ export function DayHabitView({ initialHabits, initialTasks = [], dateStr }: DayH
                         onClick={() => router.back()}
                     >
                         <ArrowLeft className="mr-2 h-4 w-4" />
-                        Volver al Calendario
+                        {t("backToCalendar")}
                     </Button>
                 </motion.div>
 
@@ -257,7 +261,7 @@ export function DayHabitView({ initialHabits, initialTasks = [], dateStr }: DayH
                     <div className="space-y-2">
                         <div className="flex items-center gap-2 text-primary">
                             <CalendarIcon className="h-4 w-4" />
-                            <span className="text-xs font-medium uppercase tracking-wider">Vista Diaria</span>
+                            <span className="text-xs font-medium uppercase tracking-wider">{t("dailyView")}</span>
                         </div>
                         <h1 className="text-3xl md:text-5xl font-bold text-white capitalize">
                             {formattedDate}
@@ -279,7 +283,7 @@ export function DayHabitView({ initialHabits, initialTasks = [], dateStr }: DayH
                             transition={{ duration: 0.5 }}
                         >
                             <div className="space-y-1">
-                                <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Progreso Diario</p>
+                                <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">{t("dailyProgress")}</p>
                                 <motion.p
                                     className="text-2xl font-bold"
                                     animate={{
@@ -346,7 +350,7 @@ export function DayHabitView({ initialHabits, initialTasks = [], dateStr }: DayH
                     whileTap={{ scale: 0.98 }}
                 >
                     <Target className="h-4 w-4" />
-                    Hábitos
+                    {tPlanner("habits")}
                     {requiredHabits.length > 0 && (
                         <span className={cn(
                             "px-1.5 py-0.5 rounded-full text-xs",
@@ -368,7 +372,7 @@ export function DayHabitView({ initialHabits, initialTasks = [], dateStr }: DayH
                     whileTap={{ scale: 0.98 }}
                 >
                     <ListTodo className="h-4 w-4" />
-                    Tareas del Día
+                    {tPlanner("tasks")}
                     {tasks.length > 0 && (
                         <span className={cn(
                             "px-1.5 py-0.5 rounded-full text-xs",
@@ -473,10 +477,10 @@ export function DayHabitView({ initialHabits, initialTasks = [], dateStr }: DayH
                                             } : {}}
                                             transition={{ duration: 0.4 }}
                                         >
-                                            {isCompleted && "Completado"}
-                                            {isFailed && "No cumplido"}
-                                            {isNotRequired && "No requerido"}
-                                            {!isCompleted && !isFailed && !isNotRequired && "Pendiente"}
+                                            {isCompleted && t("status.completed")}
+                                            {isFailed && t("status.failed")}
+                                            {isNotRequired && t("status.notRequired")}
+                                            {!isCompleted && !isFailed && !isNotRequired && t("status.pending")}
                                         </motion.div>
                                         <span className="text-[10px] text-white/40">{getFrequencyLabel(habit.frequency)}</span>
                                     </div>
@@ -492,7 +496,7 @@ export function DayHabitView({ initialHabits, initialTasks = [], dateStr }: DayH
                                                 size="sm"
                                             />
                                             <span className={cn("transition-colors duration-300", isCompleted ? "text-primary font-medium" : "")}>
-                                                racha actual
+                                                {t("currentStreak")}
                                             </span>
                                             {weekProgress && (
                                                 <span className="ml-1 px-2 py-0.5 bg-white/10 rounded-full text-[10px] text-white/70">
@@ -533,7 +537,7 @@ export function DayHabitView({ initialHabits, initialTasks = [], dateStr }: DayH
                                                     >
                                                         <Check className="h-5 w-5 stroke-[3px]" />
                                                     </motion.div>
-                                                    <span>¡Hecho!</span>
+                                                    <span>{t("buttons.done")}</span>
                                                 </motion.div>
                                             )}
                                             {isFailed && (
@@ -544,7 +548,7 @@ export function DayHabitView({ initialHabits, initialTasks = [], dateStr }: DayH
                                                     animate={{ opacity: 1 }}
                                                 >
                                                     <X className="h-5 w-5 stroke-[2px]" />
-                                                    <span>No cumplido</span>
+                                                    <span>{t("buttons.notCompleted")}</span>
                                                 </motion.div>
                                             )}
                                             {isNotRequired && (
@@ -555,7 +559,7 @@ export function DayHabitView({ initialHabits, initialTasks = [], dateStr }: DayH
                                                     animate={{ opacity: 1 }}
                                                 >
                                                     <Minus className="h-5 w-5 stroke-[2px]" />
-                                                    <span>No aplica hoy</span>
+                                                    <span>{t("buttons.notApplicable")}</span>
                                                 </motion.div>
                                             )}
                                             {!isCompleted && !isFailed && !isNotRequired && (
@@ -564,7 +568,7 @@ export function DayHabitView({ initialHabits, initialTasks = [], dateStr }: DayH
                                                     initial={{ opacity: 0 }}
                                                     animate={{ opacity: 1 }}
                                                 >
-                                                    Marcar como hecho
+                                                    {t("buttons.markAsDone")}
                                                 </motion.span>
                                             )}
                                         </AnimatePresence>
@@ -593,8 +597,8 @@ export function DayHabitView({ initialHabits, initialTasks = [], dateStr }: DayH
                                     >
                                         📅
                                     </motion.div>
-                                    <h3 className="text-2xl font-bold text-white">No hay hábitos para este día</h3>
-                                    <p className="text-muted-foreground">Parece que no tenías hábitos activos en esta fecha.</p>
+                                    <h3 className="text-2xl font-bold text-white">{t("empty.title")}</h3>
+                                    <p className="text-muted-foreground">{t("empty.subtitle")}</p>
                                 </div>
                             </motion.div>
                         )}
@@ -610,7 +614,7 @@ export function DayHabitView({ initialHabits, initialTasks = [], dateStr }: DayH
                     >
                         {/* Task Actions */}
                         <div className="flex items-center justify-between">
-                            <h2 className="text-lg font-semibold text-white">Tareas del Día</h2>
+                            <h2 className="text-lg font-semibold text-white">{tPlanner("tasks")}</h2>
                             <CreateTaskDialog dateStr={dateStr} onSuccess={refreshTasks} />
                         </div>
 

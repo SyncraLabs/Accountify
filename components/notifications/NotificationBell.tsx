@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Bell, Check, CheckCheck, MessageSquare, AtSign, Zap, X } from 'lucide-react'
+import { Bell, CheckCheck, MessageSquare, AtSign, Zap } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
     DropdownMenu,
@@ -13,6 +13,7 @@ import { createClient } from '@/lib/supabase/client'
 import { getNotifications, getUnreadCount, markAsRead, markAllAsRead, type Notification } from '@/app/[locale]/notifications/actions'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 
 const notificationIcons: Record<string, React.ReactNode> = {
     mention: <AtSign className="h-4 w-4 text-primary" />,
@@ -25,9 +26,9 @@ export function NotificationBell() {
     const [notifications, setNotifications] = useState<Notification[]>([])
     const [unreadCount, setUnreadCount] = useState(0)
     const [isOpen, setIsOpen] = useState(false)
-    const [loading, setLoading] = useState(false)
     const router = useRouter()
     const supabase = createClient()
+    const t = useTranslations('notifications')
 
     // Fetch notifications on mount
     useEffect(() => {
@@ -59,14 +60,12 @@ export function NotificationBell() {
     }, [supabase])
 
     const fetchData = async () => {
-        setLoading(true)
         const [notifResult, countResult] = await Promise.all([
             getNotifications(10, 0),
             getUnreadCount()
         ])
         setNotifications(notifResult.notifications)
         setUnreadCount(countResult.count)
-        setLoading(false)
     }
 
     const handleMarkAsRead = async (notification: Notification) => {
@@ -99,7 +98,7 @@ export function NotificationBell() {
         const diffHours = Math.floor(diffMins / 60)
         const diffDays = Math.floor(diffHours / 24)
 
-        if (diffMins < 1) return 'ahora'
+        if (diffMins < 1) return t('time.now')
         if (diffMins < 60) return `${diffMins}m`
         if (diffHours < 24) return `${diffHours}h`
         return `${diffDays}d`
@@ -135,7 +134,7 @@ export function NotificationBell() {
             >
                 {/* Header */}
                 <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-800">
-                    <h3 className="font-medium text-sm text-white">Notificaciones</h3>
+                    <h3 className="font-medium text-sm text-white">{t('title')}</h3>
                     {unreadCount > 0 && (
                         <Button
                             variant="ghost"
@@ -144,7 +143,7 @@ export function NotificationBell() {
                             className="h-7 text-xs text-zinc-400 hover:text-white"
                         >
                             <CheckCheck className="h-3.5 w-3.5 mr-1" />
-                            Marcar todo
+                            {t('markAllRead')}
                         </Button>
                     )}
                 </div>
@@ -154,7 +153,7 @@ export function NotificationBell() {
                     {notifications.length === 0 ? (
                         <div className="py-12 text-center text-zinc-500 text-sm">
                             <Bell className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                            No tienes notificaciones
+                            {t('empty')}
                         </div>
                     ) : (
                         <div className="divide-y divide-zinc-800/50">
@@ -208,7 +207,7 @@ export function NotificationBell() {
                             }}
                             className="w-full text-xs text-zinc-400 hover:text-white"
                         >
-                            Configurar notificaciones
+                            {t('configure')}
                         </Button>
                     </div>
                 )}
