@@ -69,6 +69,12 @@ export function AppSidebar({ className, user }: SidebarProps) {
             section: t('sections.settings'),
             items: [
                 {
+                    label: t('plans'),
+                    icon: CreditCard,
+                    href: "/plans",
+                    active: pathname === "/plans",
+                },
+                {
                     label: t('settings'),
                     icon: Settings,
                     href: "/settings",

@@ -15,7 +15,8 @@
       "Read(//tmp/claude/c--Users-FX507-Desktop-Appcountability/tasks/**)",
       "Bash(tree:*)",
       "Bash(git diff:*)",
-      "Bash(npx vercel:*)"
+      "Bash(npx vercel:*)",
+      "Bash(git restore:*)"
     ]
   }
 }

@@ -126,20 +126,23 @@ export function Sidebar({ groups, selectedGroupId }: { groups: any[], selectedGr
                 )}
             </div>
 
-            {/* Bottom Feature Highlight - Hidden on mobile */}
-            {groups.length > 0 && (
-                <div className="hidden md:block p-4 border-t border-zinc-800/50 bg-gradient-to-t from-zinc-900/50 to-transparent">
-                    <div className="flex items-center gap-3 p-3 rounded-lg bg-primary/5 border border-primary/10">
-                        <div className="p-2 rounded-lg bg-primary/10">
-                            <Trophy className="h-4 w-4 text-primary" />
+            {/* Community — Coming Soon */}
+            <div className="hidden md:block p-4 border-t border-zinc-800/50 bg-gradient-to-t from-zinc-900/50 to-transparent">
+                <div className="p-3 rounded-lg bg-zinc-900/60 border border-zinc-800/60">
+                    <div className="flex items-center gap-2 mb-2">
+                        <div className="p-1.5 rounded-md bg-blue-500/10">
+                            <Users className="h-3.5 w-3.5 text-blue-400" />
                         </div>
-                        <div className="flex-1">
-                            <p className="text-xs font-medium text-zinc-200">{t('shareProgress')}</p>
-                            <p className="text-[10px] text-zinc-500">{t('inspireOthers')}</p>
-                        </div>
+                        <span className="text-xs font-medium text-white">Comunidades Abiertas</span>
+                        <span className="px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wider text-yellow-400 bg-yellow-500/15 border border-yellow-500/20 rounded-full">
+                            Pronto
+                        </span>
                     </div>
+                    <p className="text-[10px] text-zinc-500 leading-relaxed">
+                        Conecta con personas de todo el mundo que comparten tus metas. Directorio público, desafíos globales y más.
+                    </p>
                 </div>
-            )}
+            </div>
         </div>
     )
 }
