@@ -848,6 +848,35 @@
         "upload": "Error al subir imagen"
       }
     },
+    "groupsOnboarding": {
+      "steps": {
+        "community": {
+          "title": "Bienvenido a Grupos",
+          "subtitle": "Tu comunidad de disciplina",
+          "description": "Conecta con personas que comparten tus metas. Juntos, la rendición de cuentas se convierte en motivación."
+        },
+        "share": {
+          "title": "Comparte Tu Progreso",
+          "subtitle": "Celebra cada victoria",
+          "description": "Comparte automáticamente tus hábitos completados con tu grupo. Cada logro inspira a otros."
+        },
+        "progress": {
+          "title": "Mantente Responsable",
+          "subtitle": "Ve el progreso del equipo",
+          "description": "Observa el progreso diario de tu grupo. Apóyense mutuamente y celebren juntos."
+        }
+      },
+      "visual": {
+        "meditate": "Meditar",
+        "days": "días",
+        "group": "Grupo"
+      },
+      "actions": {
+        "skip": "Saltar",
+        "next": "Siguiente",
+        "start": "Comenzar"
+      }
+    },
     "challenges": {
       "activeTitle": "Retos Activos",
       "activeDesc": "Progreso y desafíos actuales del grupo",

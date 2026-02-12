@@ -10,6 +10,7 @@ import { Settings, Camera, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { createClient } from '@/lib/supabase/client'
 import Image from 'next/image'
+import { useTranslations } from 'next-intl'
 
 interface GroupSettingsDialogProps {
     group: {
@@ -29,6 +30,7 @@ export function GroupSettingsDialog({ group, onUpdate }: GroupSettingsDialogProp
     const [description, setDescription] = useState(group.description || '')
     const [avatarUrl, setAvatarUrl] = useState(group.avatar_url || '')
     const fileInputRef = useRef<HTMLInputElement>(null)
+    const t = useTranslations('groups.settings')
 
     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
@@ -36,11 +38,11 @@ export function GroupSettingsDialog({ group, onUpdate }: GroupSettingsDialogProp
 
         // Validate file type and size
         if (!file.type.startsWith('image/')) {
-            toast.error('Por favor selecciona una imagen')
+            toast.error(t('errors.selectImage'))
             return
         }
         if (file.size > 5 * 1024 * 1024) {
-            toast.error('La imagen debe ser menor a 5MB')
+            toast.error(t('errors.imageSize'))
             return
         }
 
@@ -61,10 +63,10 @@ export function GroupSettingsDialog({ group, onUpdate }: GroupSettingsDialogProp
                 .getPublicUrl(fileName)
 
             setAvatarUrl(publicUrl)
-            toast.success('¡Imagen subida!')
+            toast.success(t('imageUploaded'))
         } catch (error: any) {
             console.error('Error uploading image:', error)
-            toast.error(error.message || 'Error al subir imagen')
+            toast.error(error.message || t('errors.upload'))
         } finally {
             setUploading(false)
         }
@@ -85,7 +87,7 @@ export function GroupSettingsDialog({ group, onUpdate }: GroupSettingsDialogProp
         if (result.error) {
             toast.error(result.error)
         } else {
-            toast.success('¡Grupo actualizado!')
+            toast.success(t('success'))
             setOpen(false)
             onUpdate?.()
         }
@@ -100,14 +102,14 @@ export function GroupSettingsDialog({ group, onUpdate }: GroupSettingsDialogProp
                     className="w-full justify-start gap-2 text-zinc-400 hover:text-white hover:bg-zinc-800/50 h-9 transition-all duration-200"
                 >
                     <Settings className="h-4 w-4" />
-                    Configuración
+                    {t('button')}
                 </Button>
             </DialogTrigger>
-            <DialogContent className="bg-zinc-950/95 backdrop-blur-xl border border-zinc-800 shadow-[0_0_50px_rgba(0,0,0,0.5)] sm:max-w-[425px]">
+            <DialogContent className="bg-zinc-950/95 backdrop-blur-xl border border-zinc-800 shadow-[0_0_50px_rgba(0,0,0,0.5)] w-[calc(100vw-2rem)] max-w-[425px] mx-auto">
                 <DialogHeader className="space-y-3 pb-4 border-b border-zinc-900">
-                    <DialogTitle className="text-xl font-semibold text-white tracking-tight">Editar Grupo</DialogTitle>
+                    <DialogTitle className="text-xl font-semibold text-white tracking-tight">{t('title')}</DialogTitle>
                     <DialogDescription className="text-zinc-500">
-                        Personaliza la imagen, nombre y descripción de tu grupo de disciplina.
+                        {t('desc')}
                     </DialogDescription>
                 </DialogHeader>
 
@@ -138,7 +140,7 @@ export function GroupSettingsDialog({ group, onUpdate }: GroupSettingsDialogProp
                                 ) : (
                                     <>
                                         <Camera className="h-6 w-6 text-white mb-1" />
-                                        <span className="text-[10px] text-zinc-300 font-medium">CAMBIAR</span>
+                                        <span className="text-[10px] text-zinc-300 font-medium">{t('changeImage')}</span>
                                     </>
                                 )}
                             </div>
@@ -151,8 +153,8 @@ export function GroupSettingsDialog({ group, onUpdate }: GroupSettingsDialogProp
                             onChange={handleImageUpload}
                         />
                         <div className="text-center">
-                            <p className="text-sm font-medium text-white">Imagen del Grupo</p>
-                            <p className="text-xs text-zinc-500 mt-0.5">Recomendado: 500x500px</p>
+                            <p className="text-sm font-medium text-white">{t('imageLabel')}</p>
+                            <p className="text-xs text-zinc-500 mt-0.5">{t('imageHint')}</p>
                         </div>
                     </div>
 
@@ -160,13 +162,13 @@ export function GroupSettingsDialog({ group, onUpdate }: GroupSettingsDialogProp
                         {/* Name */}
                         <div className="space-y-2">
                             <Label htmlFor="name" className="text-zinc-400 text-xs uppercase tracking-wider font-semibold">
-                                Nombre
+                                {t('nameLabel')}
                             </Label>
                             <Input
                                 id="name"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
-                                placeholder="Ej. Espartanos 300"
+                                placeholder={t('namePlaceholder')}
                                 required
                                 className="bg-zinc-900/50 border-zinc-800 focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all h-10"
                             />
@@ -175,39 +177,39 @@ export function GroupSettingsDialog({ group, onUpdate }: GroupSettingsDialogProp
                         {/* Description */}
                         <div className="space-y-2">
                             <Label htmlFor="description" className="text-zinc-400 text-xs uppercase tracking-wider font-semibold">
-                                Descripción
+                                {t('descLabel')}
                             </Label>
                             <Input
                                 id="description"
                                 value={description}
                                 onChange={(e) => setDescription(e.target.value)}
-                                placeholder="¿Cuál es el propósito de este grupo?"
+                                placeholder={t('descPlaceholder')}
                                 className="bg-zinc-900/50 border-zinc-800 focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all h-10"
                             />
                         </div>
                     </div>
 
-                    <DialogFooter className="pt-2">
+                    <DialogFooter className="pt-2 flex-col sm:flex-row gap-2">
                         <Button
                             type="button"
                             variant="ghost"
                             onClick={() => setOpen(false)}
-                            className="text-zinc-400 hover:text-white hover:bg-zinc-900"
+                            className="text-zinc-400 hover:text-white hover:bg-zinc-900 w-full sm:w-auto"
                         >
-                            Cancelar
+                            {t('cancel')}
                         </Button>
                         <Button
                             type="submit"
                             disabled={loading || uploading}
-                            className="bg-primary text-black hover:bg-primary/90 min-w-[120px] transition-all duration-200 hover:shadow-[0_0_20px_rgba(191,245,73,0.2)]"
+                            className="bg-primary text-black hover:bg-primary/90 min-w-[120px] transition-all duration-200 hover:shadow-[0_0_20px_rgba(191,245,73,0.2)] w-full sm:w-auto"
                         >
                             {loading ? (
                                 <>
                                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                                    Guardando...
+                                    {t('saving')}
                                 </>
                             ) : (
-                                'Guardar Cambios'
+                                t('save')
                             )}
                         </Button>
                     </DialogFooter>

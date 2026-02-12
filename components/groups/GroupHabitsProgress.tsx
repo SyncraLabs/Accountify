@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronDown, ChevronRight, Check, Flame, Users, Loader2 } from 'lucide-react'
+import { ChevronDown, ChevronRight, Check, Users, Loader2 } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { getGroupMembersProgress } from '@/app/[locale]/groups/actions'
 import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/utils'
+import { useTranslations } from 'next-intl'
 
 interface GroupHabitsProgressProps {
     groupId: string
@@ -37,6 +38,7 @@ export function GroupHabitsProgress({ groupId }: GroupHabitsProgressProps) {
     const [loading, setLoading] = useState(true)
     const [expanded, setExpanded] = useState(true)
     const [expandedMembers, setExpandedMembers] = useState<Set<string>>(new Set())
+    const t = useTranslations('groups.progress')
 
     useEffect(() => {
         loadProgress()
@@ -102,7 +104,7 @@ export function GroupHabitsProgress({ groupId }: GroupHabitsProgressProps) {
             <div className="space-y-2">
                 <h3 className="text-xs font-medium text-zinc-500 uppercase tracking-wider flex items-center gap-2">
                     <Users className="h-3.5 w-3.5" />
-                    Progreso del Grupo
+                    {t('title')}
                 </h3>
                 <div className="flex items-center justify-center py-6">
                     <Loader2 className="h-5 w-5 animate-spin text-zinc-500" />
@@ -116,11 +118,11 @@ export function GroupHabitsProgress({ groupId }: GroupHabitsProgressProps) {
             <div className="space-y-2">
                 <h3 className="text-xs font-medium text-zinc-500 uppercase tracking-wider flex items-center gap-2">
                     <Users className="h-3.5 w-3.5" />
-                    Progreso del Grupo
+                    {t('title')}
                 </h3>
                 <div className="p-4 rounded-lg border border-dashed border-zinc-700/50 text-center">
                     <p className="text-xs text-zinc-500">
-                        Nadie ha compartido hábitos aún
+                        {t('empty')}
                     </p>
                 </div>
             </div>
@@ -136,7 +138,7 @@ export function GroupHabitsProgress({ groupId }: GroupHabitsProgressProps) {
             >
                 <span className="flex items-center gap-2">
                     <Users className="h-3.5 w-3.5" />
-                    Progreso del Grupo
+                    {t('title')}
                 </span>
                 {expanded ? (
                     <ChevronDown className="h-4 w-4" />

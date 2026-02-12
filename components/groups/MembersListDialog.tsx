@@ -9,6 +9,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Users, MoreVertical, Shield, ShieldOff, UserMinus, Loader2, Crown } from 'lucide-react'
 import { toast } from 'sonner'
 import Image from 'next/image'
+import { useTranslations } from 'next-intl'
 
 interface Member {
     userId: string
@@ -37,6 +38,8 @@ export function MembersListDialog({ groupId, isAdmin, currentUserId }: MembersLi
         type: 'promote' | 'demote' | 'remove'
         member: Member | null
     }>({ open: false, type: 'remove', member: null })
+    const t = useTranslations('groups.members')
+    const tCommon = useTranslations('common')
 
     const fetchMembers = async () => {
         setLoading(true)
@@ -64,19 +67,20 @@ export function MembersListDialog({ groupId, isAdmin, currentUserId }: MembersLi
         setActionLoading(member.userId)
         setConfirmDialog({ open: false, type: 'remove', member: null })
 
+        const name = member.profile.full_name || 'User'
         let result
         switch (type) {
             case 'promote':
                 result = await promoteToAdmin(groupId, member.userId)
-                if (result.success) toast.success(`${member.profile.full_name || 'Usuario'} ahora es admin`)
+                if (result.success) toast.success(t('success.promote', { name }))
                 break
             case 'demote':
                 result = await demoteFromAdmin(groupId, member.userId)
-                if (result.success) toast.success(`${member.profile.full_name || 'Usuario'} ya no es admin`)
+                if (result.success) toast.success(t('success.demote', { name }))
                 break
             case 'remove':
                 result = await removeMember(groupId, member.userId)
-                if (result.success) toast.success(`${member.profile.full_name || 'Usuario'} ha sido expulsado`)
+                if (result.success) toast.success(t('success.kick', { name }))
                 break
         }
 
@@ -91,14 +95,14 @@ export function MembersListDialog({ groupId, isAdmin, currentUserId }: MembersLi
 
     const getConfirmMessage = () => {
         const { type, member } = confirmDialog
-        const name = member?.profile.full_name || 'este usuario'
+        const name = member?.profile.full_name || 'this user'
         switch (type) {
             case 'promote':
-                return `¿Estás seguro de que quieres hacer admin a ${name}?`
+                return t('confirm.promote', { name })
             case 'demote':
-                return `¿Estás seguro de que quieres quitar los permisos de admin a ${name}?`
+                return t('confirm.demote', { name })
             case 'remove':
-                return `¿Estás seguro de que quieres expulsar a ${name} del grupo?`
+                return t('confirm.kick', { name })
         }
     }
 
@@ -112,14 +116,14 @@ export function MembersListDialog({ groupId, isAdmin, currentUserId }: MembersLi
                         className="w-full justify-start gap-2 text-zinc-400 hover:text-white hover:bg-zinc-800/50 h-9 transition-all duration-200"
                     >
                         <Users className="h-4 w-4" />
-                        Ver Miembros
+                        {t('viewButton')}
                     </Button>
                 </DialogTrigger>
-                <DialogContent className="bg-zinc-900/95 backdrop-blur-xl border-zinc-800 shadow-[0_0_50px_rgba(0,0,0,0.5)] max-w-md">
+                <DialogContent className="bg-zinc-900/95 backdrop-blur-xl border-zinc-800 shadow-[0_0_50px_rgba(0,0,0,0.5)] w-[calc(100vw-2rem)] max-w-md mx-auto">
                     <DialogHeader>
-                        <DialogTitle className="text-white">Miembros del Grupo</DialogTitle>
+                        <DialogTitle className="text-white">{t('title')}</DialogTitle>
                         <DialogDescription className="text-zinc-400">
-                            {members.length} miembro{members.length !== 1 ? 's' : ''}
+                            {members.length === 1 ? t('count', { count: members.length }) : t('counts', { count: members.length })}
                         </DialogDescription>
                     </DialogHeader>
 
@@ -129,7 +133,7 @@ export function MembersListDialog({ groupId, isAdmin, currentUserId }: MembersLi
                                 <Loader2 className="h-6 w-6 text-zinc-400 animate-spin" />
                             </div>
                         ) : members.length === 0 ? (
-                            <p className="text-center text-zinc-500 py-8">No hay miembros</p>
+                            <p className="text-center text-zinc-500 py-8">{t('empty')}</p>
                         ) : (
                             members.map((member) => (
                                 <div
@@ -156,16 +160,16 @@ export function MembersListDialog({ groupId, isAdmin, currentUserId }: MembersLi
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center gap-2">
                                             <span className="text-sm font-medium text-white truncate">
-                                                {member.profile.full_name || 'Usuario'}
+                                                {member.profile.full_name || 'User'}
                                             </span>
                                             {member.role === 'admin' && (
                                                 <span className="flex items-center gap-1 px-1.5 py-0.5 bg-primary/20 text-primary text-xs rounded">
                                                     <Crown className="h-3 w-3" />
-                                                    Admin
+                                                    {t('adminBadge')}
                                                 </span>
                                             )}
                                             {member.userId === currentUserId && (
-                                                <span className="text-xs text-zinc-500">(tú)</span>
+                                                <span className="text-xs text-zinc-500">{t('you')}</span>
                                             )}
                                         </div>
                                     </div>
@@ -194,7 +198,7 @@ export function MembersListDialog({ groupId, isAdmin, currentUserId }: MembersLi
                                                         className="text-zinc-300 focus:text-white focus:bg-zinc-800"
                                                     >
                                                         <Shield className="h-4 w-4 mr-2" />
-                                                        Hacer Admin
+                                                        {t('actions.makeAdmin')}
                                                     </DropdownMenuItem>
                                                 ) : (
                                                     <DropdownMenuItem
@@ -202,7 +206,7 @@ export function MembersListDialog({ groupId, isAdmin, currentUserId }: MembersLi
                                                         className="text-zinc-300 focus:text-white focus:bg-zinc-800"
                                                     >
                                                         <ShieldOff className="h-4 w-4 mr-2" />
-                                                        Quitar Admin
+                                                        {t('actions.removeAdmin')}
                                                     </DropdownMenuItem>
                                                 )}
                                                 <DropdownMenuItem
@@ -210,7 +214,7 @@ export function MembersListDialog({ groupId, isAdmin, currentUserId }: MembersLi
                                                     className="text-red-400 focus:text-red-300 focus:bg-zinc-800"
                                                 >
                                                     <UserMinus className="h-4 w-4 mr-2" />
-                                                    Expulsar
+                                                    {t('actions.kick')}
                                                 </DropdownMenuItem>
                                             </DropdownMenuContent>
                                         </DropdownMenu>
@@ -224,16 +228,16 @@ export function MembersListDialog({ groupId, isAdmin, currentUserId }: MembersLi
 
             {/* Confirmation Dialog */}
             <AlertDialog open={confirmDialog.open} onOpenChange={(open) => setConfirmDialog(prev => ({ ...prev, open }))}>
-                <AlertDialogContent className="bg-zinc-900 border-zinc-800">
+                <AlertDialogContent className="bg-zinc-900 border-zinc-800 w-[calc(100vw-2rem)] max-w-md mx-auto">
                     <AlertDialogHeader>
-                        <AlertDialogTitle className="text-white">¿Confirmar acción?</AlertDialogTitle>
+                        <AlertDialogTitle className="text-white">{t('confirm.title')}</AlertDialogTitle>
                         <AlertDialogDescription className="text-zinc-400">
                             {getConfirmMessage()}
                         </AlertDialogDescription>
                     </AlertDialogHeader>
-                    <AlertDialogFooter>
+                    <AlertDialogFooter className="flex-col sm:flex-row gap-2">
                         <AlertDialogCancel className="bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700">
-                            Cancelar
+                            {tCommon('cancel')}
                         </AlertDialogCancel>
                         <AlertDialogAction
                             onClick={executeAction}
@@ -242,7 +246,7 @@ export function MembersListDialog({ groupId, isAdmin, currentUserId }: MembersLi
                                 : "bg-primary text-black hover:bg-primary/90"
                             }
                         >
-                            Confirmar
+                            {tCommon('confirm')}
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>

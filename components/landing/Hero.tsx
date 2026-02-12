@@ -222,8 +222,8 @@ export function Hero() {
 
             </div>
 
-            {/* Dashboard Preview — hidden on mobile */}
-            <div className="hidden md:block w-full">
+            {/* Dashboard Preview — hidden on mobile/tablet */}
+            <div className="hidden lg:block w-full">
                 <DashboardPreview />
             </div>
 

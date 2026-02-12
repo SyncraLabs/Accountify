@@ -895,6 +895,35 @@
         "upload": "Error uploading image"
       }
     },
+    "groupsOnboarding": {
+      "steps": {
+        "community": {
+          "title": "Welcome to Groups",
+          "subtitle": "Your discipline community",
+          "description": "Connect with people who share your goals. Together, accountability becomes motivation."
+        },
+        "share": {
+          "title": "Share Your Progress",
+          "subtitle": "Celebrate every victory",
+          "description": "Automatically share your completed habits with your group. Every achievement inspires others."
+        },
+        "progress": {
+          "title": "Stay Accountable",
+          "subtitle": "See team progress",
+          "description": "Watch your group's daily progress. Support each other and celebrate together."
+        }
+      },
+      "visual": {
+        "meditate": "Meditate",
+        "days": "days",
+        "group": "Group"
+      },
+      "actions": {
+        "skip": "Skip",
+        "next": "Next",
+        "start": "Start"
+      }
+    },
     "challenges": {
       "activeTitle": "Active Challenges",
       "activeDesc": "Current group progress and challenges",
