@@ -745,7 +745,8 @@
         "progress": "Progreso"
       },
       "shareProgress": "Comparte tu progreso",
-      "inspireOthers": "Tus hábitos pueden inspirar a otros"
+      "inspireOthers": "Tus hábitos pueden inspirar a otros",
+      "defaultDesc": "Sin descripción"
     },
     "chat": {
       "you": "Tú",

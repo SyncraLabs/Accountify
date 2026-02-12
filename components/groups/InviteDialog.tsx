@@ -65,7 +65,7 @@ export function InviteDialog({ inviteCode, groupName }: InviteDialogProps) {
                     {t('button')}
                 </Button>
             </DialogTrigger>
-            <DialogContent className="bg-zinc-900/95 backdrop-blur-xl border-zinc-800 shadow-[0_0_50px_rgba(0,0,0,0.5)] w-[calc(100vw-2rem)] max-w-sm mx-auto">
+            <DialogContent className="bg-zinc-900/95 backdrop-blur-xl border-zinc-800 shadow-[0_0_50px_rgba(0,0,0,0.5)] w-[calc(100vw-2rem)] max-w-sm mx-auto max-h-[85vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle className="text-white">{t('title')}</DialogTitle>
                     <DialogDescription className="text-zinc-400">
@@ -120,21 +120,22 @@ export function InviteDialog({ inviteCode, groupName }: InviteDialogProps) {
                             <QrCode className="h-3.5 w-3.5" />
                             {t('qrLabel')}
                         </label>
-                        <div className="relative flex justify-center p-5 sm:p-6 rounded-xl bg-gradient-to-br from-white via-zinc-50 to-zinc-100 border border-zinc-200 shadow-inner">
+                        <div className="relative flex justify-center p-4 sm:p-6 rounded-xl bg-gradient-to-br from-white via-zinc-50 to-zinc-100 border border-zinc-200 shadow-inner">
                             {/* Decorative corners */}
                             <div className="absolute top-2 left-2 w-4 h-4 border-l-2 border-t-2 border-primary/40 rounded-tl-sm" />
                             <div className="absolute top-2 right-2 w-4 h-4 border-r-2 border-t-2 border-primary/40 rounded-tr-sm" />
                             <div className="absolute bottom-2 left-2 w-4 h-4 border-l-2 border-b-2 border-primary/40 rounded-bl-sm" />
                             <div className="absolute bottom-2 right-2 w-4 h-4 border-r-2 border-b-2 border-primary/40 rounded-br-sm" />
 
-                            <div className="p-3 bg-white rounded-lg shadow-sm">
+                            <div className="p-2 sm:p-3 bg-white rounded-lg shadow-sm">
                                 <QRCodeSVG
                                     value={inviteLink}
-                                    size={140}
+                                    size={120}
                                     level="M"
                                     includeMargin={false}
                                     fgColor="#18181b"
                                     bgColor="#ffffff"
+                                    className="w-full h-auto max-w-[140px]"
                                 />
                             </div>
                         </div>

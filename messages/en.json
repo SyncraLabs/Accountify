@@ -754,7 +754,8 @@
         "progress": "Progress"
       },
       "shareProgress": "Share your progress",
-      "inspireOthers": "Your habits can inspire others"
+      "inspireOthers": "Your habits can inspire others",
+      "defaultDesc": "No description"
     },
     "chat": {
       "you": "You",

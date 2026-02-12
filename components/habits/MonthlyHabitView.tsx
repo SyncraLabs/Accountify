@@ -188,13 +188,13 @@ export function MonthlyHabitView({ initialHabits }: MonthlyHabitViewProps) {
                 </div>
 
                 {/* Calendar Grid */}
-                <div className="p-4 md:p-6">
+                <div className="p-2 md:p-6">
                     {/* Week day headers */}
-                    <div className="grid grid-cols-7 gap-1 mb-2">
+                    <div className="grid grid-cols-7 gap-0.5 md:gap-1 mb-2">
                         {weekDays.map((day) => (
                             <div
                                 key={day}
-                                className="text-center text-xs font-medium text-zinc-500 py-2"
+                                className="text-center text-[10px] md:text-xs font-medium text-zinc-500 py-2"
                             >
                                 {day}
                             </div>
@@ -202,7 +202,7 @@ export function MonthlyHabitView({ initialHabits }: MonthlyHabitViewProps) {
                     </div>
 
                     {/* Calendar days */}
-                    <div className="grid grid-cols-7 gap-1">
+                    <div className="grid grid-cols-7 gap-0.5 md:gap-1">
                         {calendarDays.map((day, index) => {
                             if (!day) {
                                 return <div key={`empty-${index}`} className="aspect-square" />;
@@ -219,8 +219,8 @@ export function MonthlyHabitView({ initialHabits }: MonthlyHabitViewProps) {
                                     key={day.toISOString()}
                                     onClick={() => handleDayClick(day)}
                                     className={cn(
-                                        "aspect-square rounded-xl flex flex-col items-center justify-center gap-0.5 transition-all border",
-                                        isToday && "ring-2 ring-primary ring-offset-2 ring-offset-black",
+                                        "aspect-square rounded-lg md:rounded-xl flex flex-col items-center justify-center gap-0.5 transition-all border",
+                                        isToday && "ring-1 md:ring-2 ring-primary ring-offset-1 md:ring-offset-2 ring-offset-black",
                                         isFuture && "opacity-30 cursor-default",
                                         status === 'completed' && "bg-primary/20 border-primary/30",
                                         status === 'failed' && "bg-red-500/10 border-red-500/20",
@@ -233,7 +233,7 @@ export function MonthlyHabitView({ initialHabits }: MonthlyHabitViewProps) {
                                     disabled={isFuture}
                                 >
                                     <span className={cn(
-                                        "text-sm font-medium",
+                                        "text-xs md:text-sm font-medium",
                                         isToday && "text-primary",
                                         status === 'completed' && "text-primary",
                                         status === 'failed' && "text-red-400",
@@ -242,13 +242,13 @@ export function MonthlyHabitView({ initialHabits }: MonthlyHabitViewProps) {
                                         {day.getDate()}
                                     </span>
                                     {status === 'completed' && (
-                                        <Check className="h-3 w-3 text-primary" />
+                                        <Check className="h-2.5 w-2.5 md:h-3 md:w-3 text-primary" />
                                     )}
                                     {status === 'failed' && (
-                                        <X className="h-3 w-3 text-red-400" />
+                                        <X className="h-2.5 w-2.5 md:h-3 md:w-3 text-red-400" />
                                     )}
                                     {status === 'not_required' && (
-                                        <Minus className="h-3 w-3 text-zinc-600" />
+                                        <Minus className="h-2.5 w-2.5 md:h-3 md:w-3 text-zinc-600" />
                                     )}
                                 </motion.button>
                             );
