@@ -239,9 +239,9 @@ export function HabitsHub({ initialHabits, initialTasks, dateStr }: HabitsHubPro
     return (
         <div className="space-y-8 animate-fade-up">
             {/* Header */}
-            <div className="flex flex-col gap-6">
-                <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
-                    <div className="space-y-4">
+            <div className="flex flex-col gap-6 items-center text-center md:items-start md:text-left">
+                <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 w-full">
+                    <div className="flex flex-col items-center md:items-start space-y-4">
                         <div className="flex items-center gap-2 text-primary">
                             <Target className="h-4 w-4" />
                             <span className="text-xs font-medium uppercase tracking-wider">{t("myHabits")}</span>
@@ -322,7 +322,7 @@ export function HabitsHub({ initialHabits, initialTasks, dateStr }: HabitsHubPro
 
                 {/* Date Display (only on daily view) */}
                 {view === 'daily' && (
-                    <h1 className="text-3xl md:text-4xl font-bold text-white capitalize">
+                    <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white capitalize px-4 md:px-0">
                         {formattedDate}
                     </h1>
                 )}

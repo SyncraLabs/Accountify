@@ -128,7 +128,7 @@ export function MonthlyHabitView({ initialHabits }: MonthlyHabitViewProps) {
         <div className="space-y-6 w-full min-w-0 overflow-hidden">
             {/* Habit Selector */}
             {initialHabits.length > 1 && (
-                <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none">
+                <div className="flex gap-2 justify-start sm:justify-center overflow-x-auto pb-2 scrollbar-none">
                     {initialHabits.map((habit) => (
                         <motion.button
                             key={habit.id}
@@ -190,7 +190,7 @@ export function MonthlyHabitView({ initialHabits }: MonthlyHabitViewProps) {
                 {/* Calendar Grid */}
                 <div className="p-2 md:p-6 overflow-x-auto">
                     {/* Week day headers */}
-                    <div className="grid grid-cols-7 gap-0.5 md:gap-1 mb-2 min-w-[280px]">
+                    <div className="grid grid-cols-7 gap-1 mb-2">
                         {weekDays.map((day) => (
                             <div
                                 key={day}
