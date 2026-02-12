@@ -94,7 +94,7 @@ export function CTASection() {
                         whileInView={{ opacity: 1 }}
                         viewport={{ once: true }}
                         transition={{ delay: 0.7 }}
-                        className="mt-12 flex items-center justify-center gap-8 text-sm text-zinc-500"
+                        className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 text-sm text-zinc-500"
                     >
                         <div className="flex items-center gap-2">
                             <div className="w-2 h-2 rounded-full bg-primary" />

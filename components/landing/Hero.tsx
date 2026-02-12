@@ -56,7 +56,7 @@ export function Hero() {
     const t = useTranslations('landing.hero');
 
     return (
-        <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden pt-32 pb-24">
+        <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden pt-24 sm:pt-32 pb-12 sm:pb-24">
             {/* Animated gradient background */}
             <motion.div
                 className="absolute inset-0 -z-10 pointer-events-none"
@@ -114,7 +114,7 @@ export function Hero() {
 
                 {/* Headline with word-by-word animation */}
                 <motion.h1
-                    className="text-5xl lg:text-7xl font-semibold tracking-tight text-white leading-[1.1] max-w-4xl mx-auto mb-6"
+                    className="text-3xl sm:text-5xl lg:text-7xl font-semibold tracking-tight text-white leading-[1.1] max-w-4xl mx-auto mb-6"
                     variants={textRevealVariants}
                     initial="hidden"
                     animate="visible"
@@ -181,7 +181,7 @@ export function Hero() {
 
                 {/* Social Proof / Stats */}
                 <motion.div
-                    className="flex items-center gap-8 md:gap-12 mb-20 border-t border-white/5 pt-8 px-8"
+                    className="flex flex-col md:flex-row items-center gap-6 md:gap-12 mb-10 border-t border-white/5 pt-8 px-8"
                     variants={textRevealVariants}
                     initial="hidden"
                     animate="visible"
@@ -194,7 +194,8 @@ export function Hero() {
                         <span className="text-2xl font-bold text-white">{t('earlyAccess')}</span>
                         <span className="text-xs text-zinc-500 uppercase tracking-wider">{t('earlyAccessSub')}</span>
                     </motion.div>
-                    <div className="w-px h-10 bg-white/10" />
+                    <div className="hidden md:block w-px h-10 bg-white/10" />
+                    <div className="md:hidden w-16 h-px bg-white/10" />
                     <motion.div
                         className="flex flex-col items-center"
                         whileHover={{ scale: 1.05 }}
@@ -202,7 +203,8 @@ export function Hero() {
                         <span className="text-2xl font-bold text-white">{t('personalCoach')}</span>
                         <span className="text-xs text-zinc-500 uppercase tracking-wider">{t('personalCoachSub')}</span>
                     </motion.div>
-                    <div className="w-px h-10 bg-white/10" />
+                    <div className="hidden md:block w-px h-10 bg-white/10" />
+                    <div className="md:hidden w-16 h-px bg-white/10" />
                     <motion.div
                         className="flex flex-col items-center"
                         whileHover={{ scale: 1.05 }}

@@ -68,7 +68,7 @@ export default async function CalendarPage() {
             <MobileNav />
 
             <main className="md:pl-64 flex-1 relative">
-                <div className="h-full px-6 py-10 pb-24 md:pb-10 lg:px-10 max-w-[1400px] mx-auto">
+                <div className="h-full px-3 py-6 pb-24 md:py-10 md:pb-10 md:px-6 lg:px-10 max-w-[1400px] mx-auto">
                     <HabitsHub
                         initialHabits={transformedHabits}
                         initialTasks={transformedTasks}

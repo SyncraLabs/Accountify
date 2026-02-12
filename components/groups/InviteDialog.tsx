@@ -65,7 +65,7 @@ export function InviteDialog({ inviteCode, groupName }: InviteDialogProps) {
                     {t('button')}
                 </Button>
             </DialogTrigger>
-            <DialogContent className="bg-zinc-900/95 backdrop-blur-xl border-zinc-800 shadow-[0_0_50px_rgba(0,0,0,0.5)] max-w-[calc(100vw-2rem)] sm:max-w-sm mx-auto max-h-[85vh] overflow-y-auto">
+            <DialogContent className="bg-zinc-900/95 backdrop-blur-xl border-zinc-800 shadow-[0_0_50px_rgba(0,0,0,0.5)] w-[90%] max-w-sm mx-auto max-h-[85vh] overflow-y-auto rounded-xl">
                 <DialogHeader>
                     <DialogTitle className="text-white">{t('title')}</DialogTitle>
                     <DialogDescription className="text-zinc-400">

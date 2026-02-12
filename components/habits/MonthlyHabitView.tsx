@@ -188,9 +188,9 @@ export function MonthlyHabitView({ initialHabits }: MonthlyHabitViewProps) {
                 </div>
 
                 {/* Calendar Grid */}
-                <div className="p-2 md:p-6">
+                <div className="p-2 md:p-6 overflow-x-auto">
                     {/* Week day headers */}
-                    <div className="grid grid-cols-7 gap-0.5 md:gap-1 mb-2">
+                    <div className="grid grid-cols-7 gap-0.5 md:gap-1 mb-2 min-w-[280px]">
                         {weekDays.map((day) => (
                             <div
                                 key={day}
@@ -202,7 +202,7 @@ export function MonthlyHabitView({ initialHabits }: MonthlyHabitViewProps) {
                     </div>
 
                     {/* Calendar days */}
-                    <div className="grid grid-cols-7 gap-0.5 md:gap-1">
+                    <div className="grid grid-cols-7 gap-0.5 md:gap-1 min-w-[280px]">
                         {calendarDays.map((day, index) => {
                             if (!day) {
                                 return <div key={`empty-${index}`} className="aspect-square" />;
