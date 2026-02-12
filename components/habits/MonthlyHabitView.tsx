@@ -125,7 +125,7 @@ export function MonthlyHabitView({ initialHabits }: MonthlyHabitViewProps) {
     const monthlyStats = getMonthlyStats();
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 w-full min-w-0 overflow-hidden">
             {/* Habit Selector */}
             {initialHabits.length > 1 && (
                 <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none">
@@ -153,15 +153,15 @@ export function MonthlyHabitView({ initialHabits }: MonthlyHabitViewProps) {
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="rounded-3xl bg-white/5 border border-white/10 overflow-hidden"
+                className="rounded-3xl bg-white/5 border border-white/10 overflow-hidden w-full min-w-0"
             >
                 {/* Calendar Header */}
-                <div className="p-6 border-b border-white/5">
+                <div className="p-3 sm:p-6 border-b border-white/5">
                     <div className="flex items-center justify-between">
                         <div>
-                            <h2 className="text-2xl font-bold text-white capitalize">{monthName}</h2>
+                            <h2 className="text-lg sm:text-2xl font-bold text-white capitalize">{monthName}</h2>
                             {selectedHabitData && (
-                                <p className="text-sm text-zinc-400 mt-1">
+                                <p className="text-[11px] sm:text-sm text-zinc-400 mt-1">
                                     {getEmoji(selectedHabitData.category)} {selectedHabitData.title} - {monthlyStats.completed}/{monthlyStats.total} días completados
                                 </p>
                             )}
@@ -257,8 +257,8 @@ export function MonthlyHabitView({ initialHabits }: MonthlyHabitViewProps) {
                 </div>
 
                 {/* Legend */}
-                <div className="px-6 pb-6">
-                    <div className="flex flex-wrap gap-4 text-xs text-zinc-400">
+                <div className="px-3 sm:px-6 pb-4 sm:pb-6">
+                    <div className="flex flex-wrap gap-2 sm:gap-4 text-[10px] sm:text-xs text-zinc-400">
                         <div className="flex items-center gap-2">
                             <div className="h-3 w-3 rounded bg-primary/30 border border-primary/50" />
                             <span>{t("status.completed")}</span>

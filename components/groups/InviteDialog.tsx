@@ -65,7 +65,7 @@ export function InviteDialog({ inviteCode, groupName }: InviteDialogProps) {
                     {t('button')}
                 </Button>
             </DialogTrigger>
-            <DialogContent className="bg-zinc-900/95 backdrop-blur-xl border-zinc-800 shadow-[0_0_50px_rgba(0,0,0,0.5)] w-[calc(100vw-2rem)] max-w-sm mx-auto max-h-[85vh] overflow-y-auto">
+            <DialogContent className="bg-zinc-900/95 backdrop-blur-xl border-zinc-800 shadow-[0_0_50px_rgba(0,0,0,0.5)] max-w-[calc(100vw-2rem)] sm:max-w-sm mx-auto max-h-[85vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle className="text-white">{t('title')}</DialogTitle>
                     <DialogDescription className="text-zinc-400">
@@ -130,12 +130,12 @@ export function InviteDialog({ inviteCode, groupName }: InviteDialogProps) {
                             <div className="p-2 sm:p-3 bg-white rounded-lg shadow-sm">
                                 <QRCodeSVG
                                     value={inviteLink}
-                                    size={120}
+                                    size={100}
                                     level="M"
                                     includeMargin={false}
                                     fgColor="#18181b"
                                     bgColor="#ffffff"
-                                    className="w-full h-auto max-w-[140px]"
+                                    className="w-full h-auto max-w-[100px] sm:max-w-[140px]"
                                 />
                             </div>
                         </div>
