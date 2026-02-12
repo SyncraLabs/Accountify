@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Users, Trophy, MessageCircle, Share2, Target, Flame, Sparkles, ArrowRight } from 'lucide-react'
+import { Users, Trophy, MessageCircle, Share2, Target, Flame, Sparkles, ArrowRight, Globe, Calendar } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 
 const containerVariants = {
@@ -107,6 +107,39 @@ export function GroupsWelcome({ className }: { className?: string }) {
                             <p className="text-xs text-zinc-400">{feature.description}</p>
                         </motion.div>
                     ))}
+                </motion.div>
+
+                {/* Community — Coming Soon */}
+                <motion.div
+                    variants={itemVariants}
+                    className="mb-8 p-4 rounded-xl bg-zinc-900/40 border border-zinc-800/40"
+                >
+                    <div className="flex items-center gap-2.5 mb-3">
+                        <div className="p-2 rounded-lg bg-blue-500/10 border border-blue-500/15">
+                            <Globe className="h-4 w-4 text-blue-400" />
+                        </div>
+                        <span className="text-sm font-semibold text-white">Comunidades Abiertas</span>
+                        <span className="px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-blue-400 bg-blue-500/10 border border-blue-500/20 rounded-full">
+                            Próximamente
+                        </span>
+                    </div>
+                    <p className="text-[11px] text-zinc-500 mb-3">
+                        Conecta con personas de todo el mundo que comparten tus metas.
+                    </p>
+                    <div className="grid grid-cols-3 gap-2">
+                        <div className="flex flex-col items-center gap-1 p-2.5 rounded-lg bg-zinc-800/40 border border-zinc-700/30">
+                            <Globe className="h-3.5 w-3.5 text-zinc-500" />
+                            <span className="text-[10px] text-zinc-500">Directorio público</span>
+                        </div>
+                        <div className="flex flex-col items-center gap-1 p-2.5 rounded-lg bg-zinc-800/40 border border-zinc-700/30">
+                            <Trophy className="h-3.5 w-3.5 text-zinc-500" />
+                            <span className="text-[10px] text-zinc-500">Desafíos globales</span>
+                        </div>
+                        <div className="flex flex-col items-center gap-1 p-2.5 rounded-lg bg-zinc-800/40 border border-zinc-700/30">
+                            <Calendar className="h-3.5 w-3.5 text-zinc-500" />
+                            <span className="text-[10px] text-zinc-500">Eventos</span>
+                        </div>
+                    </div>
                 </motion.div>
 
                 {/* Call to Action */}
