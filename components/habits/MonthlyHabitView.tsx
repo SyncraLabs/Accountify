@@ -202,10 +202,10 @@ export function MonthlyHabitView({ initialHabits }: MonthlyHabitViewProps) {
                     </div>
 
                     {/* Calendar days */}
-                    <div className="grid grid-cols-7 gap-1 w-fit mx-auto md:w-full md:gap-1">
+                    <div className="grid grid-cols-7 gap-1 w-full md:gap-1">
                         {calendarDays.map((day, index) => {
                             if (!day) {
-                                return <div key={`empty-${index}`} className="w-9 h-9 md:w-auto md:h-auto md:aspect-square" />;
+                                return <div key={`empty-${index}`} className="aspect-square" />;
                             }
 
                             const isToday = day.toDateString() === today.toDateString();
@@ -219,7 +219,7 @@ export function MonthlyHabitView({ initialHabits }: MonthlyHabitViewProps) {
                                     key={day.toISOString()}
                                     onClick={() => handleDayClick(day)}
                                     className={cn(
-                                        "w-9 h-9 md:w-auto md:h-auto md:aspect-square rounded-lg md:rounded-xl flex flex-col items-center justify-center gap-0.5 transition-all border",
+                                        "aspect-square rounded-lg md:rounded-xl flex flex-col items-center justify-center gap-0.5 transition-all border",
                                         isToday && "ring-1 md:ring-2 ring-primary ring-offset-1 md:ring-offset-2 ring-offset-black",
                                         isFuture && "opacity-30 cursor-default",
                                         status === 'completed' && "bg-primary/20 border-primary/30",
